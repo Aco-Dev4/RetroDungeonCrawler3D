@@ -1,26 +1,44 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyAI : MonoBehaviour
 {
+    #region Variables: NavMesh Travel
     private NavMeshAgent _agent;
-    private float _distance;
-    private Vector3 _startingPoint;
-    private Vector3 _lastValidDestination;
+    #endregion
 
+    #region Variables: Target Follow
     [SerializeField] private GameObject player;
-    [SerializeField] private float attackDistance = 2.0f;
     [SerializeField] private float rotationSpeed = 10f;
+    private Health _playerHealth;
+    private float _distance;
+    private Vector3 _lastValidDestination;
+    #endregion
+    
+    #region Variables: Attack
+    [SerializeField] private float attackDistance = 2.0f;
+    [SerializeField] private int attackDamage = 10;
+    [SerializeField] private float attackCooldown = 1.5f;
+    private bool _canAttack = true;
+    #endregion
 
     void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
-        _startingPoint = transform.position;
+        _playerHealth = player.GetComponent<Health>();
     }
 
     void Update()
+    {
+        DistanceCheck();
+
+        HandleRotation();
+    }
+
+    private void DistanceCheck()
     {
         if (player == null) return;
 
@@ -30,15 +48,65 @@ public class EnemyAI : MonoBehaviour
         if (_distance < attackDistance)
         {
             _agent.isStopped = true;
-            // TODO: Play attack animation or deal damage
+            TryAttack();
+            // TODO: Play attack animation
         }
         else
         {
             _agent.isStopped = false;
             MoveToPlayer();
         }
+    }
 
-        HandleRotation();
+    private void TryAttack()
+    {
+        if (!_canAttack) return;
+
+        StartCoroutine(AttackCooldown());
+        PerformAttack();
+    }
+
+    private void PerformAttack()
+    {
+        if (player == null) return;
+        
+        if (_playerHealth != null)
+        {
+            _playerHealth.TakeDamage(attackDamage, gameObject);
+        }
+        
+        #region Debuging: Attack Visual
+        
+        Debug.DrawLine(transform.position, player.transform.position, Color.red, 0.2f);
+        Debug.DrawRay(transform.position, transform.forward * 2, Color.red, 0.2f);
+        DebugExtension.DebugWireSphere(transform.position + transform.forward * (2), Color.red, 2, 0.2f);
+        
+        // Debug Red Sphere
+        GameObject debugSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        GameObject.Destroy(debugSphere.GetComponent<Collider>());
+        debugSphere.transform.position = transform.position + transform.forward * 2;
+        debugSphere.transform.localScale = Vector3.one * 2;
+        var sphereRenderer = debugSphere.GetComponent<Renderer>();
+        sphereRenderer.material = new Material(Shader.Find("Standard"));
+        sphereRenderer.material.color = new Color(1f, 0f, 0f, 0.4f);
+        sphereRenderer.material.SetFloat("_Mode", 3); // force transparency
+        sphereRenderer.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        sphereRenderer.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        sphereRenderer.material.SetInt("_ZWrite", 0);
+        sphereRenderer.material.DisableKeyword("_ALPHATEST_ON");
+        sphereRenderer.material.EnableKeyword("_ALPHABLEND_ON");
+        sphereRenderer.material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        sphereRenderer.material.renderQueue = 3000;
+        GameObject.Destroy(debugSphere, 0.2f);
+        
+        #endregion
+    }
+
+    private IEnumerator AttackCooldown()
+    {
+        _canAttack = false;
+        yield return new WaitForSeconds(attackCooldown);
+        _canAttack = true;
     }
 
     private void MoveToPlayer()
