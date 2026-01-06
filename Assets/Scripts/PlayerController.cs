@@ -10,8 +10,9 @@ public class PlayerController : MonoBehaviour
     #region Variables: Componenets
     private CharacterController _characterController;
     private Camera _mainCamera;
+    [SerializeField] private Animator _animator;
     #endregion
-    
+
     #region Variables: Movement
     private Vector2 _input;
     private Vector3 _direction;
@@ -66,6 +67,8 @@ public class PlayerController : MonoBehaviour
         }
         
         _direction.y = _velocity; // Apply velocity to position Y
+        _animator.SetBool("isGrounded", IsGrounded());
+        _animator.SetFloat("VerticalVel", _velocity);
     }
 
     private void ApplyRotation()
@@ -81,6 +84,8 @@ public class PlayerController : MonoBehaviour
     private void ApplyMovement()
     {
         _characterController.Move(_direction * (speed * Time.deltaTime)); // Movement in his direction with his speed
+        float moveAmount = new Vector3(_direction.x, 0f, _direction.z).magnitude;
+        _animator.SetFloat("Speed", moveAmount);
     }
 
     private void ApplySlide()
