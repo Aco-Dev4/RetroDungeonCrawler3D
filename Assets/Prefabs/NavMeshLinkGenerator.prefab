@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5302239576814011194
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3251905350453638287}
+  - component: {fileID: 4268060474316077997}
+  m_Layer: 0
+  m_Name: NavMeshLinkGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3251905350453638287
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5302239576814011194}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4268060474316077997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5302239576814011194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2aaf98270776dbd44854f39e3af1f50b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::eDmitriyAssets.NavmeshLinksGenerator.NavMeshLinks_AutoPlacer
+  linkPrefab: {fileID: 838760645148759918, guid: d0433256072c0a6428ade154008c1d17, type: 3}
+  OnewayLinkPrefab: {fileID: 838760645148759918, guid: 2ded572f9bf70374fa82ea4eb47431cd, type: 3}
+  tileWidth: 1
+  maxJumpHeight: 3.5
+  maxJumpDist: 4
+  raycastLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  sphereCastRadius: 1
+  cheatOffset: 0.25
+  wallCheckYOffset: 1.5
+  invertFacingNormal: 0
+  dontAllignYAxis: 0
