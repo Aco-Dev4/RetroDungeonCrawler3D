@@ -574,6 +574,22 @@ PrefabInstance:
       propertyPath: m_Center.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4793233608397910765, guid: 289abe6daaa7f6b42b895bb6f9133c4a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 4793233608397910765, guid: 289abe6daaa7f6b42b895bb6f9133c4a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 4793233608397910765, guid: 289abe6daaa7f6b42b895bb6f9133c4a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 4793233608397910765, guid: 289abe6daaa7f6b42b895bb6f9133c4a, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5816387277668628970, guid: 289abe6daaa7f6b42b895bb6f9133c4a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

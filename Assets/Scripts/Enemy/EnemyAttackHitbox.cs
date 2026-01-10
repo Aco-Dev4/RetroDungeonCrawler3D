@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyAttackHitbox : MonoBehaviour
+public class EnemyAttackHitbox : MonoBehaviour, IEnemyAttack
 {
     private int _damage;
     private GameObject _owner;
@@ -9,6 +9,7 @@ public class EnemyAttackHitbox : MonoBehaviour
     {
         _damage = damage;
         _owner = owner;
+        Destroy(gameObject, 0.15f);
     }
 
     private void OnTriggerEnter(Collider other)

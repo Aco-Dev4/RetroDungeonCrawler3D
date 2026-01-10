@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 2671354570314762334}
   - component: {fileID: 4327210381511015384}
   m_Layer: 7
-  m_Name: Enemy
+  m_Name: SkeletonEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -154,10 +154,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   _animator: {fileID: 3189866509523881114}
-  rotationSpeed: 1000
-  attackHitboxPrefab: {fileID: 335866988915699104, guid: b7b8a9a880008084792b57caee99a3f6, type: 3}
-  attackSpawnPoint: {fileID: 7375838174279600244}
-  attackDistance: 1.3
+  attackPrefab: {fileID: 335866988915699104, guid: b7b8a9a880008084792b57caee99a3f6, type: 3}
+  attackOrigin: {fileID: 7375838174279600244}
+  attackRange: 2
   attackDamage: 10
   attackSpeed: 1
 --- !u!114 &2671354570314762334

@@ -12,16 +12,15 @@ public class EnemyAI : MonoBehaviour
     #region Variables: Target Follow
     [SerializeField] private Animator _animator;
     private GameObject _player;
-    [SerializeField] private float rotationSpeed = 10f;
     private Health _playerHealth;
     private float _distance;
     private Vector3 _lastValidDestination;
     #endregion
 
     #region Variables: Attack
-    [SerializeField] private GameObject attackHitboxPrefab;
-    [SerializeField] private Transform attackSpawnPoint;
-    [SerializeField] private float attackDistance = 2.0f;
+    [SerializeField] private GameObject attackPrefab;
+    [SerializeField] private Transform attackOrigin;
+    [SerializeField] private float attackRange = 2.0f;
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private float attackSpeed = 1f;
     private bool _canAttack = true;
@@ -62,16 +61,18 @@ public class EnemyAI : MonoBehaviour
         _distance = Vector3.Distance(_agent.transform.position, _player.transform.position);
 
         // Check attack range OR if player is touching enemy collider
-        if (_distance <= attackDistance || IsPlayerTouching())
+        if (_distance <= attackRange || IsPlayerTouching())
         {
             _agent.isStopped = true;
-            _animator.SetBool("IsMoving", false);
+            if (_animator != null)
+                _animator.SetBool("IsMoving", false);
             TryAttack();
         }
         else
         {
             _agent.isStopped = false;
-            _animator.SetBool("IsMoving", true);
+            if (_animator != null)
+                _animator.SetBool("IsMoving", true);
             MoveToPlayer();
         }
     }
@@ -97,18 +98,28 @@ public class EnemyAI : MonoBehaviour
         _agent.isStopped = true;
         _agent.velocity = Vector3.zero;
 
-        _animator.SetFloat("AttackSpeed", attackSpeed);
-
-        _animator.SetTrigger("Attack");
+        if (_animator != null)
+        {
+            _animator.SetFloat("AttackSpeed", attackSpeed);
+            _animator.SetTrigger("Attack");
+        }
 
         StartCoroutine(AttackCooldown());
     }
 
     public void ApplyAttackDamage()
     {
-        GameObject hitbox = Instantiate(attackHitboxPrefab, attackSpawnPoint.position, attackSpawnPoint.rotation);
-        hitbox.GetComponent<EnemyAttackHitbox>().Init(attackDamage, gameObject);
-        Destroy(hitbox, 0.15f);
+        GameObject attackObj = Instantiate(attackPrefab, attackOrigin.position, attackOrigin.rotation);
+
+        IEnemyAttack attack = attackObj.GetComponent<IEnemyAttack>();
+        if (attack != null)
+        {
+            attack.Init(attackDamage, gameObject);
+        }
+        else
+        {
+            Debug.LogWarning($"{attackObj.name} has no IEnemyAttack component.");
+        }
     }
 
     public void OnAttackFinished()
@@ -116,12 +127,22 @@ public class EnemyAI : MonoBehaviour
         _isAttacking = false;
     }
 
-    private IEnumerator AttackCooldown()
-    {
-        float animLength = _animator.GetCurrentAnimatorStateInfo(0).length;
-        yield return new WaitForSeconds(animLength / attackSpeed);
+    private IEnumerator AttackCooldown() 
+    { 
+        float animLength = 1f;
+        if (_animator != null)
+        { 
+            animLength = _animator.GetCurrentAnimatorStateInfo(0).length;
+        } 
+        else
+        {
+            ApplyAttackDamage();
+        }
+        yield return new WaitForSeconds(animLength / attackSpeed); 
         _canAttack = true;
+        _isAttacking = false;
     }
+
 
     private void MoveToPlayer()
     {
@@ -172,7 +193,7 @@ public class EnemyAI : MonoBehaviour
 
         if (direction != Vector3.zero)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), rotationSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.LookRotation(direction);
         }
     }
 }
