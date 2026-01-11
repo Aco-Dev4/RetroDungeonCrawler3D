@@ -129,16 +129,11 @@ public class EnemyAI : MonoBehaviour
 
     private IEnumerator AttackCooldown() 
     { 
-        float animLength = 1f;
-        if (_animator != null)
-        { 
-            animLength = _animator.GetCurrentAnimatorStateInfo(0).length;
-        } 
-        else
+        if (_animator == null)
         {
             ApplyAttackDamage();
         }
-        yield return new WaitForSeconds(animLength / attackSpeed); 
+        yield return new WaitForSeconds(1f / attackSpeed); 
         _canAttack = true;
         _isAttacking = false;
     }

@@ -125,8 +125,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackProjectile
   speed: 10
-  lifetime: 100
-  destroyOnLayers:
+  lifetime: 10
+  ignoreDestroyOnLayers:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 128
   destroyOnAnyCollision: 0
