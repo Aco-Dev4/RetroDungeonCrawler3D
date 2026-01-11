@@ -5,6 +5,10 @@ using System.Collections;
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyAI : MonoBehaviour
 {
+    [SerializeField] private EnemyData enemyData;
+    private EnemyStats _stats;
+    private WaveInstance _waveInstance;
+
     #region Variables: NavMesh Travel
     private NavMeshAgent _agent;
     #endregion
@@ -20,9 +24,9 @@ public class EnemyAI : MonoBehaviour
     #region Variables: Attack
     [SerializeField] private GameObject attackPrefab;
     [SerializeField] private Transform attackOrigin;
-    [SerializeField] private float attackRange = 2.0f;
-    [SerializeField] private int attackDamage = 10;
-    [SerializeField] private float attackSpeed = 1f;
+    // [SerializeField] private float attackRange = 2.0f;
+    // [SerializeField] private int attackDamage = 10;
+    // [SerializeField] private float attackSpeed = 1f;
     private bool _canAttack = true;
     private bool _isAttacking;
     #endregion
@@ -44,6 +48,38 @@ public class EnemyAI : MonoBehaviour
         {
             Debug.LogError("EnemyAI: No GameObject with tag 'Player' found!");
         }
+
+        #region Debug
+        if (enemyData == null)
+        {
+            Debug.LogError($"{name} has no EnemyData assigned!");
+            return;
+        }
+
+        if (EnemyManager.Instance == null)
+        {
+            Debug.LogError("EnemyManager not found in scene!");
+            return;
+        }
+        #endregion
+        _stats = EnemyManager.Instance.GetStats(enemyData);
+
+        _agent.speed = _stats.moveSpeed;
+        Health health = GetComponent<Health>();
+        if (health != null)
+        {
+            health.Init(_stats.maxHealth);
+        }
+    }
+
+    public void InitWave(WaveInstance waveInstance)
+    {
+        _waveInstance = waveInstance;
+    }
+
+    public WaveInstance GetWaveInstance()
+    {
+        return _waveInstance;
     }
 
     void Update()
@@ -61,7 +97,7 @@ public class EnemyAI : MonoBehaviour
         _distance = Vector3.Distance(_agent.transform.position, _player.transform.position);
 
         // Check attack range OR if player is touching enemy collider
-        if (_distance <= attackRange || IsPlayerTouching())
+        if (_distance <= _stats.attackRange || IsPlayerTouching())
         {
             _agent.isStopped = true;
             if (_animator != null)
@@ -100,7 +136,7 @@ public class EnemyAI : MonoBehaviour
 
         if (_animator != null)
         {
-            _animator.SetFloat("AttackSpeed", attackSpeed);
+            _animator.SetFloat("AttackSpeed", _stats.attackSpeed);
             _animator.SetTrigger("Attack");
         }
 
@@ -114,7 +150,7 @@ public class EnemyAI : MonoBehaviour
         IEnemyAttack attack = attackObj.GetComponent<IEnemyAttack>();
         if (attack != null)
         {
-            attack.Init(attackDamage, gameObject);
+            attack.Init(_stats.damage, gameObject);
         }
         else
         {
@@ -133,7 +169,7 @@ public class EnemyAI : MonoBehaviour
         {
             ApplyAttackDamage();
         }
-        yield return new WaitForSeconds(1f / attackSpeed); 
+        yield return new WaitForSeconds(1f / _stats.attackSpeed);
         _canAttack = true;
         _isAttacking = false;
     }

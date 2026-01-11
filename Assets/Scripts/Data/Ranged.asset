@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00590751a0b8ef941bda1e0a12fc2b4e, type: 3}
+  m_Name: Ranged
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: Ranged
+  prefab: {fileID: 5987976300149318567, guid: 5d2be4e348caaf040ba1c9a980b50ee5, type: 3}
+  maxHealth: 50
+  damage: 15
+  attackSpeed: 0.5
+  attackRange: 7
+  moveSpeed: 3

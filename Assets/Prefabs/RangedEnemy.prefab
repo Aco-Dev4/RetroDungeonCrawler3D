@@ -130,7 +130,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.6
-  m_Speed: 3.5
+  m_Speed: 3
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -154,12 +154,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e3092ecb139e51449bc0cf6755261d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
+  enemyData: {fileID: 11400000, guid: 0ddb78870065bc44087109faf0679440, type: 2}
   _animator: {fileID: 0}
   attackPrefab: {fileID: 4381943666982117654, guid: 9cba0796c66fbde499d695546c14fc39, type: 3}
   attackOrigin: {fileID: 5625834042954020785}
-  attackRange: 7
-  attackDamage: 15
-  attackSpeed: 0.5
 --- !u!114 &8709629022254772993
 MonoBehaviour:
   m_ObjectHideFlags: 0

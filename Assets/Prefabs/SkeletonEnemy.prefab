@@ -154,12 +154,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e3092ecb139e51449bc0cf6755261d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
+  enemyData: {fileID: 11400000, guid: 78079503e485c264d9330762d52bd62a, type: 2}
   _animator: {fileID: 3189866509523881114}
   attackPrefab: {fileID: 335866988915699104, guid: b7b8a9a880008084792b57caee99a3f6, type: 3}
   attackOrigin: {fileID: 7375838174279600244}
-  attackRange: 2
-  attackDamage: 10
-  attackSpeed: 1
 --- !u!114 &2671354570314762334
 MonoBehaviour:
   m_ObjectHideFlags: 0

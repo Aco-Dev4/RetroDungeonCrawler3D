@@ -3,14 +3,27 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
     #region Variables: Health
-    [SerializeField] private int maxHealth = 100;
+    private int maxHealth;
     public int currentHealth;
     public HealthBar healthBar;
     #endregion
 
     private void Awake()
     {
+        // If Init() was not called (e.g. player), fall back safely
+        if (maxHealth <= 0)
+        {
+            maxHealth = currentHealth;
+            if (healthBar != null)
+                healthBar.SetMaxHealth(maxHealth);
+        }
+    }
+
+    public void Init(int maxHealthValue)
+    {
+        maxHealth = maxHealthValue;
         currentHealth = maxHealth;
+
         if (healthBar != null)
             healthBar.SetMaxHealth(maxHealth);
     }
@@ -22,11 +35,6 @@ public class Health : MonoBehaviour
         if (healthBar != null)
             healthBar.SetHealth(currentHealth);
         
-        #region Debuging: Damage amount and source
-        string attackerName = damageSource.name;
-        Debug.Log($"{gameObject.name} took {amount} damage from {attackerName}. Current health: {currentHealth}");
-        #endregion
-        
         if (currentHealth <= 0)
         {
             Die();
@@ -35,7 +43,13 @@ public class Health : MonoBehaviour
 
     private void Die()
     {
-        // Later: play animation, drop loot, etc.
+        EnemyAI ai = GetComponent<EnemyAI>();
+        if (ai != null)
+        {   
+            WaveManager manager = FindAnyObjectByType<WaveManager>();
+            if (manager != null)
+                manager.OnEnemyKilled(ai, transform.position);
+        }
         Destroy(gameObject);
     }
 }

@@ -14,7 +14,7 @@ public class EnemyAttackHitbox : MonoBehaviour, IEnemyAttack
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == _owner) return;
+        if (_owner != null && other.gameObject == _owner) return;
 
         Health health = other.GetComponent<Health>();
         if (health != null)

@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator _animator;
     #endregion
 
+    #region Health
+    [SerializeField] private int startingHealth = 100;
+    #endregion
+
     #region Variables: Movement
     private Vector2 _input;
     private Vector3 _direction;
@@ -43,6 +47,12 @@ public class PlayerController : MonoBehaviour
     {
         _characterController = GetComponent<CharacterController>();
         _mainCamera = Camera.main; // Needs the TAG MainCamera in unity
+
+        Health health = GetComponent<Health>();
+        if (health != null)
+        {
+            health.Init(startingHealth);
+        }
     }
 
     private void Update()
