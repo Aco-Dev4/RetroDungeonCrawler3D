@@ -32,7 +32,8 @@ public class EnemyAttackProjectile : MonoBehaviour, IEnemyAttack
         if (health != null)
         {
             health.TakeDamage(_damage, _owner);
-            if (destroyOnAnyCollision) Destroy(gameObject);
+            if (destroyOnAnyCollision) 
+                Destroy(gameObject);
             return;
         }
 

@@ -20,12 +20,6 @@ public class EnemySpawner : MonoBehaviour
         return obj;
     }
 
-    private void Spawn(EnemyData enemyData)
-    {
-        Instantiate(enemyData.prefab, spawnPoint.position, spawnPoint.rotation);
-        StartCoroutine(Cooldown());
-    }
-
     private IEnumerator Cooldown()
     {
         _isReady = false;

@@ -17,8 +17,8 @@ public class WaveInstance
 
     public WaveInstance(WaveData waveData, int number)
     {
-        data = waveData;
-        waveNumber = number;
+        this.data = waveData;
+        this.waveNumber = number;
 
         remainingToSpawn = 0;
         aliveEnemies = 0;

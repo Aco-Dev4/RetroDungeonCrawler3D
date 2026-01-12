@@ -171,7 +171,8 @@ public class EnemyAI : MonoBehaviour
         }
         yield return new WaitForSeconds(1f / _stats.attackSpeed);
         _canAttack = true;
-        _isAttacking = false;
+        if (_animator == null)
+            _isAttacking = false;
     }
 
 

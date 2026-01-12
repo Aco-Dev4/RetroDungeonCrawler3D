@@ -11,9 +11,18 @@ public class WaveManager : MonoBehaviour
     [Header("Spawners")]
     [SerializeField] private List<EnemySpawner> spawners = new();
 
+    [Header("UI")]
+    [SerializeField] private WavePopupUI wavePopupUI;
+    [SerializeField] private WaveCounterUI waveCounterUI;
+
     private List<WaveInstance> _activeWaves = new();
     private int _nextWaveIndex = 0;
 
+    void Awake()
+    {
+        if (waveCounterUI != null)
+        waveCounterUI.SetWave(0, waves.Count);
+    }
     void Update()
     {
         if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame)
@@ -37,7 +46,12 @@ public class WaveManager : MonoBehaviour
         WaveInstance instance = new WaveInstance(waveData, waveNumber);
         _activeWaves.Add(instance);
 
+        if (waveCounterUI != null)
+            waveCounterUI.SetWave(waveNumber, waves.Count);
+
         Debug.Log($"Wave {waveNumber} started.");
+        if (wavePopupUI != null)
+            wavePopupUI.Show($"Wave {waveNumber} Started", WavePopupType.WaveStarted);
 
         StartCoroutine(SpawnLoop(instance));
     }
@@ -116,6 +130,8 @@ public class WaveManager : MonoBehaviour
     private void EndWave(WaveInstance wave)
     {
         Debug.Log($"Wave {wave.waveNumber} completed.");
+        if (wavePopupUI != null)
+            wavePopupUI.Show($"Wave {wave.waveNumber} Completed", WavePopupType.WaveCompleted);
 
         if (wave.data.rewardPrefab != null)
         {
