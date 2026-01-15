@@ -41,6 +41,13 @@ public class Health : MonoBehaviour
         }
     }
 
+    public void IncreaseMaxHealth(int amount)
+    {
+        maxHealth += amount;
+        currentHealth += amount; // optional but feels good
+        healthBar.SetMaxHealth(maxHealth);
+    }
+
     private void Die()
     {
         EnemyAI ai = GetComponent<EnemyAI>();

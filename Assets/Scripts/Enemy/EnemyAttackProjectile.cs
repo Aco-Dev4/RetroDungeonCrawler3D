@@ -10,18 +10,23 @@ public class EnemyAttackProjectile : MonoBehaviour, IEnemyAttack
     [SerializeField] private bool destroyOnAnyCollision = false;
 
     private int _damage;
+    private Vector3 _direction;
     private GameObject _owner;
 
-    public void Init(int damage, GameObject owner)
+    public void Init(int damage, GameObject owner, Vector3 targetPosition)
     {
         _damage = damage;
         _owner = owner;
+
+        _direction = (targetPosition - transform.position).normalized;
+        transform.rotation = Quaternion.LookRotation(_direction);
+
         Destroy(gameObject, lifetime);
     }
 
     void Update()
     {
-        transform.position += transform.forward * speed * Time.deltaTime;
+        transform.position += _direction * speed * Time.deltaTime;
     }
 
     private void OnTriggerEnter(Collider other)

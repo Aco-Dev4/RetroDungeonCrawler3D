@@ -155,7 +155,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   enemyData: {fileID: 11400000, guid: 0ddb78870065bc44087109faf0679440, type: 2}
-  _animator: {fileID: 0}
   attackPrefab: {fileID: 4381943666982117654, guid: 9cba0796c66fbde499d695546c14fc39, type: 3}
   attackOrigin: {fileID: 5625834042954020785}
 --- !u!114 &8709629022254772993
@@ -216,7 +215,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3abeb8ed0a18f1641804ba825de52cc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 50
   currentHealth: 0
   healthBar: {fileID: 7117315808176342768}
 --- !u!1 &7941866496728493820
@@ -244,7 +242,7 @@ Transform:
   m_GameObject: {fileID: 7941866496728493820}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.52, z: 1.034}
+  m_LocalPosition: {x: 0, y: 0.3, z: 0.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -317,7 +315,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: bab7fc1b3863aec4ba1c3581f4d2a564, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

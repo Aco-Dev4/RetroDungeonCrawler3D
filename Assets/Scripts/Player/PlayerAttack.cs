@@ -43,33 +43,6 @@ public class PlayerAttack : MonoBehaviour
                 break;
             }
         }
-
-        #region Debuging: Attack Visual
-
-        // Temporary visual
-        Debug.DrawLine(transform.position, transform.position + transform.forward * attackRange, Color.red, 0.2f);
-        Debug.DrawRay(transform.position, transform.forward * attackRange, Color.red, 0.2f);
-        DebugExtension.DebugWireSphere(transform.position + transform.forward * (attackRange * 0.5f), Color.red, attackRange * 0.5f, 0.2f);
-        
-        // Debug Red Sphere
-        GameObject debugSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        GameObject.Destroy(debugSphere.GetComponent<Collider>());
-        debugSphere.transform.position = transform.position + transform.forward * (attackRange * 0.5f);
-        debugSphere.transform.localScale = Vector3.one * attackRange;
-        var sphereRenderer = debugSphere.GetComponent<Renderer>();
-        sphereRenderer.material = new Material(Shader.Find("Standard"));
-        sphereRenderer.material.color = new Color(1f, 0f, 0f, 0.4f);
-        sphereRenderer.material.SetFloat("_Mode", 3); // force transparency
-        sphereRenderer.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        sphereRenderer.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        sphereRenderer.material.SetInt("_ZWrite", 0);
-        sphereRenderer.material.DisableKeyword("_ALPHATEST_ON");
-        sphereRenderer.material.EnableKeyword("_ALPHABLEND_ON");
-        sphereRenderer.material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        sphereRenderer.material.renderQueue = 3000;
-        GameObject.Destroy(debugSphere, 0.2f);
-        
-        #endregion
     }
 
     private IEnumerator AttackCooldown()

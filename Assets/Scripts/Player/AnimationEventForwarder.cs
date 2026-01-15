@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class AnimationEventForwarder : MonoBehaviour
 {
-    private PlayerAttack _playerAttack;
+    private PlayerController _playerController;
 
     private void Awake()
     {
-        _playerAttack = GetComponentInParent<PlayerAttack>();
+        _playerController = GetComponentInParent<PlayerController>();
     }
 
     public void ApplyAttackDamage()
     {
-        _playerAttack.ApplyAttackDamage();
+        _playerController.ApplyAttackDamage();
     }
 }

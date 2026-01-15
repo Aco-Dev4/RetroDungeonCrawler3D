@@ -5,7 +5,7 @@ public class EnemyAttackHitbox : MonoBehaviour, IEnemyAttack
     private int _damage;
     private GameObject _owner;
 
-    public void Init(int damage, GameObject owner)
+    public void Init(int damage, GameObject owner, Vector3 targetPosition)
     {
         _damage = damage;
         _owner = owner;

@@ -5,51 +5,77 @@ using System.Collections;
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyAI : MonoBehaviour
 {
+    [Header("Data")]
     [SerializeField] private EnemyData enemyData;
+
     private EnemyStats _stats;
     private WaveInstance _waveInstance;
 
-    #region Variables: NavMesh Travel
+    #region Components
     private NavMeshAgent _agent;
+    private Animator _animator;
+    private Collider _collider;
     #endregion
 
-    #region Variables: Target Follow
-    [SerializeField] private Animator _animator;
+    #region Target
     private GameObject _player;
     private Health _playerHealth;
-    private float _distance;
     private Vector3 _lastValidDestination;
     #endregion
 
-    #region Variables: Attack
+    #region Attack
     [SerializeField] private GameObject attackPrefab;
     [SerializeField] private Transform attackOrigin;
-    // [SerializeField] private float attackRange = 2.0f;
-    // [SerializeField] private int attackDamage = 10;
-    // [SerializeField] private float attackSpeed = 1f;
+
     private bool _canAttack = true;
     private bool _isAttacking;
     #endregion
 
-    private Collider _collider;
+    #region State
+    private float _distanceToPlayer;
+    #endregion
 
-    void Awake()
+    private void Awake()
+    {
+        CacheComponents();
+        ResolvePlayer();
+        ResolveStats();
+        ApplyStats();
+    }
+
+    private void Update()
+    {
+        if (_player == null) return;
+
+        HandleDistanceCheck();
+        _agent.updateRotation = !_isAttacking;
+        HandleRotation();
+    }
+
+    #region Initialization
+
+    private void CacheComponents()
     {
         _agent = GetComponent<NavMeshAgent>();
         _collider = GetComponent<Collider>();
+        _animator = GetComponentInChildren<Animator>();
+    }
 
-        GameObject foundPlayer = GameObject.FindWithTag("Player");
-        if (foundPlayer != null)
+    private void ResolvePlayer()
+    {
+        GameObject found = GameObject.FindWithTag("Player");
+        if (found == null)
         {
-            _player = foundPlayer;
-            _playerHealth = _player.GetComponent<Health>();
-        }
-        else
-        {
-            Debug.LogError("EnemyAI: No GameObject with tag 'Player' found!");
+            Debug.LogError("EnemyAI: Player not found!");
+            return;
         }
 
-        #region Debug
+        _player = found;
+        _playerHealth = _player.GetComponent<Health>();
+    }
+
+    private void ResolveStats()
+    {
         if (enemyData == null)
         {
             Debug.LogError($"{name} has no EnemyData assigned!");
@@ -61,16 +87,22 @@ public class EnemyAI : MonoBehaviour
             Debug.LogError("EnemyManager not found in scene!");
             return;
         }
-        #endregion
-        _stats = EnemyManager.Instance.GetStats(enemyData);
 
+        _stats = EnemyManager.Instance.GetStats(enemyData);
+    }
+
+    private void ApplyStats()
+    {
         _agent.speed = _stats.moveSpeed;
+
         Health health = GetComponent<Health>();
         if (health != null)
-        {
             health.Init(_stats.maxHealth);
-        }
     }
+
+    #endregion
+
+    #region Wave
 
     public void InitWave(WaveInstance waveInstance)
     {
@@ -82,47 +114,56 @@ public class EnemyAI : MonoBehaviour
         return _waveInstance;
     }
 
-    void Update()
-    {
-        DistanceCheck();
-        _agent.updateRotation = !_isAttacking;
-        HandleRotation();
-    }
+    #endregion
 
-    private void DistanceCheck()
+    #region Movement & Detection
+
+    private void HandleDistanceCheck()
     {
-        if (_player == null) return;
         if (_isAttacking) return;
 
-        _distance = Vector3.Distance(_agent.transform.position, _player.transform.position);
+        _distanceToPlayer = Vector3.Distance(transform.position, _player.transform.position);
 
-        // Check attack range OR if player is touching enemy collider
-        if (_distance <= _stats.attackRange || IsPlayerTouching())
+        if (_distanceToPlayer <= _stats.attackRange || IsPlayerTouching())
         {
-            _agent.isStopped = true;
-            if (_animator != null)
-                _animator.SetBool("IsMoving", false);
+            StopMovement();
             TryAttack();
         }
         else
         {
-            _agent.isStopped = false;
-            if (_animator != null)
-                _animator.SetBool("IsMoving", true);
+            ResumeMovement();
             MoveToPlayer();
         }
     }
 
     private bool IsPlayerTouching()
     {
-        if (_player == null) return false;
-
-        // Check if player collider intersects enemy collider bounds
         Collider playerCollider = _player.GetComponent<Collider>();
         if (playerCollider == null) return false;
 
         return _collider.bounds.Intersects(playerCollider.bounds);
     }
+
+    private void StopMovement()
+    {
+        _agent.isStopped = true;
+        _agent.velocity = Vector3.zero;
+
+        if (_animator != null)
+            _animator.SetBool("IsMoving", false);
+    }
+
+    private void ResumeMovement()
+    {
+        _agent.isStopped = false;
+
+        if (_animator != null)
+            _animator.SetBool("IsMoving", true);
+    }
+
+    #endregion
+
+    #region Attack Logic
 
     private void TryAttack()
     {
@@ -130,9 +171,6 @@ public class EnemyAI : MonoBehaviour
 
         _canAttack = false;
         _isAttacking = true;
-
-        _agent.isStopped = true;
-        _agent.velocity = Vector3.zero;
 
         if (_animator != null)
         {
@@ -145,12 +183,13 @@ public class EnemyAI : MonoBehaviour
 
     public void ApplyAttackDamage()
     {
+        if (_player == null) return;
         GameObject attackObj = Instantiate(attackPrefab, attackOrigin.position, attackOrigin.rotation);
 
         IEnemyAttack attack = attackObj.GetComponent<IEnemyAttack>();
         if (attack != null)
         {
-            attack.Init(_stats.damage, gameObject);
+            attack.Init(_stats.damage, gameObject, _player.transform.position);
         }
         else
         {
@@ -163,23 +202,28 @@ public class EnemyAI : MonoBehaviour
         _isAttacking = false;
     }
 
-    private IEnumerator AttackCooldown() 
-    { 
+    private IEnumerator AttackCooldown()
+    {
         if (_animator == null)
         {
             ApplyAttackDamage();
         }
-        yield return new WaitForSeconds(1f / _stats.attackSpeed);
+
+        float attackInterval = 1f / _stats.attackSpeed;
+        yield return new WaitForSeconds(attackInterval);
+
         _canAttack = true;
+
         if (_animator == null)
             _isAttacking = false;
     }
 
+    #endregion
+
+    #region Navigation
 
     private void MoveToPlayer()
     {
-        if (_player == null) return;
-
         NavMeshPath path = new NavMeshPath();
         _agent.CalculatePath(_player.transform.position, path);
 
@@ -190,43 +234,39 @@ public class EnemyAI : MonoBehaviour
         }
         else if (path.status == NavMeshPathStatus.PathPartial)
         {
-            _lastValidDestination = path.corners[path.corners.Length - 1];
+            _lastValidDestination = path.corners[^1];
             _agent.SetDestination(_lastValidDestination);
         }
-        else
+        else if (_lastValidDestination != Vector3.zero)
         {
-            if (_lastValidDestination != Vector3.zero)
-            {
-                _agent.SetDestination(_lastValidDestination);
-            }
+            _agent.SetDestination(_lastValidDestination);
         }
     }
 
     private void HandleRotation()
     {
-        if (_player == null) return;
-
-        Vector3 direction = Vector3.zero;
+        Vector3 direction;
 
         if (_agent.isOnOffMeshLink)
         {
-            direction = (_agent.currentOffMeshLinkData.endPos - transform.position).normalized;
+            direction = _agent.currentOffMeshLinkData.endPos - transform.position;
         }
         else if (!_isAttacking && _agent.velocity.sqrMagnitude > 0.1f)
         {
-            direction = _agent.velocity.normalized;
+            direction = _agent.velocity;
         }
         else
         {
-            direction = (_player.transform.position - transform.position).normalized;
+            direction = _player.transform.position - transform.position;
         }
 
-        direction.y = 0;
+        direction.y = 0f;
 
         if (direction != Vector3.zero)
-        {
-            transform.rotation = Quaternion.LookRotation(direction);
-        }
+            transform.rotation = Quaternion.LookRotation(direction.normalized);
     }
+
+    #endregion
 }
+
 

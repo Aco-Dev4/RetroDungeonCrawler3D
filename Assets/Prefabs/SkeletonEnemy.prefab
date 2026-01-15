@@ -117,9 +117,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.6
-  m_Height: 3
+  m_Height: 2.6
   m_Direction: 1
-  m_Center: {x: 0, y: 0.2, z: 0.1}
+  m_Center: {x: 0, y: 0.3, z: 0.1}
 --- !u!195 &5717608415262027775
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -155,7 +155,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   enemyData: {fileID: 11400000, guid: 78079503e485c264d9330762d52bd62a, type: 2}
-  _animator: {fileID: 3189866509523881114}
   attackPrefab: {fileID: 335866988915699104, guid: b7b8a9a880008084792b57caee99a3f6, type: 3}
   attackOrigin: {fileID: 7375838174279600244}
 --- !u!114 &2671354570314762334
@@ -216,7 +215,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3abeb8ed0a18f1641804ba825de52cc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 100
   currentHealth: 0
   healthBar: {fileID: 1487025274288235001}
 --- !u!1 &4791526945918114391
@@ -385,7 +383,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 95329416eeb00d94bb248f6c33ad53bc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1
+      value: -1.1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 95329416eeb00d94bb248f6c33ad53bc, type: 3}
       propertyPath: m_LocalPosition.z
