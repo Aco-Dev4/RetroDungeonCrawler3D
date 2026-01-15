@@ -50,12 +50,10 @@ public class Health : MonoBehaviour
 
     private void Die()
     {
-        EnemyAI ai = GetComponent<EnemyAI>();
-        if (ai != null)
+        EnemyAI enemy = GetComponent<EnemyAI>();
+        if (enemy != null)
         {   
-            WaveManager manager = FindAnyObjectByType<WaveManager>();
-            if (manager != null)
-                manager.OnEnemyKilled(ai, transform.position);
+            enemy.HandleDeath();
         }
         Destroy(gameObject);
     }

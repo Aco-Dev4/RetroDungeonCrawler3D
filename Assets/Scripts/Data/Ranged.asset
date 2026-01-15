@@ -19,3 +19,5 @@ MonoBehaviour:
   attackSpeed: 0.5
   attackRange: 7
   moveSpeed: 3
+  minSilverDrop: 2
+  maxSilverDrop: 5

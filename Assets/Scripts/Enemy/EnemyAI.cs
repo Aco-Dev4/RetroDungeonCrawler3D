@@ -267,6 +267,29 @@ public class EnemyAI : MonoBehaviour
     }
 
     #endregion
+
+    public void HandleDeath()
+    {
+        Debug.Log($"Enemy {name} died, handling silver drop");
+        // === Wave tracking ===
+        if (_waveInstance != null)
+        {
+            WaveManager waveManager = FindAnyObjectByType<WaveManager>();
+            if (waveManager != null)
+                waveManager.OnEnemyKilled(this, transform.position);
+        }
+
+        // === Silver drop ===
+        if (enemyData != null && CurrencyManager.Instance != null)
+        {
+            int silverAmount = Random.Range(
+                enemyData.minSilverDrop,
+               enemyData.maxSilverDrop + 1
+           );
+
+           CurrencyManager.Instance.AddSilver(silverAmount);
+        }
+    }
 }
 
 

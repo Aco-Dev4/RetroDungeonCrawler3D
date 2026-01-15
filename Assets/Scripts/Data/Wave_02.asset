@@ -19,3 +19,4 @@ MonoBehaviour:
   - enemy: {fileID: 11400000, guid: 0ddb78870065bc44087109faf0679440, type: 2}
     count: 2
   rewardPrefab: {fileID: 7452480036650947046, guid: da0744fe364a490489a8b152a7700975, type: 3}
+  goldReward: 1

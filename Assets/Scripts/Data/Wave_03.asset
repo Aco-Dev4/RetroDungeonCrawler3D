@@ -10,11 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: efe122e1449b58e46b50611f8ce50383, type: 3}
-  m_Name: Wave_01
+  m_Name: Wave_03
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
-  maxAliveEnemies: 3
+  maxAliveEnemies: 6
   enemies:
   - enemy: {fileID: 11400000, guid: 78079503e485c264d9330762d52bd62a, type: 2}
-    count: 5
+    count: 3
+  - enemy: {fileID: 11400000, guid: 0ddb78870065bc44087109faf0679440, type: 2}
+    count: 4
+  - enemy: {fileID: 11400000, guid: 78079503e485c264d9330762d52bd62a, type: 2}
+    count: 2
   rewardPrefab: {fileID: 7452480036650947046, guid: da0744fe364a490489a8b152a7700975, type: 3}
   goldReward: 1

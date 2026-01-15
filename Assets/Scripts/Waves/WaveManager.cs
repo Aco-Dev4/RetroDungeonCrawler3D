@@ -130,13 +130,15 @@ public class WaveManager : MonoBehaviour
     private void EndWave(WaveInstance wave)
     {
         Debug.Log($"Wave {wave.waveNumber} completed.");
+        
         if (wavePopupUI != null)
             wavePopupUI.Show($"Wave {wave.waveNumber} Completed", WavePopupType.WaveCompleted);
 
+        if (CurrencyManager.Instance != null)
+            CurrencyManager.Instance.AddGold(wave.data.goldReward);
+
         if (wave.data.rewardPrefab != null)
-        {
             Instantiate(wave.data.rewardPrefab, wave.lastDeathPosition, Quaternion.identity);
-        }
 
         _activeWaves.Remove(wave);
     }

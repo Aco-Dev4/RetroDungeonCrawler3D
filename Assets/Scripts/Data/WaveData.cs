@@ -12,4 +12,5 @@ public class WaveData : ScriptableObject
 
     [Header("Rewards")]
     public GameObject rewardPrefab;
+    public int goldReward = 5;
 }
