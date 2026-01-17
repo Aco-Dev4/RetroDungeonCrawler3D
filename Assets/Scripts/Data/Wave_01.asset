@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
   maxAliveEnemies: 3
   enemies:
-  - enemy: {fileID: 11400000, guid: 78079503e485c264d9330762d52bd62a, type: 2}
+  - enemy: {fileID: 11400000, guid: 525e31117d61a6f4395a14f905cf9a1b, type: 2}
     count: 5
   rewardPrefab: {fileID: 7452480036650947046, guid: da0744fe364a490489a8b152a7700975, type: 3}
   goldReward: 1

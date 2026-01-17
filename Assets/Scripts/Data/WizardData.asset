@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 00590751a0b8ef941bda1e0a12fc2b4e, type: 3}
-  m_Name: Ranged
+  m_Name: WizardData
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  enemyName: Ranged
+  enemyName: Wizard
   prefab: {fileID: 5987976300149318567, guid: 5d2be4e348caaf040ba1c9a980b50ee5, type: 3}
   maxHealth: 50
   damage: 15
   attackSpeed: 0.5
-  attackRange: 7
+  attackRange: 10
   moveSpeed: 3
   minSilverDrop: 2
   maxSilverDrop: 5
