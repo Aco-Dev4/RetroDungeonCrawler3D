@@ -45,6 +45,12 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.Instance.State != GameState.Playing)
+        {
+            StopMovement();
+            return;
+        }
+
         if (_player == null) return;
 
         HandleDistanceCheck();
@@ -298,22 +304,6 @@ public class EnemyAI : MonoBehaviour
 
         float normalizedSpeed = _agent.velocity.magnitude / Mathf.Max(0.01f, _agent.speed);
         _animator.SetFloat("MoveSpeed", normalizedSpeed);
-    }
-
-    public void OnPlayerDied()
-    {
-        _canAttack = false;
-        _isAttacking = false;
-        _canRotate = false;
-
-        StopMovement();
-        _agent.ResetPath();
-
-        if (_animator != null)
-        {
-            _animator.SetBool("IsMoving", false);
-            _animator.SetFloat("MoveSpeed", 0f);
-        }
     }
 
     #endregion

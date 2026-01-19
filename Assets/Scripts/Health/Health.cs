@@ -57,8 +57,7 @@ public class Health : MonoBehaviour
         else if (TryGetComponent(out PlayerController player))
         {
             player.HandleDeath();
-            foreach (EnemyAI ai in FindObjectsOfType<EnemyAI>())
-                ai.OnPlayerDied();
+            GameManager.Instance?.SetState(GameState.PlayerDead);
         }
 
         Destroy(gameObject);

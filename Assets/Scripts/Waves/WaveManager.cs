@@ -25,7 +25,7 @@ public class WaveManager : MonoBehaviour
     }
     void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame)
+        if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame && GameManager.Instance.State == GameState.Playing)
         {
             StartNextWave();
         }
@@ -60,7 +60,8 @@ public class WaveManager : MonoBehaviour
     {
         while (!wave.IsCompleted)
         {
-            Debug.Log($"[Wave {wave.waveNumber}] CHECK | Alive: {wave.aliveEnemies} | Remaining: {wave.remainingToSpawn}");
+            if (GameManager.Instance.State != GameState.Playing)
+                yield break;
             if (wave.remainingToSpawn > 0 && wave.aliveEnemies < wave.data.maxAliveEnemies)
             {
                 EnemySpawner spawner = GetRandomReadySpawner();

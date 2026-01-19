@@ -57,7 +57,6 @@ public class PlayerController : MonoBehaviour
     {
         _characterController = GetComponent<CharacterController>();
         _mainCamera = Camera.main;
-        CursorManager.Instance.LockCursor();
 
         ApplyBaseStats();
 
@@ -65,6 +64,11 @@ public class PlayerController : MonoBehaviour
         Health health = GetComponent<Health>();
         if (health != null)
             health.Init(_maxHealth);
+    }
+
+    void Start()
+    {
+        CursorManager.Instance.LockCursor();
     }
 
     private void ApplyBaseStats()
