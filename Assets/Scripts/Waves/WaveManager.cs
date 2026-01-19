@@ -60,6 +60,7 @@ public class WaveManager : MonoBehaviour
     {
         while (!wave.IsCompleted)
         {
+            Debug.Log($"[Wave {wave.waveNumber}] CHECK | Alive: {wave.aliveEnemies} | Remaining: {wave.remainingToSpawn}");
             if (wave.remainingToSpawn > 0 && wave.aliveEnemies < wave.data.maxAliveEnemies)
             {
                 EnemySpawner spawner = GetRandomReadySpawner();
@@ -72,8 +73,7 @@ public class WaveManager : MonoBehaviour
                         if (spawned != null)
                         {
                             EnemyAI ai = spawned.GetComponent<EnemyAI>();
-                            if (ai != null)
-                                ai.InitWave(wave);
+                            if (ai != null) ai.InitWave(wave);
 
                             wave.remainingToSpawn--;
                             wave.aliveEnemies++;
@@ -106,25 +106,23 @@ public class WaveManager : MonoBehaviour
 
     private EnemyData GetNextEnemy(WaveInstance wave)
     {
-        foreach (var kvp in wave.spawnQueue)
-        {
-            if (kvp.Value > 0)
-            {
-                wave.spawnQueue[kvp.Key]--;
-                return kvp.Key;
-            }
-        }
-
-        return null;
+        if (wave.spawnQueue.Count == 0) return null;
+        return wave.spawnQueue.Dequeue();
     }
 
     public void OnEnemyKilled(EnemyAI enemy, Vector3 position)
     {
         WaveInstance wave = enemy.GetWaveInstance();
-        if (wave == null) return;
+        if (wave == null)
+        {
+            Debug.LogWarning($"Enemy {enemy.name} died but had NO wave assigned!");
+            return;
+        }
 
         wave.aliveEnemies--;
         wave.lastDeathPosition = position;
+
+        Debug.Log($"[Wave {wave.waveNumber}] Enemy died | Alive now: {wave.aliveEnemies} | Remaining: {wave.remainingToSpawn}");
     }
 
     private void EndWave(WaveInstance wave)

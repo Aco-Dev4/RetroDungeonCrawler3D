@@ -21,6 +21,7 @@ public class EnemyAI : MonoBehaviour
     private GameObject _player;
     private Health _playerHealth;
     private Vector3 _lastValidDestination;
+    private float _distanceToPlayer;
     #endregion
 
     #region Attack
@@ -28,11 +29,10 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private Transform attackOrigin;
 
     private bool _canAttack = true;
+    private bool _canRotate = true;
     private bool _isAttacking;
-    #endregion
 
-    #region State
-    private float _distanceToPlayer;
+    private float _attackInterval; // cached: seconds per attack
     #endregion
 
     private void Awake()
@@ -50,6 +50,7 @@ public class EnemyAI : MonoBehaviour
         HandleDistanceCheck();
         _agent.updateRotation = !_isAttacking;
         HandleRotation();
+        UpdateMoveAnimation();
     }
 
     #region Initialization
@@ -82,18 +83,33 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        if (EnemyManager.Instance == null)
+        if (EnemyManager.Instance != null)
         {
-            Debug.LogError("EnemyManager not found in scene!");
-            return;
+            _stats = EnemyManager.Instance.GetStats(enemyData);
         }
+        else
+        {
+            _stats = new EnemyStats
+            {
+                maxHealth   = enemyData.maxHealth,
+                damage      = enemyData.damage,
+                attackSpeed = enemyData.attackSpeed,
+                attackRange = enemyData.attackRange,
+                moveSpeed   = enemyData.moveSpeed
+            };
 
-        _stats = EnemyManager.Instance.GetStats(enemyData);
+#if UNITY_EDITOR
+            Debug.LogWarning($"{name} using fallback EnemyStats (EnemyManager not present).");
+#endif
+        }
     }
 
     private void ApplyStats()
     {
         _agent.speed = _stats.moveSpeed;
+
+        // attacks per second → seconds per attack
+        _attackInterval = 1f / Mathf.Max(0.01f, _stats.attackSpeed);
 
         Health health = GetComponent<Health>();
         if (health != null)
@@ -174,7 +190,13 @@ public class EnemyAI : MonoBehaviour
 
         if (_animator != null)
         {
-            _animator.SetFloat("AttackSpeed", _stats.attackSpeed);
+            // Fit animation into attack interval
+            float animSpeed = 1f;
+            AnimationClip clip = _animator.runtimeAnimatorController.animationClips[0];
+            if (clip != null)
+                animSpeed = clip.length / _attackInterval;
+
+            _animator.SetFloat("AttackSpeed", animSpeed);
             _animator.SetTrigger("Attack");
         }
 
@@ -184,33 +206,37 @@ public class EnemyAI : MonoBehaviour
     public void ApplyAttackDamage()
     {
         if (_player == null) return;
-        GameObject attackObj = Instantiate(attackPrefab, attackOrigin.position, attackOrigin.rotation);
+
+        GameObject attackObj = Instantiate(
+            attackPrefab,
+            attackOrigin.position,
+            attackOrigin.rotation
+        );
 
         IEnemyAttack attack = attackObj.GetComponent<IEnemyAttack>();
         if (attack != null)
         {
             attack.Init(_stats.damage, gameObject, _player.transform.position);
         }
-        else
-        {
-            Debug.LogWarning($"{attackObj.name} has no IEnemyAttack component.");
-        }
+    }
+
+    public void DisableRotation()
+    {
+        _canRotate = false;
     }
 
     public void OnAttackFinished()
     {
         _isAttacking = false;
+        _canRotate = true;
     }
 
     private IEnumerator AttackCooldown()
     {
         if (_animator == null)
-        {
             ApplyAttackDamage();
-        }
 
-        float attackInterval = 1f / _stats.attackSpeed;
-        yield return new WaitForSeconds(attackInterval);
+        yield return new WaitForSeconds(_attackInterval);
 
         _canAttack = true;
 
@@ -245,20 +271,16 @@ public class EnemyAI : MonoBehaviour
 
     private void HandleRotation()
     {
+        if (!_canRotate) return;
+
         Vector3 direction;
 
         if (_agent.isOnOffMeshLink)
-        {
             direction = _agent.currentOffMeshLinkData.endPos - transform.position;
-        }
         else if (!_isAttacking && _agent.velocity.sqrMagnitude > 0.1f)
-        {
             direction = _agent.velocity;
-        }
         else
-        {
             direction = _player.transform.position - transform.position;
-        }
 
         direction.y = 0f;
 
@@ -266,30 +288,29 @@ public class EnemyAI : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(direction.normalized);
     }
 
+    private void UpdateMoveAnimation()
+    {
+        if (_animator == null) return;
+
+        float normalizedSpeed = _agent.velocity.magnitude / Mathf.Max(0.01f, _agent.speed);
+        _animator.SetFloat("MoveSpeed", normalizedSpeed);
+    }
+
     #endregion
 
-    public void HandleDeath()
+        public void HandleDeath()
     {
-        Debug.Log($"Enemy {name} died, handling silver drop");
-        // === Wave tracking ===
         if (_waveInstance != null)
         {
-            WaveManager waveManager = FindAnyObjectByType<WaveManager>();
-            if (waveManager != null)
-                waveManager.OnEnemyKilled(this, transform.position);
+            _waveInstance.aliveEnemies = Mathf.Max(0, _waveInstance.aliveEnemies - 1);
+            _waveInstance.lastDeathPosition = transform.position;
         }
 
-        // === Silver drop ===
         if (enemyData != null && CurrencyManager.Instance != null)
         {
-            int silverAmount = Random.Range(
-                enemyData.minSilverDrop,
-               enemyData.maxSilverDrop + 1
-           );
-
-           CurrencyManager.Instance.AddSilver(silverAmount);
+            int silverAmount = Random.Range(enemyData.minSilverDrop, enemyData.maxSilverDrop + 1);
+            CurrencyManager.Instance.AddSilver(silverAmount);
         }
     }
+
 }
-
-

@@ -46,7 +46,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: dd38fef0d54dea242aaac60be838e6a8, type: 2}
+  m_Motion: {fileID: 7400000, guid: 0fb43f5c18347a64d9ccf47407799e6b, type: 2}
   m_Tag: 
   m_SpeedParameter: AttackSpeed
   m_MirrorParameter: 
@@ -73,7 +73,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: f44d1ec8178642343b64413307daa2d7, type: 2}
+  m_Motion: {fileID: 7400000, guid: 8668563940fb39f4e9db64b6ffdc2aa7, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -100,7 +100,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 8f5d539bc21f8f540bd3d889339c7f2d, type: 2}
+  m_Motion: {fileID: 7400000, guid: 8e8e35252c4b66346ac531af8f403444, type: 2}
   m_Tag: 
   m_SpeedParameter: MoveSpeed
   m_MirrorParameter: 
@@ -137,7 +137,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: WizardController
+  m_Name: OrcController
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: IsMoving

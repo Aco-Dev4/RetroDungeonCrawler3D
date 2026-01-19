@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 00590751a0b8ef941bda1e0a12fc2b4e, type: 3}
-  m_Name: SlkeletonData
+  m_Name: SkeletonData
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: Skeleton
   prefab: {fileID: 2454594840246160982, guid: 6e46788b95c225a47817f48e6e320927, type: 3}
   maxHealth: 70
   damage: 10
-  attackSpeed: 0.8
+  attackSpeed: 0.7
   attackRange: 2
   moveSpeed: 3.5
   minSilverDrop: 1

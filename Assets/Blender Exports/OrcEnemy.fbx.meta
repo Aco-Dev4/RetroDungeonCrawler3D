@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 95329416eeb00d94bb248f6c33ad53bc
+guid: 191f4c75b1294f04283a6703b78799f9
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -34,8 +34,8 @@ ModelImporter:
       name: Armature|Attack
       takeName: Armature|Attack
       internalID: 4723146814002874508
-      firstFrame: 10
-      lastFrame: 44
+      firstFrame: 0
+      lastFrame: 74
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -55,22 +55,22 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.54937917
+      - time: 0.59999996
         functionName: ApplyAttackDamage
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 1
-        functionName: OnAttackFinished
+      - time: 0.40392154
+        functionName: DisableRotation
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.5490196
-        functionName: DisableRotation
+      - time: 0.8627451
+        functionName: OnAttackFinished
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -79,13 +79,13 @@ ModelImporter:
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 10
+      additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Armature|Idle
       takeName: Armature|Idle
       internalID: -8945691123924629249
       firstFrame: 0
-      lastFrame: 29
+      lastFrame: 59
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

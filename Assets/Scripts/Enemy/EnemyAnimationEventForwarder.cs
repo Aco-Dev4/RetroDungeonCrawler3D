@@ -14,6 +14,11 @@ public class EnemyAnimationEventForwarder : MonoBehaviour
         _enemyAI.ApplyAttackDamage();
     }
 
+    public void DisableRotation()
+    {
+        _enemyAI.DisableRotation();
+    }
+
     public void OnAttackFinished()
     {
         _enemyAI.OnAttackFinished();
