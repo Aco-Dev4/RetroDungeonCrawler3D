@@ -51,11 +51,13 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     private float AttackInterval => 1f / _attackSpeed;
+    [SerializeField] private Transform deathPivot;
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
         _mainCamera = Camera.main;
+        CursorManager.Instance.LockCursor();
 
         ApplyBaseStats();
 
@@ -207,5 +209,28 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool IsGrounded() => _characterController.isGrounded;
+
+    #region Death
+    public void HandleDeath()
+    {
+        // Disable player control
+        enabled = false;
+
+        // Stop movement
+        _velocity = 0f;
+
+        // Unlock cursor
+        CursorManager.Instance.UnlockCursor();
+
+
+        Debug.Log("PLAYER HANDLE DEATH CALLED");
+        // Tell camera to enter death mode
+        deathPivot.SetParent(null, true);
+        CameraManager.Instance.StartDeathOrbit(deathPivot);
+
+        Debug.Log(deathPivot != null ? "DeathPivot OK" : "DeathPivot IS NULL");
+        Debug.Log(CameraManager.Instance != null ? "CameraManager OK" : "CameraManager IS NULL");
+    }
+    #endregion
 }
 

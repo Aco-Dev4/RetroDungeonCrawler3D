@@ -50,11 +50,17 @@ public class Health : MonoBehaviour
 
     private void Die()
     {
-        EnemyAI enemy = GetComponent<EnemyAI>();
-        if (enemy != null)
-        {   
+        if (TryGetComponent(out EnemyAI enemy))
+        {
             enemy.HandleDeath();
         }
+        else if (TryGetComponent(out PlayerController player))
+        {
+            player.HandleDeath();
+            foreach (EnemyAI ai in FindObjectsOfType<EnemyAI>())
+                ai.OnPlayerDied();
+        }
+
         Destroy(gameObject);
     }
 }
