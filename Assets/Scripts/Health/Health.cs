@@ -57,7 +57,8 @@ public class Health : MonoBehaviour
         else if (TryGetComponent(out PlayerController player))
         {
             player.HandleDeath();
-            GameManager.Instance?.SetState(GameState.PlayerDead);
+            GameManager.Instance?.SetState(GameState.GameOver);
+            UIManager.Instance?.ShowGameOver();
         }
 
         Destroy(gameObject);

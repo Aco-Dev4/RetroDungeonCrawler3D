@@ -13,6 +13,8 @@ public class WaveInstance
 
     public Vector3 lastDeathPosition;
 
+    public Quaternion lastDeathRotation;
+
     public Queue<EnemyData> spawnQueue = new();
 
     public WaveInstance(WaveData waveData, int number)

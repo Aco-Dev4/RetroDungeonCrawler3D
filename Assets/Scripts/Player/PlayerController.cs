@@ -88,6 +88,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.Instance.State != GameState.Playing)
+            return;
         ApplyRotation();
         ApplyGravity();
         ApplySlide();
@@ -179,6 +181,7 @@ public class PlayerController : MonoBehaviour
         _animator.SetTrigger("Attack");
         StartCoroutine(AttackCooldown());
     }
+
     #endregion
 
     #region Attack Logic

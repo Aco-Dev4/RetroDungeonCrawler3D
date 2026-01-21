@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
+using Vector3 = UnityEngine.Vector3;
+using Quaternion = UnityEngine.Quaternion;
 
 public class WaveManager : MonoBehaviour
 {
@@ -23,12 +26,11 @@ public class WaveManager : MonoBehaviour
         if (waveCounterUI != null)
         waveCounterUI.SetWave(0, waves.Count);
     }
-    void Update()
+    
+    public void OnNextWave(InputAction.CallbackContext context)
     {
-        if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame && GameManager.Instance.State == GameState.Playing)
-        {
-            StartNextWave();
-        }
+        if (!context.started) return;
+        StartNextWave();
     }
 
     private void StartNextWave()
@@ -60,8 +62,9 @@ public class WaveManager : MonoBehaviour
     {
         while (!wave.IsCompleted)
         {
-            if (GameManager.Instance.State != GameState.Playing)
+            if (GameManager.Instance.State == GameState.GameOver)
                 yield break;
+                
             if (wave.remainingToSpawn > 0 && wave.aliveEnemies < wave.data.maxAliveEnemies)
             {
                 EnemySpawner spawner = GetRandomReadySpawner();
@@ -80,6 +83,14 @@ public class WaveManager : MonoBehaviour
                             wave.aliveEnemies++;
                         }
                     }
+                    else
+                    {
+                        Debug.LogWarning("Missing Enemy!");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Missing Spawner!");
                 }
             }
 
@@ -122,8 +133,6 @@ public class WaveManager : MonoBehaviour
 
         wave.aliveEnemies--;
         wave.lastDeathPosition = position;
-
-        Debug.Log($"[Wave {wave.waveNumber}] Enemy died | Alive now: {wave.aliveEnemies} | Remaining: {wave.remainingToSpawn}");
     }
 
     private void EndWave(WaveInstance wave)
@@ -137,7 +146,7 @@ public class WaveManager : MonoBehaviour
             CurrencyManager.Instance.AddGold(wave.data.goldReward);
 
         if (wave.data.rewardPrefab != null)
-            Instantiate(wave.data.rewardPrefab, wave.lastDeathPosition, Quaternion.identity);
+            Instantiate(wave.data.rewardPrefab, new Vector3(wave.lastDeathPosition.x, 0f, wave.lastDeathPosition.z), wave.lastDeathRotation * Quaternion.Euler(0f, 180f, 0f));
 
         _activeWaves.Remove(wave);
     }

@@ -314,6 +314,7 @@ public class EnemyAI : MonoBehaviour
         {
             _waveInstance.aliveEnemies = Mathf.Max(0, _waveInstance.aliveEnemies - 1);
             _waveInstance.lastDeathPosition = transform.position;
+            _waveInstance.lastDeathRotation = transform.rotation;
         }
 
         if (enemyData != null && CurrencyManager.Instance != null)
