@@ -6,10 +6,12 @@ public class Health : MonoBehaviour
     private int maxHealth;
     public int currentHealth;
     public HealthBar healthBar;
+    private PlayerVignetteController _vignette;
     #endregion
 
     private void Awake()
     {
+        _vignette = GetComponent<PlayerVignetteController>();
         // If Init() was not called (e.g. player), fall back safely
         if (maxHealth <= 0)
         {
@@ -26,6 +28,8 @@ public class Health : MonoBehaviour
 
         if (healthBar != null)
             healthBar.SetMaxHealth(maxHealth);
+
+        _vignette?.SetHealthNormalized(1f);
     }
 
     public void TakeDamage(int amount, GameObject damageSource)
@@ -34,6 +38,8 @@ public class Health : MonoBehaviour
         currentHealth = Mathf.Max(currentHealth, 0); // Making sure health cannot be less than 0
         if (healthBar != null)
             healthBar.SetHealth(currentHealth);
+            
+        _vignette?.SetHealthNormalized((float)currentHealth / maxHealth);
         
         if (currentHealth <= 0)
         {

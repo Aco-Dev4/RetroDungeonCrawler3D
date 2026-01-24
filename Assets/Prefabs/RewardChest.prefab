@@ -50,6 +50,7 @@ MonoBehaviour:
   animator: {fileID: 8273237300654595604}
   interactionCanvas: {fileID: 6409362365040854503}
   outlineObject: {fileID: 0}
+  timeToDespawn: 2
 --- !u!135 &3396580641633797285
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -337,19 +338,19 @@ PrefabInstance:
     - target: {fileID: 1261596957915617074, guid: 636c1ab7dd908f04cb7d6c427d5ab3b3, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: -905690159841262435, guid: 0902c14c79f968d49b3de0a1d999e070, type: 3}
+      objectReference: {fileID: 2100000, guid: 93cb7fef74e9c7f4e9b992033d0250fb, type: 2}
     - target: {fileID: 1261596957915617074, guid: 636c1ab7dd908f04cb7d6c427d5ab3b3, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: -1444460858095362738, guid: 0902c14c79f968d49b3de0a1d999e070, type: 3}
+      objectReference: {fileID: 2100000, guid: ca127482eb18dc543b429f03af1c8fae, type: 2}
     - target: {fileID: 1261596957915617074, guid: 636c1ab7dd908f04cb7d6c427d5ab3b3, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 4362962105363994262, guid: 0902c14c79f968d49b3de0a1d999e070, type: 3}
+      objectReference: {fileID: 2100000, guid: 768c5ffdad8932c468e84f09eceb58d0, type: 2}
     - target: {fileID: 1261596957915617074, guid: 636c1ab7dd908f04cb7d6c427d5ab3b3, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: -5439195200755731214, guid: 0902c14c79f968d49b3de0a1d999e070, type: 3}
+      objectReference: {fileID: 2100000, guid: db44dc7348279394485e2be71f7affeb, type: 2}
     - target: {fileID: 1261596957915617074, guid: 636c1ab7dd908f04cb7d6c427d5ab3b3, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
