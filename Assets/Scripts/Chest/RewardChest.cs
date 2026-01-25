@@ -72,6 +72,7 @@ public class RewardChest : MonoBehaviour, IInteractable
 
     private IEnumerator Despawn()
     {
+        _playerInteract?.Unregister(this);
         yield return new WaitForSeconds(timeToDespawn);
         Destroy(gameObject);
     }

@@ -24,9 +24,9 @@ public class WaveManager : MonoBehaviour
     void Awake()
     {
         if (waveCounterUI != null)
-        waveCounterUI.SetWave(0, waves.Count);
+            waveCounterUI.SetWave(0, waves.Count);
     }
-    
+
     public void OnNextWave(InputAction.CallbackContext context)
     {
         if (!context.started) return;
@@ -64,7 +64,7 @@ public class WaveManager : MonoBehaviour
         {
             if (GameManager.Instance.State == GameState.GameOver)
                 yield break;
-                
+
             if (wave.remainingToSpawn > 0 && wave.aliveEnemies < wave.data.maxAliveEnemies)
             {
                 EnemySpawner spawner = GetRandomReadySpawner();
@@ -135,10 +135,12 @@ public class WaveManager : MonoBehaviour
         wave.lastDeathPosition = position;
     }
 
+    [SerializeField] private LayerMask groundLayer;
+
     private void EndWave(WaveInstance wave)
     {
         Debug.Log($"Wave {wave.waveNumber} completed.");
-        
+
         if (wavePopupUI != null)
             wavePopupUI.Show($"Wave {wave.waveNumber} Completed", WavePopupType.WaveCompleted);
 
@@ -146,10 +148,20 @@ public class WaveManager : MonoBehaviour
             CurrencyManager.Instance.AddGold(wave.data.goldReward);
 
         if (wave.data.rewardPrefab != null)
-            Instantiate(wave.data.rewardPrefab, new Vector3(wave.lastDeathPosition.x, 0f, wave.lastDeathPosition.z), wave.lastDeathRotation * Quaternion.Euler(0f, 180f, 0f));
+        {
+            Vector3 origin = wave.lastDeathPosition + Vector3.up * 2f;
+
+            if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 10f, groundLayer))
+            {
+                Vector3 forwardOnGround = Vector3.ProjectOnPlane(wave.lastDeathRotation * Vector3.forward, hit.normal).normalized;
+                Quaternion rot = Quaternion.LookRotation(forwardOnGround, hit.normal);
+                Instantiate(wave.data.rewardPrefab, hit.point + hit.normal * 0.5f, rot * Quaternion.Euler(0f, 180f, 0f));
+            }
+        }
 
         _activeWaves.Remove(wave);
     }
+
 }
 
 

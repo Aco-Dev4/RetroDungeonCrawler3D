@@ -25,8 +25,11 @@ public class EnemyAI : MonoBehaviour
     #endregion
 
     #region Attack
+    [Header("Attacks")]
     [SerializeField] private GameObject attackPrefab;
     [SerializeField] private Transform attackOrigin;
+
+    [SerializeField] private LayerMask lineOfSightBlockers;
 
     private bool _canAttack = true;
     private bool _canRotate = true;
@@ -97,11 +100,11 @@ public class EnemyAI : MonoBehaviour
         {
             _stats = new EnemyStats
             {
-                maxHealth   = enemyData.maxHealth,
-                damage      = enemyData.damage,
+                maxHealth = enemyData.maxHealth,
+                damage = enemyData.damage,
                 attackSpeed = enemyData.attackSpeed,
                 attackRange = enemyData.attackRange,
-                moveSpeed   = enemyData.moveSpeed
+                moveSpeed = enemyData.moveSpeed
             };
 
 #if UNITY_EDITOR
@@ -140,20 +143,31 @@ public class EnemyAI : MonoBehaviour
 
     #region Movement & Detection
 
+    private bool HasLineOfSight()
+    {
+        Vector3 dir = _player.transform.position - attackOrigin.position;
+        if (Physics.Raycast(attackOrigin.position, dir.normalized, out RaycastHit hit, dir.magnitude, lineOfSightBlockers))
+            return false;
+        return true;
+    }
+
     private void HandleDistanceCheck()
     {
-        if (_isAttacking) return;
+        if (_isAttacking || _player == null) return;
 
         _distanceToPlayer = Vector3.Distance(transform.position, _player.transform.position);
 
         if (_distanceToPlayer <= _stats.attackRange || IsPlayerTouching())
         {
+            if (!HasLineOfSight())
+            {
+                ResumeMovement();
+                MoveToPlayer();
+                return;
+            }
+
             StopMovement();
             TryAttack();
-        }
-        else if (_player == null)
-        {
-            return;
         }
         else
         {
@@ -308,7 +322,7 @@ public class EnemyAI : MonoBehaviour
 
     #endregion
 
-        public void HandleDeath()
+    public void HandleDeath()
     {
         if (_waveInstance != null)
         {

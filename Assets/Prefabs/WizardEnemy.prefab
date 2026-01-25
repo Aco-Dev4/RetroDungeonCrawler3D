@@ -157,6 +157,9 @@ MonoBehaviour:
   enemyData: {fileID: 11400000, guid: 525e31117d61a6f4395a14f905cf9a1b, type: 2}
   attackPrefab: {fileID: 4381943666982117654, guid: 9cba0796c66fbde499d695546c14fc39, type: 3}
   attackOrigin: {fileID: 5625834042954020785}
+  lineOfSightBlockers:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!114 &8709629022254772993
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -380,7 +383,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 11044dd6b18c49c4ca57b0ada4584516, type: 2}
-  m_CullingMode: 0
+  m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
