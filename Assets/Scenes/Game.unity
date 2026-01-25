@@ -7739,6 +7739,9 @@ MonoBehaviour:
   - {fileID: 863190471}
   wavePopupUI: {fileID: 2142381563}
   waveCounterUI: {fileID: 1238462118}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!4 &696374775
 Transform:
   m_ObjectHideFlags: 0

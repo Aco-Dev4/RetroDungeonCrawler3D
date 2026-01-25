@@ -157,6 +157,9 @@ MonoBehaviour:
   enemyData: {fileID: 11400000, guid: 9f56cbf75ff282c42976fb74268a2bfc, type: 2}
   attackPrefab: {fileID: 335866988915699104, guid: b7b8a9a880008084792b57caee99a3f6, type: 3}
   attackOrigin: {fileID: 7375838174279600244}
+  lineOfSightBlockers:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!114 &2671354570314762334
 MonoBehaviour:
   m_ObjectHideFlags: 0

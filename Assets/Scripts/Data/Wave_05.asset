@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe122e1449b58e46b50611f8ce50383, type: 3}
   m_Name: Wave_05
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
-  maxAliveEnemies: 8
+  maxAliveEnemies: 9
   enemies:
   - enemy: {fileID: 11400000, guid: 9f56cbf75ff282c42976fb74268a2bfc, type: 2}
     count: 3

@@ -19,5 +19,5 @@ MonoBehaviour:
   maxJumps: 1
   gravityMultiplier: 1
   attackRange: 2
-  attackDamage: 20
+  attackDamage: 200
   attackSpeed: 1
