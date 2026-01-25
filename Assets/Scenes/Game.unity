@@ -6079,10 +6079,6 @@ PrefabInstance:
       propertyPath: m_ActionEvents.Array.data[5].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 592673983}
-    - target: {fileID: 882783927435812614, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
-      propertyPath: m_Antialiasing
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 923606941324749983, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -6250,10 +6246,6 @@ PrefabInstance:
     - target: {fileID: 7308168610679253188, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7548654642663218651, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
-      propertyPath: m_ClearFlags
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7558656407013331616, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: m_SizeDelta.x
