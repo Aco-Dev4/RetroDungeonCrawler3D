@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 2581524851872743024}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 42.63, y: 0, z: 5.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -90,6 +90,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &4677409103459036030
 MonoBehaviour:
@@ -103,7 +104,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bafcf6a87a135914f946d8083cdd9e4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnvironmentSpawnPoint
-  prefab: {fileID: 3104260108927542916, guid: fae3a567e388d4e4dac9c2af38a6d631, type: 3}
+  prefabs:
+  - {fileID: 2895844061771245431, guid: b644c43f08f72c5429fc1425ac9c7c82, type: 3}
+  - {fileID: 6327252311974767531, guid: 74559d46ad3a1a342b79ead8087a207a, type: 3}
 --- !u!114 &-252862081565380087
 MonoBehaviour:
   m_ObjectHideFlags: 0

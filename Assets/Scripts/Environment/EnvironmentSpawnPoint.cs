@@ -1,6 +1,7 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class EnvironmentSpawnPoint : MonoBehaviour
 {
-    public GameObject prefab;
+    public List<GameObject> prefabs = new();
 }

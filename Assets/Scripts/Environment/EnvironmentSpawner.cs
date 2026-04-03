@@ -29,14 +29,18 @@ public class EnvironmentSpawner : MonoBehaviour
 
         foreach (var point in points)
         {
-            if (point.prefab == null)
+            if (point.prefabs == null || point.prefabs.Count == 0)
                 continue;
 
-            #if UNITY_EDITOR
-            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(point.prefab, transform);
-            #else
-            GameObject obj = Instantiate(point.prefab, transform);
-            #endif
+            GameObject selectedPrefab = point.prefabs[Random.Range(0, point.prefabs.Count)];
+            if (selectedPrefab == null)
+                continue;
+
+#if UNITY_EDITOR
+            GameObject obj = (GameObject)PrefabUtility.InstantiatePrefab(selectedPrefab, transform);
+#else
+GameObject obj = Instantiate(selectedPrefab, transform);
+#endif
 
             obj.transform.position = point.transform.position + Vector3.up * yOffset;
 
@@ -80,6 +84,6 @@ public class EnvironmentSpawner : MonoBehaviour
         navMeshSurface.RemoveData();
         navMeshSurface.BuildNavMesh();
     }
-    #endif
+#endif
 }
 

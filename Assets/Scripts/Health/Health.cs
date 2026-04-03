@@ -1,9 +1,11 @@
+using NUnit.Framework;
 using UnityEngine;
 
 public class Health : MonoBehaviour
 {
     #region Variables: Health
     private int maxHealth;
+    private bool _healthBarShown;
     public int currentHealth;
     public HealthBar healthBar;
     private PlayerVignetteController _vignette;
@@ -27,24 +29,36 @@ public class Health : MonoBehaviour
         currentHealth = maxHealth;
 
         if (healthBar != null)
+        {
+            if (!TryGetComponent<PlayerController>(out _))
+            {
+                healthBar.Hide();
+            }
             healthBar.SetMaxHealth(maxHealth);
+        }
+
 
         _vignette?.SetHealthNormalized(1f);
     }
 
     public void TakeDamage(int amount, GameObject damageSource)
     {
+        if (!_healthBarShown && healthBar != null && !TryGetComponent<PlayerController>(out _))
+        {
+            healthBar.Show();
+            _healthBarShown = true;
+        }
+
         currentHealth -= amount;
-        currentHealth = Mathf.Max(currentHealth, 0); // Making sure health cannot be less than 0
+        currentHealth = Mathf.Max(currentHealth, 0);
+
         if (healthBar != null)
             healthBar.SetHealth(currentHealth);
-            
+
         _vignette?.SetHealthNormalized((float)currentHealth / maxHealth);
-        
+
         if (currentHealth <= 0)
-        {
             Die();
-        }
     }
 
     public void IncreaseMaxHealth(int amount)
