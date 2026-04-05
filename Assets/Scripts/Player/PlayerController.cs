@@ -50,7 +50,7 @@ public class PlayerController : MonoBehaviour
     private float _attackSpeed;
     #endregion
 
-    private float AttackInterval => 1f / _attackSpeed;
+    private float AttackInterval => 1f / 1.5f * _attackSpeed;
     [SerializeField] private Transform deathPivot;
 
     private void Awake()
@@ -175,7 +175,7 @@ public class PlayerController : MonoBehaviour
 
         if (attackClip != null)
         {
-            _animator.SetFloat("AttackSpeed", _attackSpeed);
+            _animator.SetFloat("AttackSpeed", 1.5f * _attackSpeed);
         }
 
         _animator.SetTrigger("Attack");

@@ -104,9 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bafcf6a87a135914f946d8083cdd9e4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnvironmentSpawnPoint
-  prefabs:
-  - {fileID: 2895844061771245431, guid: b644c43f08f72c5429fc1425ac9c7c82, type: 3}
-  - {fileID: 6327252311974767531, guid: 74559d46ad3a1a342b79ead8087a207a, type: 3}
+  prefabs: []
 --- !u!114 &-252862081565380087
 MonoBehaviour:
   m_ObjectHideFlags: 0
