@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     private Camera _mainCamera;
     [SerializeField] private PlayerData playerData;
     [SerializeField] private Animator _animator;
+    [SerializeField] private RunCardInventory runCardInventory;
     #endregion
 
     #region Movement
@@ -48,15 +49,18 @@ public class PlayerController : MonoBehaviour
     private float _attackRange;
     private int _attackDamage;
     private float _attackSpeed;
+    private int _luck;
     #endregion
 
-    private float AttackInterval => 1f / 1.5f * _attackSpeed;
+    private float AttackInterval => 1f / _attackSpeed;
     [SerializeField] private Transform deathPivot;
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
         _mainCamera = Camera.main;
+        if (runCardInventory == null)
+            runCardInventory = GetComponent<RunCardInventory>();
 
         ApplyBaseStats();
 
@@ -83,7 +87,9 @@ public class PlayerController : MonoBehaviour
 
         _attackRange = playerData.attackRange;
         _attackDamage = playerData.attackDamage;
-        _attackSpeed = playerData.attackSpeed;
+        _attackSpeed = playerData.attackSpeed * 1.5f;
+        
+        _luck = 0;
     }
 
     private void Update()
@@ -175,7 +181,7 @@ public class PlayerController : MonoBehaviour
 
         if (attackClip != null)
         {
-            _animator.SetFloat("AttackSpeed", 1.5f * _attackSpeed);
+            _animator.SetFloat("AttackSpeed", _attackSpeed);
         }
 
         _animator.SetTrigger("Attack");
@@ -238,6 +244,75 @@ public class PlayerController : MonoBehaviour
         Debug.Log(deathPivot != null ? "DeathPivot OK" : "DeathPivot IS NULL");
         Debug.Log(CameraManager.Instance != null ? "CameraManager OK" : "CameraManager IS NULL");
     }
+    #endregion
+
+    #region Cards
+    public void RecalculateStats()
+    {
+        Health health = GetComponent<Health>();
+        int oldMaxHealth = health != null ? health.GetMaxHealth() : _maxHealth;
+
+        ApplyBaseStats();
+
+        if (runCardInventory == null) return;
+
+        foreach (var ownedCard in runCardInventory.OwnedCards)
+        {
+            if (ownedCard.cardData == null) continue;
+
+            float value = ownedCard.GetCurrentValue();
+
+            switch (ownedCard.cardData.statType)
+            {
+                case CardStatType.MaxHealth:
+                    _maxHealth += ownedCard.cardData.usePercent ? Mathf.RoundToInt(_maxHealth * value) : Mathf.RoundToInt(value);
+                    break;
+
+                case CardStatType.Heal:
+                    break;
+
+                case CardStatType.MoveSpeed:
+                    _moveSpeed += ownedCard.cardData.usePercent ? _moveSpeed * value : value;
+                    break;
+
+                case CardStatType.JumpPower:
+                    _jumpPower += ownedCard.cardData.usePercent ? _jumpPower * value : value;
+                    break;
+
+                case CardStatType.AttackDamage:
+                    _attackDamage += ownedCard.cardData.usePercent ? Mathf.RoundToInt(_attackDamage * value) : Mathf.RoundToInt(value);
+                    break;
+
+                case CardStatType.AttackSpeed:
+                    _attackSpeed += ownedCard.cardData.usePercent ? _attackSpeed * value : value;
+                    break;
+
+                case CardStatType.AttackRange:
+                    _attackRange += ownedCard.cardData.usePercent ? _attackRange * value : value;
+                    break;
+
+                case CardStatType.JumpCount:
+                    _maxJumps += ownedCard.cardData.usePercent ? Mathf.RoundToInt(_maxJumps * value) : Mathf.RoundToInt(value);
+                    break;
+
+                case CardStatType.Luck:
+                    _luck += ownedCard.cardData.usePercent ? Mathf.RoundToInt(_luck * value) : Mathf.RoundToInt(value);
+                    break;
+            }
+        }
+
+        if (health != null)
+            health.SetMaxHealth(_maxHealth, true);
+    }
+
+    public float GetMoveSpeed() { return _moveSpeed; }
+    public float GetJumpPower() { return _jumpPower; }
+    public int GetMaxJumps() { return _maxJumps; }
+    public int GetAttackDamage() { return _attackDamage; }
+    public float GetAttackSpeed() { return _attackSpeed; }
+    public float GetAttackRange() { return _attackRange; }
+    public int GetLuck() { return _luck; }
+    public int GetOwnedCardCount() { return runCardInventory != null ? runCardInventory.OwnedCards.Count : 0; }
     #endregion
 }
 

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class RewardChest : MonoBehaviour, IInteractable
 {
-    public int Priority => 100; // chest beats everything
+    public int Priority => 100;
 
     [Header("References")]
     [SerializeField] private Animator animator;
@@ -16,15 +16,15 @@ public class RewardChest : MonoBehaviour, IInteractable
     private bool _opened;
     private PlayerInteract _playerInteract;
     private static RewardChest _activeChest;
+    private int _waveNumber;
 
     private void Awake()
     {
         interactionCanvas.SetActive(false);
+
         if (outlineObject != null)
             outlineObject.SetActive(false);
     }
-
-    // ================= INTERFACE =================
 
     public void Interact()
     {
@@ -34,6 +34,7 @@ public class RewardChest : MonoBehaviour, IInteractable
         _opened = true;
         _activeChest = this;
         interactionCanvas.SetActive(false);
+
         if (outlineObject != null)
             outlineObject.SetActive(false);
 
@@ -43,7 +44,9 @@ public class RewardChest : MonoBehaviour, IInteractable
     public void OnFocus()
     {
         if (_opened) return;
+
         interactionCanvas.SetActive(true);
+
         if (outlineObject != null)
             outlineObject.SetActive(true);
     }
@@ -51,13 +54,12 @@ public class RewardChest : MonoBehaviour, IInteractable
     public void OnUnfocus()
     {
         interactionCanvas.SetActive(false);
+
         if (outlineObject != null)
             outlineObject.SetActive(false);
     }
 
-    // ============== ANIMATION EVENT ==============
-
-    public void OnChestOpened() // animation event
+    public void OnChestOpened()
     {
         if (ChestRewardUI.Instance != null)
             ChestRewardUI.Instance.Open(this);
@@ -67,17 +69,31 @@ public class RewardChest : MonoBehaviour, IInteractable
     {
         if (_activeChest == this)
             _activeChest = null;
+
         StartCoroutine(Despawn());
     }
 
     private IEnumerator Despawn()
     {
-        _playerInteract?.Unregister(this);
+        if (_playerInteract != null)
+        {
+            _playerInteract.Unregister(this);
+            _playerInteract = null;
+        }
+
         yield return new WaitForSeconds(timeToDespawn);
         Destroy(gameObject);
     }
 
-    // ================= TRIGGERS ==================
+    public void SetWaveNumber(int waveNumber)
+    {
+        _waveNumber = waveNumber;
+    }
+
+    public int GetWaveNumber()
+    {
+        return _waveNumber;
+    }
 
     private void OnTriggerEnter(Collider other)
     {

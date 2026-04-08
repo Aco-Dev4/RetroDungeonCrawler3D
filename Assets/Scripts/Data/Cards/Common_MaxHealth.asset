@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e3bfa3e3e537fb47a2254f5dc63b3ab, type: 3}
+  m_Name: Common_MaxHealth
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: Max Health
+  description: 
+  icon: {fileID: 0}
+  rarity: 0
+  statType: 0
+  usePercent: 0
+  baseValue: 20
+  valuePerUpgrade: 10
+  canAppearInChest: 1
+  requiresWeapon: 0

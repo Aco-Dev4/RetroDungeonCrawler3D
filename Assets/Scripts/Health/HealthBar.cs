@@ -1,20 +1,21 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class HealthBar : MonoBehaviour
 {
-    public Slider slider;
-    public bool player;
-    public Gradient gradient;
-    public Image fill;
-
-    public void Show() { gameObject.SetActive(true); }
-    public void Hide() { gameObject.SetActive(false); }
+    [SerializeField] private Slider slider;
+    [SerializeField] private bool player;
+    [SerializeField] private Gradient gradient;
+    [SerializeField] private Image fill;
+    [SerializeField] private TMP_Text healthText;
 
     public void SetMaxHealth(int health)
     {
         slider.maxValue = health;
         slider.value = health;
+
+        UpdateHealthText();
 
         if (player)
             fill.color = gradient.Evaluate(1f);
@@ -24,7 +25,15 @@ public class HealthBar : MonoBehaviour
     {
         slider.value = health;
 
+        UpdateHealthText();
+
         if (player)
             fill.color = gradient.Evaluate(slider.normalizedValue);
+    }
+
+    private void UpdateHealthText()
+    {
+        if (healthText == null) return;
+        healthText.text = $"{Mathf.RoundToInt(slider.value)} / {Mathf.RoundToInt(slider.maxValue)}";
     }
 }

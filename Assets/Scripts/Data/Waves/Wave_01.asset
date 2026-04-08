@@ -15,6 +15,6 @@ MonoBehaviour:
   maxAliveEnemies: 3
   enemies:
   - enemy: {fileID: 11400000, guid: 9f56cbf75ff282c42976fb74268a2bfc, type: 2}
-    count: 5
+    count: 1
   rewardPrefab: {fileID: 1089913685205598432, guid: 0d84a0bdf00a0dd45b8dc5fa1aa6ed0a, type: 3}
   goldReward: 1

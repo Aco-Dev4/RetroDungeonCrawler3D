@@ -12,6 +12,7 @@ public class HealthBarEditor : Editor
         SerializedProperty player = serializedObject.FindProperty("player");
         SerializedProperty gradient = serializedObject.FindProperty("gradient");
         SerializedProperty fill = serializedObject.FindProperty("fill");
+        SerializedProperty healthText = serializedObject.FindProperty("healthText");
 
         EditorGUILayout.PropertyField(slider);
         EditorGUILayout.PropertyField(player);
@@ -20,6 +21,7 @@ public class HealthBarEditor : Editor
         {
             EditorGUILayout.PropertyField(gradient);
             EditorGUILayout.PropertyField(fill);
+            EditorGUILayout.PropertyField(healthText);
         }
 
         serializedObject.ApplyModifiedProperties();
