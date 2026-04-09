@@ -7,6 +7,7 @@ public class Health : MonoBehaviour
     public int currentHealth;
     public HealthBar healthBar;
     private PlayerVignetteController _vignette;
+    private bool _hasTakenDamage = false;
     #endregion
 
     private void Awake()
@@ -30,6 +31,11 @@ public class Health : MonoBehaviour
             healthBar.SetMaxHealth(maxHealth);
 
         _vignette?.SetHealthNormalized(1f);
+
+        if (healthBar != null && !healthBar.player)
+        {
+            healthBar.gameObject.SetActive(false);
+        }
     }
 
     public int GetMaxHealth()
@@ -79,6 +85,14 @@ public class Health : MonoBehaviour
     {
         currentHealth -= amount;
         currentHealth = Mathf.Max(currentHealth, 0);
+
+        if (!_hasTakenDamage)
+        {
+            _hasTakenDamage = true;
+
+            if (healthBar != null && !healthBar.player)
+                healthBar.gameObject.SetActive(true);
+        }
 
         if (healthBar != null)
             healthBar.SetHealth(currentHealth);

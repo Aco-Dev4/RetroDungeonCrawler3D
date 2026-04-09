@@ -35,7 +35,18 @@ public class EnemyAI : MonoBehaviour
     private bool _canRotate = true;
     private bool _isAttacking;
 
-    private float _attackInterval; // cached: seconds per attack
+    private float _attackInterval;
+    #endregion
+
+    #region Knockback
+    [Header("Knockback")]
+    [SerializeField] private float knockbackDuration = 0.12f;
+    [SerializeField] private Transform groundPoint;
+    [SerializeField] private LayerMask knockbackBlockers;
+    [SerializeField] private float wallStopPadding = 0.1f;
+
+    private bool _isBeingKnockedBack;
+    private Coroutine _knockbackRoutine;
     #endregion
 
     private void Awake()
@@ -56,6 +67,12 @@ public class EnemyAI : MonoBehaviour
 
         if (_player == null) return;
 
+        if (_isBeingKnockedBack)
+        {
+            StopMovement();
+            return;
+        }
+
         HandleDistanceCheck();
         _agent.updateRotation = !_isAttacking;
         HandleRotation();
@@ -63,7 +80,6 @@ public class EnemyAI : MonoBehaviour
     }
 
     #region Initialization
-
     private void CacheComponents()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -104,7 +120,8 @@ public class EnemyAI : MonoBehaviour
                 damage = enemyData.damage,
                 attackSpeed = enemyData.attackSpeed,
                 attackRange = enemyData.attackRange,
-                moveSpeed = enemyData.moveSpeed
+                moveSpeed = enemyData.moveSpeed,
+                weight = enemyData.weight
             };
 
 #if UNITY_EDITOR
@@ -116,19 +133,15 @@ public class EnemyAI : MonoBehaviour
     private void ApplyStats()
     {
         _agent.speed = _stats.moveSpeed;
-
-        // attacks per second → seconds per attack
         _attackInterval = 1f / Mathf.Max(0.01f, _stats.attackSpeed);
 
         Health health = GetComponent<Health>();
         if (health != null)
             health.Init(_stats.maxHealth);
     }
-
     #endregion
 
     #region Wave
-
     public void InitWave(WaveInstance waveInstance)
     {
         _waveInstance = waveInstance;
@@ -138,11 +151,9 @@ public class EnemyAI : MonoBehaviour
     {
         return _waveInstance;
     }
-
     #endregion
 
     #region Movement & Detection
-
     private bool HasLineOfSight()
     {
         Vector3 dir = _player.transform.position - attackOrigin.position;
@@ -153,7 +164,8 @@ public class EnemyAI : MonoBehaviour
 
     private void HandleDistanceCheck()
     {
-        if (_isAttacking || _player == null) return;
+        if (_isBeingKnockedBack || _player == null) return;
+        if (_isAttacking) return;
 
         _distanceToPlayer = Vector3.Distance(transform.position, _player.transform.position);
 
@@ -186,8 +198,11 @@ public class EnemyAI : MonoBehaviour
 
     private void StopMovement()
     {
-        _agent.isStopped = true;
-        _agent.velocity = Vector3.zero;
+        if (_agent != null && _agent.enabled && _agent.isOnNavMesh)
+        {
+            _agent.isStopped = true;
+            _agent.velocity = Vector3.zero;
+        }
 
         if (_animator != null)
             _animator.SetBool("IsMoving", false);
@@ -195,16 +210,15 @@ public class EnemyAI : MonoBehaviour
 
     private void ResumeMovement()
     {
-        _agent.isStopped = false;
+        if (_agent != null && _agent.enabled && _agent.isOnNavMesh)
+            _agent.isStopped = false;
 
         if (_animator != null)
             _animator.SetBool("IsMoving", true);
     }
-
     #endregion
 
     #region Attack Logic
-
     private void TryAttack()
     {
         if (!_canAttack) return;
@@ -214,7 +228,6 @@ public class EnemyAI : MonoBehaviour
 
         if (_animator != null)
         {
-            // Fit animation into attack interval
             float animSpeed = 1f;
             AnimationClip clip = _animator.runtimeAnimatorController.animationClips[0];
             if (clip != null)
@@ -231,17 +244,11 @@ public class EnemyAI : MonoBehaviour
     {
         if (_player == null) return;
 
-        GameObject attackObj = Instantiate(
-            attackPrefab,
-            attackOrigin.position,
-            attackOrigin.rotation
-        );
+        GameObject attackObj = Instantiate(attackPrefab, attackOrigin.position, attackOrigin.rotation);
 
         IEnemyAttack attack = attackObj.GetComponent<IEnemyAttack>();
         if (attack != null)
-        {
             attack.Init(_stats.damage, gameObject, _player.transform.position);
-        }
     }
 
     public void DisableRotation()
@@ -267,11 +274,9 @@ public class EnemyAI : MonoBehaviour
         if (_animator == null)
             _isAttacking = false;
     }
-
     #endregion
 
     #region Navigation
-
     private void MoveToPlayer()
     {
         NavMeshPath path = new NavMeshPath();
@@ -315,13 +320,125 @@ public class EnemyAI : MonoBehaviour
     private void UpdateMoveAnimation()
     {
         if (_animator == null) return;
+        if (_agent == null || !_agent.enabled) return;
 
         float normalizedSpeed = _agent.velocity.magnitude / Mathf.Max(0.01f, _agent.speed);
         _animator.SetFloat("MoveSpeed", normalizedSpeed);
     }
-
     #endregion
 
+    #region Knockback
+    public void ApplyKnockback(Vector3 sourcePosition, float strength)
+    {
+        if (!gameObject.activeInHierarchy) return;
+        if (_agent == null || !_agent.enabled || !_agent.isOnNavMesh) return;
+        if (strength <= 0f) return;
+
+        Vector3 direction = transform.position - sourcePosition;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.001f)
+            direction = -transform.forward;
+
+        float distance = strength / Mathf.Max(0.1f, _stats.weight);
+
+        if (_knockbackRoutine != null)
+            StopCoroutine(_knockbackRoutine);
+
+        _knockbackRoutine = StartCoroutine(KnockbackRoutine(direction.normalized, distance));
+    }
+
+    private IEnumerator KnockbackRoutine(Vector3 direction, float distance)
+    {
+        if (_agent == null || !_agent.enabled || !_agent.isOnNavMesh)
+            yield break;
+
+        _isBeingKnockedBack = true;
+
+        Quaternion lockedRotation = transform.rotation;
+        Vector3 startGroundPosition = GetGroundPosition();
+        Vector3 visualOffset = transform.position - startGroundPosition;
+
+        _agent.isStopped = true;
+        _agent.updatePosition = false;
+
+        if (_animator != null)
+            _animator.SetBool("IsMoving", false);
+
+        float elapsed = 0f;
+        Vector3 lastValidGroundPosition = startGroundPosition;
+
+        while (elapsed < knockbackDuration)
+        {
+            if (_agent == null || !_agent.enabled || !gameObject.activeInHierarchy)
+                yield break;
+
+            elapsed += Time.deltaTime;
+            float t = elapsed / knockbackDuration;
+
+            Vector3 desiredGroundPosition = startGroundPosition + direction * distance * t;
+            Vector3 rayStart = lastValidGroundPosition + Vector3.up * 0.2f;
+            Vector3 rayEnd = desiredGroundPosition + Vector3.up * 0.2f;
+
+            if (Physics.Linecast(rayStart, rayEnd, out RaycastHit wallHit, knockbackBlockers))
+                break;
+
+            if (NavMesh.SamplePosition(desiredGroundPosition, out NavMeshHit hit, 1.5f, NavMesh.AllAreas))
+            {
+                lastValidGroundPosition = hit.position;
+                transform.position = hit.position + visualOffset;
+            }
+            else
+            {
+                break;
+            }
+
+            transform.rotation = lockedRotation;
+            yield return null;
+        }
+
+        if (_agent != null && _agent.enabled && _agent.isOnNavMesh)
+        {
+            Vector3 finalGroundPosition = lastValidGroundPosition;
+
+            if (NavMesh.SamplePosition(finalGroundPosition, out NavMeshHit finalHit, 1f, NavMesh.AllAreas))
+                transform.position = finalHit.position + visualOffset;
+
+            _agent.Warp(transform.position);
+            _agent.updatePosition = true;
+
+            if (_isAttacking)
+                StopMovement();
+            else
+                ResumeMovement();
+        }
+
+        _isBeingKnockedBack = false;
+        _knockbackRoutine = null;
+    }
+
+    private Vector3 GetGroundPosition()
+    {
+        if (groundPoint != null)
+            return groundPoint.position;
+
+        if (_collider != null)
+            return new Vector3(transform.position.x, _collider.bounds.min.y, transform.position.z);
+
+        return transform.position;
+    }
+
+    private void OnDisable()
+    {
+        if (_knockbackRoutine != null)
+            StopCoroutine(_knockbackRoutine);
+
+        _knockbackRoutine = null;
+        _isBeingKnockedBack = false;
+    }
+    #endregion
+
+    #region Death
     public void HandleDeath()
     {
         if (_waveInstance != null)
@@ -337,5 +454,5 @@ public class EnemyAI : MonoBehaviour
             CurrencyManager.Instance.AddSilver(silverAmount);
         }
     }
-
+    #endregion
 }

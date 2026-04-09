@@ -45,6 +45,7 @@ public class PlayerDebugStats : MonoBehaviour
             $"Attack Damage: {playerController.GetAttackDamage()}\n" +
             $"Attack Speed: {playerController.GetAttackSpeed()}\n" +
             $"Attack Range: {playerController.GetAttackRange()}\n" +
+            $"Knockback Strength: {playerController.GetKnockbackStrength()}\n" +
             $"Card Luck: {playerController.GetLuck()}\n" +
             $"Wave Luck: {(cardManager != null ? cardManager.GetCurrentWaveLuck() : 0)}\n" +
             $"Effective Luck: {(cardManager != null ? cardManager.GetCurrentEffectiveLuck() : playerController.GetLuck())}\n" +

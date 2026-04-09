@@ -29,6 +29,7 @@ public class EnemyManager : MonoBehaviour
         stats.attackSpeed = data.attackSpeed * attackSpeedMultiplier;
         stats.attackRange = data.attackRange;
         stats.moveSpeed = data.moveSpeed * moveSpeedMultiplier;
+        stats.weight = data.weight;
 
         return stats;
     }

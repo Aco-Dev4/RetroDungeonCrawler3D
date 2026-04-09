@@ -16,6 +16,9 @@ public class EnemyData : ScriptableObject
     public float attackRange = 2f;
     public float moveSpeed = 3.5f;
 
+    [Header("Knockback")]
+    public float weight = 1f;
+
     [Header("Currency Drops")]
     public int minSilverDrop = 5;
     public int maxSilverDrop = 10;

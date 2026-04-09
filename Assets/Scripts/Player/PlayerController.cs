@@ -50,6 +50,7 @@ public class PlayerController : MonoBehaviour
     private int _attackDamage;
     private float _attackSpeed;
     private int _luck;
+    private float _knockbackStrength;
     #endregion
 
     private float AttackInterval => 1f / _attackSpeed;
@@ -88,8 +89,9 @@ public class PlayerController : MonoBehaviour
         _attackRange = playerData.attackRange;
         _attackDamage = playerData.attackDamage;
         _attackSpeed = playerData.attackSpeed * 1.5f;
-        
+
         _luck = 0;
+        _knockbackStrength = 0f;
     }
 
     private void Update()
@@ -199,9 +201,20 @@ public class PlayerController : MonoBehaviour
         foreach (Collider hit in hits)
         {
             Health target = hit.GetComponent<Health>();
+            if (target == null)
+                target = hit.GetComponentInParent<Health>();
+
             if (target != null)
             {
                 target.TakeDamage(_attackDamage, gameObject);
+
+                EnemyAI enemy = hit.GetComponent<EnemyAI>();
+                if (enemy == null)
+                    enemy = hit.GetComponentInParent<EnemyAI>();
+
+                if (enemy != null && _knockbackStrength > 0f)
+                    enemy.ApplyKnockback(transform.position, _knockbackStrength);
+
                 break;
             }
         }
@@ -298,6 +311,10 @@ public class PlayerController : MonoBehaviour
                 case CardStatType.Luck:
                     _luck += ownedCard.cardData.usePercent ? Mathf.RoundToInt(_luck * value) : Mathf.RoundToInt(value);
                     break;
+
+                case CardStatType.Knockback:
+                    _knockbackStrength += ownedCard.cardData.usePercent ? _knockbackStrength * value : value;
+                    break;
             }
         }
 
@@ -312,6 +329,7 @@ public class PlayerController : MonoBehaviour
     public float GetAttackSpeed() { return _attackSpeed; }
     public float GetAttackRange() { return _attackRange; }
     public int GetLuck() { return _luck; }
+    public float GetKnockbackStrength() { return _knockbackStrength; }
     public int GetOwnedCardCount() { return runCardInventory != null ? runCardInventory.OwnedCards.Count : 0; }
     #endregion
 }

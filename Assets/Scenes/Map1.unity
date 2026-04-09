@@ -6032,6 +6032,10 @@ PrefabInstance:
       propertyPath: runCardInventory
       value: 
       objectReference: {fileID: 1877961220}
+    - target: {fileID: 3611402837874153444, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: testKnockbackStrength
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 4645913627871736017, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: healthBar
       value: 
@@ -21610,9 +21614,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7e90fb62d5c2b34fb182189f664c56a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RunCardInventory
-  ownedCards:
-  - cardData: {fileID: 11400000, guid: 110f153f15f469b4bad0d225d9685c1a, type: 2}
-    level: 100
+  ownedCards: []
 --- !u!114 &1877961228 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3611402837874153444, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}

@@ -5,7 +5,7 @@ using TMPro;
 public class HealthBar : MonoBehaviour
 {
     [SerializeField] private Slider slider;
-    [SerializeField] private bool player;
+    [SerializeField] public bool player;
     [SerializeField] private Gradient gradient;
     [SerializeField] private Image fill;
     [SerializeField] private TMP_Text healthText;

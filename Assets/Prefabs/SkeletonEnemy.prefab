@@ -39,6 +39,7 @@ Transform:
   - {fileID: 7955103840009481623}
   - {fileID: 7375838174279600244}
   - {fileID: 4367687639445264409}
+  - {fileID: 1151550641179160122}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6861244137412472639
@@ -96,6 +97,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &2864156910463946263
 CapsuleCollider:
@@ -160,6 +162,12 @@ MonoBehaviour:
   lineOfSightBlockers:
     serializedVersion: 2
     m_Bits: 8
+  knockbackDuration: 0.12
+  groundPoint: {fileID: 1151550641179160122}
+  knockbackBlockers:
+    serializedVersion: 2
+    m_Bits: 8
+  wallStopPadding: 0.1
 --- !u!114 &2671354570314762334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,6 +228,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   currentHealth: 0
   healthBar: {fileID: 1487025274288235001}
+--- !u!1 &4431728046573555754
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1151550641179160122}
+  m_Layer: 7
+  m_Name: GroundPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1151550641179160122
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4431728046573555754}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.078, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4289376090364950401}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4791526945918114391
 GameObject:
   m_ObjectHideFlags: 0
