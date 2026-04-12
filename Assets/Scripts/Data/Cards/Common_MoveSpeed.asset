@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e3bfa3e3e537fb47a2254f5dc63b3ab, type: 3}
   m_Name: Common_MoveSpeed
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Move Speed
-  description: You move 20% faster
-  icon: {fileID: 0}
+  cardName: MOVE SPEED
+  description: MOVEMENT SPEED +20%
+  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   rarity: 2
   statType: 2
   usePercent: 1

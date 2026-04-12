@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e3bfa3e3e537fb47a2254f5dc63b3ab, type: 3}
   m_Name: Common_AttackDamage
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Attack Damage
-  description: 
-  icon: {fileID: 0}
+  cardName: ATTACK DAMAGE
+  description: DAMAGE PER HIT +20%
+  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   rarity: 0
   statType: 4
   usePercent: 1

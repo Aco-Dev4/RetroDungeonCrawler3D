@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e3bfa3e3e537fb47a2254f5dc63b3ab, type: 3}
   m_Name: Common_MaxHealth
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Max Health
-  description: 
-  icon: {fileID: 0}
+  cardName: MAX HEALTH
+  description: +20 MAX HEALTH
+  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   rarity: 0
   statType: 0
   usePercent: 0

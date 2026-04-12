@@ -1,7 +1,7 @@
 public enum CardRarity
 {
-    Common,
-    Rare,
-    Epic,
-    Legendary
+    COMMON,
+    RARE,
+    EPIC,
+    LEGENDARY
 }

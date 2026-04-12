@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e3bfa3e3e537fb47a2254f5dc63b3ab, type: 3}
   m_Name: Common_Heal
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Heal
-  description: Heal 60% of your Max Health
-  icon: {fileID: 0}
+  cardName: HEAL
+  description: HEAL 60% OF MAX HEALTH
+  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   rarity: 0
   statType: 1
   usePercent: 0

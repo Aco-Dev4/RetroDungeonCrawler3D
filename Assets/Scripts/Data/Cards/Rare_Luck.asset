@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e3bfa3e3e537fb47a2254f5dc63b3ab, type: 3}
   m_Name: Rare_Luck
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Luck
-  description: Higher chances of better rarities in Chests
-  icon: {fileID: 0}
+  cardName: LUCK
+  description: HIGHER CHANCE OF BETTER RARITY CARDS IN CHESTS
+  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   rarity: 1
   statType: 8
   usePercent: 0

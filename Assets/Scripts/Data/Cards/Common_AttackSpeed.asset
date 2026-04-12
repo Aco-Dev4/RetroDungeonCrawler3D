@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e3bfa3e3e537fb47a2254f5dc63b3ab, type: 3}
   m_Name: Common_AttackSpeed
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Attack Speed
-  description: Testing this card
-  icon: {fileID: 0}
-  rarity: 0
+  cardName: ATTACK SPEED
+  description: SPEED BETWEEN ATTACKS +10%
+  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  rarity: 3
   statType: 5
   usePercent: 1
   baseValue: 0.1

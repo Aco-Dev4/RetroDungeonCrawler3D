@@ -147,7 +147,7 @@ public class CardManager : MonoBehaviour
         }
 
         if (totalWeight <= 0)
-            return CardRarity.Common;
+            return CardRarity.COMMON;
 
         int roll = UnityEngine.Random.Range(0, totalWeight);
         int current = 0;
@@ -160,17 +160,17 @@ public class CardManager : MonoBehaviour
                 return weights[i].rarity;
         }
 
-        return CardRarity.Common;
+        return CardRarity.COMMON;
     }
 
     private List<CardRarityRuntimeWeight> BuildAvailableRarityWeights(int luck)
     {
         List<CardRarityRuntimeWeight> result = new();
 
-        AddWeightIfAvailable(result, CardRarity.Common, GetCommonWeight(luck));
-        AddWeightIfAvailable(result, CardRarity.Rare, GetRareWeight(luck));
-        AddWeightIfAvailable(result, CardRarity.Epic, GetEpicWeight(luck));
-        AddWeightIfAvailable(result, CardRarity.Legendary, GetLegendaryWeight(luck));
+        AddWeightIfAvailable(result, CardRarity.COMMON, GetCommonWeight(luck));
+        AddWeightIfAvailable(result, CardRarity.RARE, GetRareWeight(luck));
+        AddWeightIfAvailable(result, CardRarity.EPIC, GetEpicWeight(luck));
+        AddWeightIfAvailable(result, CardRarity.LEGENDARY, GetLegendaryWeight(luck));
 
         return result;
     }
