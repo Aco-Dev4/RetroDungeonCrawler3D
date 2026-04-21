@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
+using System;
 
 public class WaveManager : MonoBehaviour
 {
@@ -25,6 +26,8 @@ public class WaveManager : MonoBehaviour
     #region Runtime
     private List<WaveInstance> _activeWaves = new();
     private int _nextWaveIndex = 0;
+    public Action OnAllWavesCompleted;
+    private bool _allWavesCompletedTriggered;
     #endregion
 
     private void Awake()
@@ -146,6 +149,7 @@ public class WaveManager : MonoBehaviour
         }
 
         _activeWaves.Remove(wave);
+        TryCompleteAllWaves();
     }
     #endregion
 
@@ -163,7 +167,7 @@ public class WaveManager : MonoBehaviour
         if (ready.Count == 0)
             return null;
 
-        return ready[Random.Range(0, ready.Count)];
+        return ready[UnityEngine.Random.Range(0, ready.Count)];
     }
 
     private EnemyData GetNextEnemy(WaveInstance wave)
@@ -184,6 +188,17 @@ public class WaveManager : MonoBehaviour
 
         wave.aliveEnemies--;
         wave.lastDeathPosition = position;
+    }
+
+    private void TryCompleteAllWaves()
+    {
+        if (_allWavesCompletedTriggered) return;
+        if (_nextWaveIndex < waves.Count) return;
+        if (_activeWaves.Count > 0) return;
+
+        _allWavesCompletedTriggered = true;
+        Debug.Log("All waves completed.");
+        OnAllWavesCompleted?.Invoke();
     }
     #endregion
 }

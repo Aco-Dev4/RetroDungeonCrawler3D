@@ -4,8 +4,7 @@ public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager Instance;
 
-    [Header("Currencies")]
-    [SerializeField] private int gold;
+    [Header("Runtime")]
     [SerializeField] private int silver;
 
     private void Awake()
@@ -27,18 +26,43 @@ public class CurrencyManager : MonoBehaviour
         // SFX goes here
     }
 
-    public int GetSilver() => silver;
-
-    // ===== Gold (already planned) =====
-    public void AddGold(int amount)
+    public int GetSilver()
     {
-        gold += amount;
-        // UI update goes here
-        // SFX goes here
-        GoldUI.Instance?.SetGold(gold);
+        return silver;
     }
 
-    public int GetGold() => gold;
+    public void SetSilver(int value)
+    {
+        silver = Mathf.Max(0, value);
+    }
+
+    // ===== Gold =====
+    public void AddGold(int amount)
+    {
+        if (GameDataManager.Instance != null)
+            GameDataManager.Instance.AddGold(amount);
+
+        GoldUI.Instance?.SetGold(GetGold());
+    }
+
+    public int GetGold()
+    {
+        if (GameDataManager.Instance != null)
+            return GameDataManager.Instance.GetGold();
+
+        return 0;
+    }
+
+    public void SetGold(int value)
+    {
+        if (GameDataManager.Instance != null)
+            GameDataManager.Instance.SetGold(value);
+
+        GoldUI.Instance?.SetGold(GetGold());
+    }
+
+    private void Start()
+    {
+        GoldUI.Instance?.SetGold(GetGold());
+    }
 }
-
-

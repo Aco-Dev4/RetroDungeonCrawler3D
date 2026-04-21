@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -118,7 +119,7 @@ public class UIManager : MonoBehaviour
         _isPaused = false;
         pausePanel.SetActive(false);
 
-       GameManager.Instance.ResumeGame();
+        GameManager.Instance.ResumeGame();
     }
 
     #endregion
@@ -132,7 +133,10 @@ public class UIManager : MonoBehaviour
 
     public void OnMenuPressed()
     {
-        Debug.Log("Menu scene will be added later");
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene("MainMenu");
+        }
     }
 
     #endregion

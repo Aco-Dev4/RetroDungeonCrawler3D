@@ -3606,6 +3606,51 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &350445583
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 350445584}
+  - component: {fileID: 350445585}
+  m_Layer: 0
+  m_Name: GameDataManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &350445584
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350445583}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1564724220}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &350445585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350445583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fa3e596f8fba5641aeaa749ec93bc4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDataManager
+  createFreshDataOnAwake: 0
 --- !u!1 &352164929
 GameObject:
   m_ObjectHideFlags: 0
@@ -6503,6 +6548,10 @@ PrefabInstance:
     - target: {fileID: 3611402837874153444, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: testKnockbackStrength
       value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3858191691804747029, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3879409008959370179, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: m_ChildAlignment
@@ -14177,7 +14226,7 @@ PrefabInstance:
     - target: {fileID: 131595492996876390, guid: cf67ef8edc9370848a1193282f311f28, type: 3}
       propertyPath: m_NavMeshData
       value: 
-      objectReference: {fileID: 23800000, guid: 42f39c874e29ecc4287293a85dfc568c, type: 2}
+      objectReference: {fileID: 23800000, guid: cb3a9ce4fe7c99c41aecd8484530f746, type: 2}
     - target: {fileID: 4739626547108802237, guid: cf67ef8edc9370848a1193282f311f28, type: 3}
       propertyPath: m_Name
       value: NavMesh Surface
@@ -14185,7 +14234,7 @@ PrefabInstance:
     - target: {fileID: 6420174101578045139, guid: cf67ef8edc9370848a1193282f311f28, type: 3}
       propertyPath: m_NavMeshData
       value: 
-      objectReference: {fileID: 23800000, guid: f52a33cf30d1e254aaf23d669de4c17d, type: 2}
+      objectReference: {fileID: 23800000, guid: 567b0b2b3f8e06b4a9c01bf9c7c796a7, type: 2}
     - target: {fileID: 7269974999390836120, guid: cf67ef8edc9370848a1193282f311f28, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -18633,7 +18682,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2532ef9507abd3418490c88cb327d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CurrencyManager
-  gold: 0
   silver: 0
 --- !u!4 &1506169232
 Transform:
@@ -18970,6 +19018,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 350445584}
   - {fileID: 896378921}
   - {fileID: 818201540}
   - {fileID: 592673982}
