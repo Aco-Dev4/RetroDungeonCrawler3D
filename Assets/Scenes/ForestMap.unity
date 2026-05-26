@@ -4145,7 +4145,7 @@ MonoBehaviour:
   cardDatabase: {fileID: 11400000, guid: 6c720ee5a6ebb9749be1f86b83f4ce2a, type: 2}
   playerController: {fileID: 1877961228}
   waveManager: {fileID: 696374774}
-  luckPerWave: 5
+  luckPerWave: 10
   commonMinWeight: 15
   rareSettings:
     unlockAt: 0
@@ -4154,13 +4154,13 @@ MonoBehaviour:
     falloffStart: -1
     falloffMin: 0
   epicSettings:
-    unlockAt: 10
+    unlockAt: 15
     growthMultiplier: 1
     maxWeight: 75
     falloffStart: -1
     falloffMin: 0
   legendarySettings:
-    unlockAt: 20
+    unlockAt: 30
     growthMultiplier: 1
     maxWeight: 50
     falloffStart: -1

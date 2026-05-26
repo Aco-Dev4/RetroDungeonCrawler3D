@@ -9,5 +9,6 @@ public enum CardStatType
     AttackRange,
     JumpCount,
     Luck,
-    Knockback
+    Knockback,
+    SilverGain
 }

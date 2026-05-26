@@ -451,6 +451,10 @@ public class EnemyAI : MonoBehaviour
         if (enemyData != null && CurrencyManager.Instance != null)
         {
             int silverAmount = Random.Range(enemyData.minSilverDrop, enemyData.maxSilverDrop + 1);
+            PlayerController playerController = FindFirstObjectByType<PlayerController>();
+            float silverMultiplier = playerController != null ? playerController.GetSilverGainMultiplier() : 1f;
+
+            silverAmount = Mathf.RoundToInt(silverAmount * silverMultiplier);
             CurrencyManager.Instance.AddSilver(silverAmount);
         }
     }

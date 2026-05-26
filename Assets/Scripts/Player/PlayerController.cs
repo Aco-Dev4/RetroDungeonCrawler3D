@@ -51,6 +51,7 @@ public class PlayerController : MonoBehaviour
     private float _attackSpeed;
     private int _luck;
     private float _knockbackStrength;
+    private float _silverGainMultiplier;
     #endregion
 
     private float AttackInterval => 1f / _attackSpeed;
@@ -92,6 +93,7 @@ public class PlayerController : MonoBehaviour
 
         _luck = 0;
         _knockbackStrength = 0f;
+        _silverGainMultiplier = 1f;
     }
 
     private void Update()
@@ -315,6 +317,10 @@ public class PlayerController : MonoBehaviour
                 case CardStatType.Knockback:
                     _knockbackStrength += ownedCard.cardData.usePercent ? _knockbackStrength * value : value;
                     break;
+
+                case CardStatType.SilverGain:
+                    _silverGainMultiplier += value;
+                    break;
             }
         }
 
@@ -331,6 +337,7 @@ public class PlayerController : MonoBehaviour
     public int GetLuck() { return _luck; }
     public float GetKnockbackStrength() { return _knockbackStrength; }
     public int GetOwnedCardCount() { return runCardInventory != null ? runCardInventory.OwnedCards.Count : 0; }
+    public float GetSilverGainMultiplier() { return _silverGainMultiplier; }
     #endregion
 }
 
