@@ -43,7 +43,7 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float knockbackDuration = 0.12f;
     [SerializeField] private Transform groundPoint;
     [SerializeField] private LayerMask knockbackBlockers;
-    [SerializeField] private float wallStopPadding = 0.1f;
+    // [SerializeField] private float wallStopPadding = 0.1f;
 
     private bool _isBeingKnockedBack;
     private Coroutine _knockbackRoutine;

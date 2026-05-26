@@ -15,6 +15,14 @@ public class CardData : ScriptableObject
     public float baseValue;
     public float valuePerUpgrade = 0.05f;
 
+    [Header("Upgrade Cost")]
+    public int baseUpgradeCost = 10;
+    public int costIncreasePerLevel = 10;
+
+    [Header("Upgrade Display")]
+    public bool showUpgradeAsMultiplier = true;
+    public float displayBaseValue = 1f;
+
     [Header("Rules")]
     public bool canAppearInChest = true;
     public bool requiresWeapon;
