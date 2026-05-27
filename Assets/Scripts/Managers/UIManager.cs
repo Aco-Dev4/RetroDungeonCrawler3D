@@ -93,6 +93,16 @@ public class UIManager : MonoBehaviour
     public void OnPause(InputAction.CallbackContext context)
     {
         if (!context.started) return;
+
+        if (ChestRewardUI.Instance != null && ChestRewardUI.Instance.IsOpen())
+            return;
+
+        if (CardUpgradeUI.Instance != null && CardUpgradeUI.Instance.IsOpen())
+        {
+            CardUpgradeUI.Instance.Close();
+            return;
+        }
+
         TogglePause();
     }
 

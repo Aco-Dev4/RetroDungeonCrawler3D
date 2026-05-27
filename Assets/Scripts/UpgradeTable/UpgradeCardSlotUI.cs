@@ -16,7 +16,7 @@ public class UpgradeCardSlotUI : MonoBehaviour
     private OwnedCard _ownedCard;
     private Action<OwnedCard> _onUpgradePressed;
 
-    public void Setup(OwnedCard ownedCard, int upgradeCost, Action<OwnedCard> onUpgradePressed)
+    public void Setup(OwnedCard ownedCard, int upgradeCost, Health health, Action<OwnedCard> onUpgradePressed)
     {
         _ownedCard = ownedCard;
         _onUpgradePressed = onUpgradePressed;
@@ -36,13 +36,13 @@ public class UpgradeCardSlotUI : MonoBehaviour
             cardIcon.enabled = cardData.icon != null;
         }
 
-        valueText.text = GetUpgradePreviewText(ownedCard);
+        valueText.text = GetUpgradePreviewText(ownedCard, health);
 
         upgradeButton.onClick.RemoveAllListeners();
         upgradeButton.onClick.AddListener(() => _onUpgradePressed?.Invoke(_ownedCard));
     }
 
-    private string GetUpgradePreviewText(OwnedCard ownedCard)
+    private string GetUpgradePreviewText(OwnedCard ownedCard, Health health)
     {
         if (ownedCard == null || ownedCard.cardData == null)
             return "";
@@ -50,7 +50,17 @@ public class UpgradeCardSlotUI : MonoBehaviour
         CardData cardData = ownedCard.cardData;
 
         if (cardData.statType == CardStatType.Heal)
-            return $"Heal {cardData.valuePerUpgrade * 100f:0}%";
+        {
+            if (health == null)
+                return $"Heal {cardData.valuePerUpgrade * 100f:0}%";
+
+            int currentHealth = health.currentHealth;
+            int maxHealth = health.GetMaxHealth();
+            int healAmount = Mathf.RoundToInt(maxHealth * cardData.valuePerUpgrade);
+            int nextHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
+
+            return $"{currentHealth}/{maxHealth} -> {nextHealth}/{maxHealth}";
+        }
 
         float currentValue = ownedCard.GetCurrentValue();
         float nextValue = currentValue + cardData.valuePerUpgrade;

@@ -8,6 +8,8 @@ using System;
 
 public class WaveManager : MonoBehaviour
 {
+    public static WaveManager Instance;
+
     #region References
     [Header("Waves")]
     [SerializeField] private List<WaveData> waves = new();
@@ -16,8 +18,17 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private List<EnemySpawner> spawners = new();
 
     [Header("UI")]
+    [SerializeField] private TutorialFlow tutorialFlow;
     [SerializeField] private WavePopupUI wavePopupUI;
     [SerializeField] private WaveCounterUI waveCounterUI;
+    [SerializeField] private NextWavePromptUI nextWavePromptUI;
+    [SerializeField] private FinishMapPromptUI finishPromptUI;
+    [SerializeField] private string mapName = "Forest";
+
+    [Header("Upgrade Table Arrow")]
+    [SerializeField] private UpgradeTableArrow upgradeTableArrow;
+    [SerializeField] private bool isTutorial;
+    [SerializeField] private int tutorialArrowUnlockWave = 2;
 
     [Header("Chest Spawn")]
     [SerializeField] private LayerMask groundLayer;
@@ -28,18 +39,39 @@ public class WaveManager : MonoBehaviour
     private int _nextWaveIndex = 0;
     public Action OnAllWavesCompleted;
     private bool _allWavesCompletedTriggered;
+    private bool _tutorialReadyToFinish;
     #endregion
 
     private void Awake()
     {
+        Instance = this;
+
         if (waveCounterUI != null)
             waveCounterUI.SetWave(0, waves.Count);
+
+        if (upgradeTableArrow != null)
+            upgradeTableArrow.HideArrow();
+
+        UpdateNextWavePrompt();
     }
 
     #region Public
     public void OnNextWave(InputAction.CallbackContext context)
     {
         if (!context.started) return;
+
+        if (finishPromptUI != null && finishPromptUI.IsVisible())
+        {
+            if (isTutorial)
+            {
+                tutorialFlow?.CompleteTutorial();
+                return;
+            }
+
+            Debug.Log("Normal map finish/victory will happen here later.");
+            return;
+        }
+
         StartNextWave();
     }
 
@@ -73,7 +105,26 @@ public class WaveManager : MonoBehaviour
         if (wavePopupUI != null)
             wavePopupUI.Show($"Wave {waveNumber} Started", WavePopupType.WaveStarted);
 
+        if (upgradeTableArrow != null)
+            upgradeTableArrow.HideArrow();
+
         StartCoroutine(SpawnLoop(instance));
+
+        UpdateNextWavePrompt();
+    }
+
+    private void UpdateNextWavePrompt()
+    {
+        if (nextWavePromptUI == null) return;
+
+        bool canStartMoreWaves = _nextWaveIndex < waves.Count;
+        bool hasActiveWaves = _activeWaves.Count > 0;
+        int nextWaveNumber = _nextWaveIndex + 1;
+
+        if (isTutorial && nextWaveNumber <= 1)
+            return;
+        else
+            nextWavePromptUI.SetPrompt(nextWaveNumber, hasActiveWaves, canStartMoreWaves);
     }
 
     private IEnumerator SpawnLoop(WaveInstance wave)
@@ -129,7 +180,20 @@ public class WaveManager : MonoBehaviour
             wavePopupUI.Show($"Wave {wave.waveNumber} Completed", WavePopupType.WaveCompleted);
 
         if (CurrencyManager.Instance != null)
-            CurrencyManager.Instance.AddGold(wave.data.goldReward);
+        {
+            if (isTutorial)
+            {
+                if (GameDataManager.Instance != null && !GameDataManager.Instance.HasClaimedTutorialGold())
+                {
+                    CurrencyManager.Instance.AddGold(1);
+                    GameDataManager.Instance.ClaimTutorialGold();
+                }
+            }
+            else
+            {
+                CurrencyManager.Instance.AddGold(wave.data.goldReward);
+            }
+        }
 
         if (wave.data.rewardPrefab != null)
         {
@@ -149,7 +213,24 @@ public class WaveManager : MonoBehaviour
         }
 
         _activeWaves.Remove(wave);
+        UpdateNextWavePrompt();
         TryCompleteAllWaves();
+        UpdateUpgradeArrow();
+    }
+
+    private void UpdateUpgradeArrow()
+    {
+        if (upgradeTableArrow == null) return;
+
+        bool hasCompletedAtLeastOneWave = _nextWaveIndex > 0;
+        bool noActiveWaves = _activeWaves.Count == 0;
+
+        int requiredWave = isTutorial ? tutorialArrowUnlockWave : 1;
+
+        if (_nextWaveIndex >= requiredWave && noActiveWaves)
+            upgradeTableArrow.ShowArrow();
+        else
+            upgradeTableArrow.HideArrow();
     }
     #endregion
 
@@ -198,7 +279,24 @@ public class WaveManager : MonoBehaviour
 
         _allWavesCompletedTriggered = true;
         Debug.Log("All waves completed.");
+        if (!isTutorial)
+            finishPromptUI?.Show(mapName);
         OnAllWavesCompleted?.Invoke();
+    }
+
+    public void OnTutorialUpgradeCompleted()
+    {
+        if (!isTutorial) return;
+
+        _tutorialReadyToFinish = true;
+    }
+
+    public void TryShowTutorialFinish()
+    {
+        if (!isTutorial) return;
+        if (!_tutorialReadyToFinish) return;
+
+        finishPromptUI?.Show(mapName);
     }
     #endregion
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 public class PersistentPlayerData
 {
     public bool finishedTutorial = false;
+    public bool tutorialGoldClaimed;
     public int gold = 0;
 
     public float sensitivity = 1f;
@@ -154,6 +155,17 @@ public class GameDataManager : MonoBehaviour
     public void SetFinishedTutorial(bool value)
     {
         _data.finishedTutorial = value;
+        Save();
+    }
+
+    public bool HasClaimedTutorialGold()
+    {
+        return _data.tutorialGoldClaimed;
+    }
+
+    public void ClaimTutorialGold()
+    {
+        _data.tutorialGoldClaimed = true;
         Save();
     }
     #endregion

@@ -32,6 +32,11 @@ public class ChestRewardUI : MonoBehaviour
         rootPanel.SetActive(false);
     }
 
+    public bool IsOpen()
+    {
+        return rootPanel != null && rootPanel.activeSelf;
+    }
+
     public void Open(RewardChest chest)
     {
         _currentChest = chest;

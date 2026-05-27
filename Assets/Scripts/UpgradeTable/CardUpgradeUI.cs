@@ -12,6 +12,10 @@ public class CardUpgradeUI : MonoBehaviour
     [SerializeField] private RunCardInventory runCardInventory;
     [SerializeField] private PlayerController playerController;
 
+    [Header("Tutorial")]
+    [SerializeField] private bool useTutorialUpgradeCost;
+    [SerializeField] private int tutorialUpgradeCost = 1;
+
     private readonly List<UpgradeCardSlotUI> _spawnedSlots = new();
 
     private void Awake()
@@ -26,6 +30,11 @@ public class CardUpgradeUI : MonoBehaviour
 
         if (rootPanel != null)
             rootPanel.SetActive(false);
+    }
+
+    public bool IsOpen()
+    {
+        return rootPanel != null && rootPanel.activeSelf;
     }
 
     public void Open()
@@ -45,6 +54,7 @@ public class CardUpgradeUI : MonoBehaviour
             rootPanel.SetActive(false);
 
         GameManager.Instance?.ResumeGame();
+        WaveManager.Instance?.TryShowTutorialFinish();
     }
 
     private void Refresh()
@@ -59,7 +69,8 @@ public class CardUpgradeUI : MonoBehaviour
 
             int cost = GetUpgradeCost(ownedCard);
             UpgradeCardSlotUI slot = Instantiate(slotPrefab, cardContainer);
-            slot.Setup(ownedCard, cost, TryUpgradeCard);
+            Health health = playerController != null ? playerController.GetComponent<Health>() : null;
+            slot.Setup(ownedCard, cost, health, TryUpgradeCard);
             _spawnedSlots.Add(slot);
         }
     }
@@ -86,11 +97,15 @@ public class CardUpgradeUI : MonoBehaviour
         ApplyUpgradeInstantEffect(cardData);
 
         Refresh();
+        WaveManager.Instance?.OnTutorialUpgradeCompleted();
     }
 
     private int GetUpgradeCost(OwnedCard ownedCard)
     {
         if (ownedCard == null || ownedCard.cardData == null) return 0;
+
+        if (useTutorialUpgradeCost)
+            return tutorialUpgradeCost;
 
         return ownedCard.cardData.baseUpgradeCost + ownedCard.cardData.costIncreasePerLevel * (ownedCard.level - 1);
     }

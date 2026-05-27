@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using TMPro;
 
 public class TutorialFlow : MonoBehaviour
@@ -20,16 +19,6 @@ public class TutorialFlow : MonoBehaviour
     [SerializeField] private TMP_Text tutorialCompleteText;
     #endregion
 
-    #region Debug
-    [Header("Debug")]
-    [SerializeField] private Key completeTutorialKey = Key.T;
-    #endregion
-
-    #region Runtime
-    private bool _wavesCompleted;
-    private bool _tutorialCompleted;
-    #endregion
-
     private void Awake()
     {
         if (upgradeInstructionRoot != null)
@@ -37,16 +26,6 @@ public class TutorialFlow : MonoBehaviour
 
         if (tutorialCompletePopupRoot != null)
             tutorialCompletePopupRoot.SetActive(false);
-    }
-
-    private void Update()
-    {
-        if (!_wavesCompleted) return;
-        if (_tutorialCompleted) return;
-        if (Keyboard.current == null) return;
-        if (!Keyboard.current[completeTutorialKey].wasPressedThisFrame) return;
-
-        CompleteTutorialFromDebugKey();
     }
 
     private void OnEnable()
@@ -64,8 +43,6 @@ public class TutorialFlow : MonoBehaviour
     #region Wave Completion
     private void HandleAllWavesCompleted()
     {
-        _wavesCompleted = true;
-
         if (firstBlockedObject != null)
             Destroy(firstBlockedObject);
 
@@ -81,15 +58,13 @@ public class TutorialFlow : MonoBehaviour
     #endregion
 
     #region Temporary Debug Completion
-    private void CompleteTutorialFromDebugKey()
+    public void CompleteTutorial()
     {
-        _tutorialCompleted = true;
-
         if (tutorialCompletePopupRoot != null)
             tutorialCompletePopupRoot.SetActive(true);
 
         if (tutorialCompleteText != null)
-            tutorialCompleteText.text = "Tutorial <color=#66FF66>Complete</color>!";
+            tutorialCompleteText.text = "Tutorial <color=#66FF66>Complete!</color>";
 
         GameManager.Instance?.PauseGame();
 
