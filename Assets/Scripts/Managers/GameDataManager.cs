@@ -13,6 +13,7 @@ public class PersistentPlayerData
     public int qualityLevel = 2;
 
     public List<string> boughtUpgradeIds = new();
+    public List<string> completedMapIds = new();
 }
 
 public class GameDataManager : MonoBehaviour
@@ -170,6 +171,22 @@ public class GameDataManager : MonoBehaviour
     }
     #endregion
 
+    #region Completed Maps
+    public bool HasCompletedMap(string mapId)
+    {
+        return _data.completedMapIds.Contains(mapId);
+    }
+
+    public void SetMapCompleted(string mapId)
+    {
+        if (string.IsNullOrWhiteSpace(mapId)) return;
+        if (_data.completedMapIds.Contains(mapId)) return;
+
+        _data.completedMapIds.Add(mapId);
+        Save();
+    }
+    #endregion
+
     #region Shop Upgrades
     public bool HasBoughtUpgrade(string upgradeId)
     {
@@ -187,6 +204,19 @@ public class GameDataManager : MonoBehaviour
         _data.boughtUpgradeIds.Add(upgradeId);
         Save();
         return true;
+    }
+
+    public bool HasSword()
+    {
+        return HasBoughtUpgrade("Sword");
+    }
+
+    public void UnlockSword()
+    {
+        if (_data.boughtUpgradeIds.Contains("Sword")) return;
+
+        _data.boughtUpgradeIds.Add("Sword");
+        Save();
     }
     #endregion
 }

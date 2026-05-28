@@ -1027,3 +1027,20 @@ MonoBehaviour:
   costText: {fileID: 8507498546756716392}
   cardIcon: {fileID: 7334237118353789084}
   upgradeButton: {fileID: 7546867612613274193}
+  background: {fileID: 4862639626661149895}
+  rarityColors:
+  - rarity: 0
+    bannerColor: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
+    backgroundColor: {r: 0.7372549, g: 0.7372549, b: 0.7372549, a: 1}
+  - rarity: 1
+    bannerColor: {r: 0.019607844, g: 0.58431375, b: 0.78431374, a: 1}
+    backgroundColor: {r: 0, g: 0.7411765, b: 1, a: 1}
+  - rarity: 2
+    bannerColor: {r: 0.54901963, g: 0, b: 0.77254903, a: 1}
+    backgroundColor: {r: 0.70980394, g: 0, b: 1, a: 1}
+  - rarity: 3
+    bannerColor: {r: 0.7372549, g: 0.52156866, b: 0.011764706, a: 1}
+    backgroundColor: {r: 1, g: 0.7019608, b: 0, a: 1}
+  upgradeButtonImage: {fileID: 7485926141377004679}
+  canAffordColor: {r: 0.40784317, g: 0.8235295, b: 0.21176472, a: 1}
+  cannotAffordColor: {r: 0.8235294, g: 0.2117647, b: 0.22453265, a: 1}

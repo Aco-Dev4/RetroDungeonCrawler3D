@@ -457,6 +457,7 @@ public class EnemyAI : MonoBehaviour
             silverAmount = Mathf.RoundToInt(silverAmount * silverMultiplier);
             CurrencyManager.Instance.AddSilver(silverAmount);
         }
+        RunStatsManager.Instance?.AddEnemyDefeated();
     }
     #endregion
 }

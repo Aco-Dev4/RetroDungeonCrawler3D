@@ -42,5 +42,11 @@ public class MenuManager : MonoBehaviour
                 mapButtons[i].RefreshState();
         }
     }
+
+    public void OnSwordBought()
+    {
+        GameDataManager.Instance?.UnlockSword();
+        Debug.Log("Sword bought");
+    }
     #endregion
 }

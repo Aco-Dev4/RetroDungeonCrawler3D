@@ -68,7 +68,8 @@ public class WaveManager : MonoBehaviour
                 return;
             }
 
-            Debug.Log("Normal map finish/victory will happen here later.");
+            finishPromptUI.Hide();
+            VictoryUI.Instance?.Show(mapName);
             return;
         }
 
@@ -93,6 +94,8 @@ public class WaveManager : MonoBehaviour
         WaveData waveData = waves[_nextWaveIndex];
         int waveNumber = _nextWaveIndex + 1;
         _nextWaveIndex++;
+
+        RunStatsManager.Instance?.SetCurrentWave(waveNumber);
 
         WaveInstance instance = new WaveInstance(waveData, waveNumber);
         _activeWaves.Add(instance);
@@ -175,6 +178,8 @@ public class WaveManager : MonoBehaviour
     private void EndWave(WaveInstance wave)
     {
         Debug.Log($"Wave {wave.waveNumber} completed.");
+
+        RunStatsManager.Instance?.AddWaveCompleted();
 
         if (wavePopupUI != null)
             wavePopupUI.Show($"Wave {wave.waveNumber} Completed", WavePopupType.WaveCompleted);

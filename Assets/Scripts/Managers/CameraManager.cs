@@ -5,12 +5,12 @@ public class CameraManager : MonoBehaviour
 {
     public static CameraManager Instance;
 
-    [SerializeField] private CinemachineCamera deathCamera;
+    [SerializeField] private CinemachineCamera orbitCamera;
     [SerializeField] private float orbitSpeed = 15f;
     [SerializeField] private Vector3 offset;
 
     private Transform orbitTarget;
-    private bool _isOrbiting = false;
+    private bool _isOrbiting;
 
     private void Awake()
     {
@@ -23,28 +23,32 @@ public class CameraManager : MonoBehaviour
         Instance = this;
     }
 
-    public void StartDeathOrbit(Transform pivot)
+    public void StartOrbit(Transform pivot)
     {
-        Debug.Log("START DEATH ORBIT");
+        if (pivot == null) return;
+
         orbitTarget = pivot;
 
-        Vector3 pos = orbitTarget.transform.position;
-        pos = orbitTarget.position + offset;
-        deathCamera.transform.position = pos;
-
-        deathCamera.Follow = orbitTarget;
-        deathCamera.LookAt = orbitTarget;
-        deathCamera.Priority = 100;
+        orbitCamera.transform.position = orbitTarget.position + offset;
+        orbitCamera.Follow = orbitTarget;
+        orbitCamera.LookAt = orbitTarget;
+        orbitCamera.Priority = 100;
 
         _isOrbiting = true;
     }
 
-    private void LateUpdate()
+    public void StopOrbit()
     {
-        if (!_isOrbiting) return;
+        _isOrbiting = false;
 
-        deathCamera.transform.RotateAround(orbitTarget.position, Vector3.up, orbitSpeed * Time.deltaTime);
+        if (orbitCamera != null)
+            orbitCamera.Priority = 0;
     }
 
-}
+    private void LateUpdate()
+    {
+        if (!_isOrbiting || orbitTarget == null) return;
 
+        orbitCamera.transform.RotateAround(orbitTarget.position, Vector3.up, orbitSpeed * Time.deltaTime);
+    }
+}

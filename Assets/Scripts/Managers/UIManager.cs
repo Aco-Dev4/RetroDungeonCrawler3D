@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -14,6 +15,18 @@ public class UIManager : MonoBehaviour
 
     [Header("Panels closed on Game Over")]
     [SerializeField] private GameObject[] closeOnGameOverPanels;
+
+    [Header("Tutorial Game Over")]
+    [SerializeField] private bool useTutorialGameOver;
+    [SerializeField] private GameObject tutorialGameOverPanel;
+    [SerializeField] private CanvasGroup tutorialGameOverCanvasGroup;
+
+    [Header("Game Over Stats")]
+    [SerializeField] private TMP_Text goldGainedText;
+    [SerializeField] private TMP_Text silverGainedText;
+    [SerializeField] private TMP_Text enemiesDefeatedText;
+    [SerializeField] private TMP_Text wavesCompletedText;
+    [SerializeField] private TMP_Text diedOnWaveText;
 
     [Header("Game Over Settings")]
     [SerializeField] private float gameOverDelay = 1.5f;
@@ -37,6 +50,16 @@ public class UIManager : MonoBehaviour
             gameOverCanvasGroup.interactable = false;
             gameOverCanvasGroup.blocksRaycasts = false;
         }
+
+        if (tutorialGameOverCanvasGroup != null)
+        {
+            tutorialGameOverCanvasGroup.alpha = 0f;
+            tutorialGameOverCanvasGroup.interactable = false;
+            tutorialGameOverCanvasGroup.blocksRaycasts = false;
+        }
+
+        if (tutorialGameOverPanel != null)
+            tutorialGameOverPanel.SetActive(false);
     }
 
     #region Game Over
@@ -62,30 +85,63 @@ public class UIManager : MonoBehaviour
 
         yield return new WaitForSeconds(gameOverDelay);
 
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(true);
+        if (useTutorialGameOver)
+        {
+            if (tutorialGameOverPanel != null)
+                tutorialGameOverPanel.SetActive(true);
 
-        if (gameOverCanvasGroup != null)
-            yield return FadeInGameOver();
+            if (tutorialGameOverCanvasGroup != null)
+                yield return FadeInCanvasGroup(tutorialGameOverCanvasGroup);
+        }
+        else
+        {
+            if (gameOverPanel != null)
+                gameOverPanel.SetActive(true);
+
+            UpdateGameOverStats();
+
+            if (gameOverCanvasGroup != null)
+                yield return FadeInCanvasGroup(gameOverCanvasGroup);
+        }
     }
 
-    private IEnumerator FadeInGameOver()
+    private IEnumerator FadeInCanvasGroup(CanvasGroup canvasGroup)
     {
         float t = 0f;
 
-        gameOverCanvasGroup.interactable = true;
-        gameOverCanvasGroup.blocksRaycasts = true;
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
 
         while (t < fadeDuration)
         {
             t += Time.unscaledDeltaTime;
-            gameOverCanvasGroup.alpha = Mathf.Lerp(0f, 1f, t / fadeDuration);
+            canvasGroup.alpha = Mathf.Lerp(0f, 1f, t / fadeDuration);
             yield return null;
         }
 
-        gameOverCanvasGroup.alpha = 1f;
+        canvasGroup.alpha = 1f;
     }
 
+    private void UpdateGameOverStats()
+    {
+        if (RunStatsManager.Instance == null) return;
+
+        if (goldGainedText != null)
+            goldGainedText.text = $"GOLD GAINED: {RunStatsManager.Instance.GoldGained}";
+
+        if (silverGainedText != null)
+            silverGainedText.text = $"SILVER GAINED: {RunStatsManager.Instance.SilverGained}";
+
+        if (enemiesDefeatedText != null)
+            enemiesDefeatedText.text = $"ENEMIES DEFEATED: {RunStatsManager.Instance.EnemiesDefeated}";
+
+        if (wavesCompletedText != null)
+            wavesCompletedText.text = $"WAVES COMPLETED: {RunStatsManager.Instance.WavesCompleted}";
+
+        if (diedOnWaveText != null)
+            diedOnWaveText.text = $"DIED ON WAVE: {RunStatsManager.Instance.CurrentWave}";
+    }
     #endregion
 
     #region Pause
@@ -149,6 +205,11 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void OnRestartScenePressed()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
     #endregion
 }
 

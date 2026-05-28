@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,11 +13,16 @@ public class UpgradeCardSlotUI : MonoBehaviour
     [SerializeField] private TMP_Text costText;
     [SerializeField] private Image cardIcon;
     [SerializeField] private Button upgradeButton;
+    [SerializeField] private Image background;
+    [SerializeField] private List<CardRarityColor> rarityColors = new();
+    [SerializeField] private Image upgradeButtonImage;
+    [SerializeField] private Color canAffordColor = Color.green;
+    [SerializeField] private Color cannotAffordColor = Color.red;
 
     private OwnedCard _ownedCard;
     private Action<OwnedCard> _onUpgradePressed;
 
-    public void Setup(OwnedCard ownedCard, int upgradeCost, Health health, Action<OwnedCard> onUpgradePressed)
+    public void Setup(OwnedCard ownedCard, int upgradeCost, int currentSilver, Health health, Action<OwnedCard> onUpgradePressed)
     {
         _ownedCard = ownedCard;
         _onUpgradePressed = onUpgradePressed;
@@ -24,7 +30,15 @@ public class UpgradeCardSlotUI : MonoBehaviour
         if (ownedCard == null || ownedCard.cardData == null)
             return;
 
+        bool canAfford = currentSilver >= upgradeCost;
+
+        if (upgradeButtonImage != null)
+            upgradeButtonImage.color = canAfford ? canAffordColor : cannotAffordColor;
+
         CardData cardData = ownedCard.cardData;
+        CardRarityColor rarityColor = GetRarityColor(cardData.rarity);
+        if (rarityColor != null && background != null)
+            background.color = rarityColor.backgroundColor;
 
         cardNameText.text = cardData.cardName;
         levelText.text = $"LEVEL: {ownedCard.level}";
@@ -69,5 +83,16 @@ public class UpgradeCardSlotUI : MonoBehaviour
         float nextDisplay = cardData.displayBaseValue + nextValue;
 
         return $"{currentDisplay:0.##} -> {nextDisplay:0.##}";
+    }
+
+    private CardRarityColor GetRarityColor(CardRarity rarity)
+    {
+        for (int i = 0; i < rarityColors.Count; i++)
+        {
+            if (rarityColors[i].rarity == rarity)
+                return rarityColors[i];
+        }
+
+        return null;
     }
 }

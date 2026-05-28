@@ -70,7 +70,8 @@ public class CardUpgradeUI : MonoBehaviour
             int cost = GetUpgradeCost(ownedCard);
             UpgradeCardSlotUI slot = Instantiate(slotPrefab, cardContainer);
             Health health = playerController != null ? playerController.GetComponent<Health>() : null;
-            slot.Setup(ownedCard, cost, health, TryUpgradeCard);
+            int currentSilver = CurrencyManager.Instance != null ? CurrencyManager.Instance.GetSilver() : 0;
+            slot.Setup(ownedCard, cost, currentSilver, health, TryUpgradeCard);
             _spawnedSlots.Add(slot);
         }
     }
@@ -92,6 +93,7 @@ public class CardUpgradeUI : MonoBehaviour
 
         CardData cardData = ownedCard.cardData;
         runCardInventory.UpgradeCard(cardData);
+        RunStatsManager.Instance?.AddCardUpgraded();
         playerController.RecalculateStats();
 
         ApplyUpgradeInstantEffect(cardData);

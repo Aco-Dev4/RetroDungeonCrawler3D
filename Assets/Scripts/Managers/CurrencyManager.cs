@@ -22,6 +22,7 @@ public class CurrencyManager : MonoBehaviour
     public void AddSilver(int amount)
     {
         silver += amount;
+        RunStatsManager.Instance?.AddSilver(amount);
         // UI update goes here
         // SFX goes here
     }
@@ -42,6 +43,7 @@ public class CurrencyManager : MonoBehaviour
         if (GameDataManager.Instance != null)
             GameDataManager.Instance.AddGold(amount);
 
+        RunStatsManager.Instance?.AddGold(amount);
         GoldUI.Instance?.SetGold(GetGold());
     }
 

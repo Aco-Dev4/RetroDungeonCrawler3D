@@ -6146,7 +6146,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1477758193}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1701650087}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: OnSwordBought
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1477758193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10136,7 +10148,6 @@ MonoBehaviour:
   knockbackBlockers:
     serializedVersion: 2
     m_Bits: 8
-  wallStopPadding: 0.1
 --- !u!136 &2079799578066941655
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -10799,8 +10810,12 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
-  attackClip: {fileID: 7400000, guid: 4a04f72e2dc33474992a66b171c1aac8, type: 2}
-  deathPivot: {fileID: 5462828757093306960}
+  punchAttackClip: {fileID: 0}
+  swordObject: {fileID: 0}
+  swordAttackClip: {fileID: 0}
+  swordRangeBonus: 1
+  swordDamageBonus: 5
+  orbitPivot: {fileID: 0}
 --- !u!1 &3686832850952261507
 GameObject:
   m_ObjectHideFlags: 0
@@ -11350,7 +11365,6 @@ MonoBehaviour:
   knockbackBlockers:
     serializedVersion: 2
     m_Bits: 8
-  wallStopPadding: 0.1
 --- !u!224 &5078014003339278892
 RectTransform:
   m_ObjectHideFlags: 0

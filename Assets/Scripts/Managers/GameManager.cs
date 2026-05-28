@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         State = GameState.GameOver;
+        RunTimer.Instance?.StopTimer();
         Time.timeScale = 1f;
         playerInput.SwitchCurrentActionMap("UI");
         CursorManager.Instance?.UnlockCursor();

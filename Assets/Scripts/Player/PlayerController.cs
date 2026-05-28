@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerData playerData;
     [SerializeField] private Animator _animator;
     [SerializeField] private RunCardInventory runCardInventory;
+
+    [Header("Tutorial Override")]
+    [SerializeField] private bool ignorePermanentUpgrades;
+    [SerializeField] private int tutorialBaseDamage = 15;
     #endregion
 
     #region Movement
@@ -35,8 +39,18 @@ public class PlayerController : MonoBehaviour
 
     #region Attack
     [SerializeField] private LayerMask enemyLayer;
-    [SerializeField] private AnimationClip attackClip;
+
+    [Header("Punch")]
+    [SerializeField] private AnimationClip punchAttackClip;
+
+    [Header("Sword")]
+    [SerializeField] private GameObject swordObject;
+    [SerializeField] private AnimationClip swordAttackClip;
+    [SerializeField] private float swordRangeBonus = 1f;
+    [SerializeField] private int swordDamageBonus = 5;
+
     private bool _canAttack = true;
+    private bool _hasSword;
     #endregion
 
     #region Runtime Stats (modifiable by cards)
@@ -55,7 +69,7 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     private float AttackInterval => 1f / _attackSpeed;
-    [SerializeField] private Transform deathPivot;
+    [SerializeField] private Transform orbitPivot;
 
     private void Awake()
     {
@@ -65,6 +79,11 @@ public class PlayerController : MonoBehaviour
             runCardInventory = GetComponent<RunCardInventory>();
 
         ApplyBaseStats();
+
+        _hasSword = !ignorePermanentUpgrades && GameDataManager.Instance != null && GameDataManager.Instance.HasSword();
+
+        if (swordObject != null)
+            swordObject.SetActive(_hasSword);
 
         // Health init
         Health health = GetComponent<Health>();
@@ -89,6 +108,8 @@ public class PlayerController : MonoBehaviour
 
         _attackRange = playerData.attackRange;
         _attackDamage = playerData.attackDamage;
+        if (ignorePermanentUpgrades)
+            _attackDamage = tutorialBaseDamage;
         _attackSpeed = playerData.attackSpeed * 1.5f;
 
         _luck = 0;
@@ -183,12 +204,13 @@ public class PlayerController : MonoBehaviour
 
         _canAttack = false;
 
-        if (attackClip != null)
-        {
-            _animator.SetFloat("AttackSpeed", _attackSpeed);
-        }
+        _animator.SetFloat("AttackSpeed", _attackSpeed);
 
-        _animator.SetTrigger("Attack");
+        if (_hasSword)
+            _animator.SetTrigger("Swing");
+        else
+            _animator.SetTrigger("Attack");
+
         StartCoroutine(AttackCooldown());
     }
 
@@ -197,28 +219,34 @@ public class PlayerController : MonoBehaviour
     #region Attack Logic
     public void ApplyAttackDamage()
     {
-        Vector3 attackOrigin = transform.position + transform.forward * (_attackRange * 0.5f);
-        Collider[] hits = Physics.OverlapSphere(attackOrigin, _attackRange * 0.5f, enemyLayer);
+        float finalRange = _hasSword ? _attackRange + swordRangeBonus : _attackRange;
+        int finalDamage = _hasSword ? _attackDamage + swordDamageBonus : _attackDamage;
 
-        foreach (Collider hit in hits)
+        Vector3 attackOrigin = transform.position + transform.forward * (finalRange * 0.5f);
+        Collider[] hits = Physics.OverlapSphere(attackOrigin, finalRange * 0.5f, enemyLayer);
+
+        for (int i = 0; i < hits.Length; i++)
         {
+            Collider hit = hits[i];
+
             Health target = hit.GetComponent<Health>();
             if (target == null)
                 target = hit.GetComponentInParent<Health>();
 
-            if (target != null)
-            {
-                target.TakeDamage(_attackDamage, gameObject);
+            if (target == null)
+                continue;
 
-                EnemyAI enemy = hit.GetComponent<EnemyAI>();
-                if (enemy == null)
-                    enemy = hit.GetComponentInParent<EnemyAI>();
+            target.TakeDamage(finalDamage, gameObject);
 
-                if (enemy != null && _knockbackStrength > 0f)
-                    enemy.ApplyKnockback(transform.position, _knockbackStrength);
+            EnemyAI enemy = hit.GetComponent<EnemyAI>();
+            if (enemy == null)
+                enemy = hit.GetComponentInParent<EnemyAI>();
 
+            if (enemy != null && _knockbackStrength > 0f)
+                enemy.ApplyKnockback(transform.position, _knockbackStrength);
+
+            if (!_hasSword)
                 break;
-            }
         }
     }
 
@@ -253,11 +281,16 @@ public class PlayerController : MonoBehaviour
 
         Debug.Log("PLAYER HANDLE DEATH CALLED");
         // Tell camera to enter death mode
-        deathPivot.SetParent(null, true);
-        CameraManager.Instance.StartDeathOrbit(deathPivot);
+        orbitPivot.SetParent(null, true);
+        CameraManager.Instance.StartOrbit(orbitPivot);
 
-        Debug.Log(deathPivot != null ? "DeathPivot OK" : "DeathPivot IS NULL");
+        Debug.Log(orbitPivot != null ? "DeathPivot OK" : "DeathPivot IS NULL");
         Debug.Log(CameraManager.Instance != null ? "CameraManager OK" : "CameraManager IS NULL");
+    }
+
+    public Transform GetOrbitPivot()
+    {
+        return orbitPivot;
     }
     #endregion
 
