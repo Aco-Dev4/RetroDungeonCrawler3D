@@ -10,13 +10,12 @@ public class MainMenuCameraParallax : MonoBehaviour
     [Header("Smoothness")]
     [SerializeField] private float smoothTime = 6f;
 
-    private Quaternion _startRotation;
+    private Quaternion _baseRotation;
     private Quaternion _targetRotation;
 
     private void Awake()
     {
-        _startRotation = transform.rotation;
-        _targetRotation = _startRotation;
+        SetBaseRotation(transform.rotation);
     }
 
     private void Update()
@@ -37,8 +36,19 @@ public class MainMenuCameraParallax : MonoBehaviour
         float yaw = normalizedX * maxYaw;
         float pitch = -normalizedY * maxPitch;
 
-        _targetRotation = _startRotation * Quaternion.Euler(pitch, yaw, 0f);
+        _targetRotation = _baseRotation * Quaternion.Euler(pitch, yaw, 0f);
 
         transform.rotation = Quaternion.Slerp(transform.rotation, _targetRotation, smoothTime * Time.deltaTime);
+    }
+
+    public void SetBaseRotation(Quaternion newBaseRotation)
+    {
+        _baseRotation = newBaseRotation;
+        _targetRotation = _baseRotation;
+    }
+
+    public void SetBaseRotationToCurrent()
+    {
+        SetBaseRotation(transform.rotation);
     }
 }

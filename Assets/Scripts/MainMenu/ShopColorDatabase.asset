@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31feee488ccc6634fa86d92f629cf9d0, type: 3}
+  m_Name: ShopColorDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::ShopColorDatabase
+  colors:
+  - colorId: Blue
+    displayName: BLUE
+    color: {r: 0, g: 0.17254902, b: 0.7764706, a: 1}
+    materialOverride: {fileID: 0}
+    icon: {fileID: 21300000, guid: 65667e25ec5df8647aa9745dd4b54351, type: 3}
+    cost: 0
+  - colorId: Red
+    displayName: RED
+    color: {r: 0.6313726, g: 0.11764706, b: 0.1254902, a: 1}
+    materialOverride: {fileID: 0}
+    icon: {fileID: 21300000, guid: 5ec675c1675bdfe4eb3e8927071a6d26, type: 3}
+    cost: 1
+  - colorId: Green
+    displayName: GREEN
+    color: {r: 0.105882354, g: 0.47058824, b: 0.07450981, a: 1}
+    materialOverride: {fileID: 0}
+    icon: {fileID: 21300000, guid: b3147045e4e86924facbacd157940bec, type: 3}
+    cost: 1
+  - colorId: Yellow
+    displayName: YELLOW
+    color: {r: 0.7254902, g: 0.6745098, b: 0.1254902, a: 1}
+    materialOverride: {fileID: 0}
+    icon: {fileID: 21300000, guid: b39f63a182f7fed4891599f862c4a33b, type: 3}
+    cost: 1
+  - colorId: Purple
+    displayName: PURPLE
+    color: {r: 0.41568628, g: 0.13333334, b: 0.7647059, a: 1}
+    materialOverride: {fileID: 0}
+    icon: {fileID: 21300000, guid: 7fc38d1956212194888b7b0be7ca8e83, type: 3}
+    cost: 1
+  - colorId: Orange
+    displayName: ORANGE
+    color: {r: 0.6784314, g: 0.4117647, b: 0.0627451, a: 1}
+    materialOverride: {fileID: 0}
+    icon: {fileID: 21300000, guid: 37d384c9aacf2f645ab643945108a477, type: 3}
+    cost: 1
+  - colorId: Black
+    displayName: BLACK
+    color: {r: 0.12156863, g: 0.12156863, b: 0.12156863, a: 1}
+    materialOverride: {fileID: 0}
+    icon: {fileID: 21300000, guid: b5e79e0a962969a4e8b919d62d624e5a, type: 3}
+    cost: 1
+  - colorId: White
+    displayName: WHITE
+    color: {r: 0.83137256, g: 0.83137256, b: 0.83137256, a: 1}
+    materialOverride: {fileID: 0}
+    icon: {fileID: 21300000, guid: fd8a79a1d4716554eae486ef4149cd22, type: 3}
+    cost: 1
+  - colorId: Pink
+    displayName: PINK
+    color: {r: 0.67058825, g: 0.078431375, b: 0.5882353, a: 1}
+    materialOverride: {fileID: 0}
+    icon: {fileID: 21300000, guid: 8458c2c034508424bbb636c995b20257, type: 3}
+    cost: 1
+  - colorId: Gold
+    displayName: GOLD
+    color: {r: 0, g: 0, b: 0, a: 0}
+    materialOverride: {fileID: 2100000, guid: 7c2ce4b232f745149a549ebf6ce2934b, type: 2}
+    icon: {fileID: 21300000, guid: 11810bb605b29fb4a88d9f7131f17ca8, type: 3}
+    cost: 99

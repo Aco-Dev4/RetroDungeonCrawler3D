@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e3bfa3e3e537fb47a2254f5dc63b3ab, type: 3}
-  m_Name: Common_MoveSpeed
+  m_Name: Rare_CritDamage
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: MOVE SPEED
-  description: MOVEMENT SPEED +20%
-  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  rarity: 0
-  statType: 2
-  usePercent: 1
-  baseValue: 0.2
-  valuePerUpgrade: 0.1
-  baseUpgradeCost: 7
+  cardName: CRITICAL DAMAGE
+  description: CRITICAL HITS DEAL +0.5X MORE DAMAGE (2.5X)
+  icon: {fileID: 0}
+  rarity: 1
+  statType: 12
+  usePercent: 0
+  baseValue: 0.5
+  valuePerUpgrade: 0.2
+  baseUpgradeCost: 12
   costIncreasePerLevel: 8
-  showUpgradeAsMultiplier: 1
-  displayBaseValue: 1
+  showUpgradeAsMultiplier: 0
+  displayBaseValue: 2
   canAppearInChest: 1
   requiresWeapon: 0
-  requiresCriticalHits: 0
+  requiresCriticalHits: 1

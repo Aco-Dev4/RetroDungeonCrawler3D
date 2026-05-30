@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15b2006b0a5927d45b75fc40c7e74cd4, type: 3}
+  m_Name: ShopUpgradeDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::ShopUpgradeDatabase
+  upgrades:
+  - upgradeId: Sword
+    displayName: SWORD
+    description: UNLOCK A SWORD WITH BETTER ATTACKS
+    icon: {fileID: 0}
+    tiers:
+    - cost: 0
+      valueText: LOCKED
+      intValue: 0
+      floatValue: 0
+    - cost: 3
+      valueText: UNLOCKED
+      intValue: 1
+      floatValue: 0
+  - upgradeId: ExtraLuck
+    displayName: EXTRA LUCK
+    description: INCREASES YOUR BASE LUCK
+    icon: {fileID: 0}
+    tiers:
+    - cost: 0
+      valueText: +0
+      intValue: 0
+      floatValue: 0
+    - cost: 2
+      valueText: +5
+      intValue: 5
+      floatValue: 0
+    - cost: 5
+      valueText: +8
+      intValue: 8
+      floatValue: 0
+    - cost: 8
+      valueText: +12
+      intValue: 12
+      floatValue: 0
+    - cost: 12
+      valueText: +15
+      intValue: 15
+      floatValue: 0
+    - cost: 18
+      valueText: +20
+      intValue: 20
+      floatValue: 0
+  - upgradeId: ExtraSilver
+    displayName: EXTRA SILVER
+    description: INCREASES SILVER GAINED FROM ENEMIES
+    icon: {fileID: 0}
+    tiers:
+    - cost: 0
+      valueText: +0%
+      intValue: 0
+      floatValue: 0
+    - cost: 3
+      valueText: +10%
+      intValue: 0
+      floatValue: 0.1
+    - cost: 10
+      valueText: +20%
+      intValue: 0
+      floatValue: 0.2
+    - cost: 20
+      valueText: +35%
+      intValue: 0
+      floatValue: 0.35
+  - upgradeId: NewRarity
+    displayName: NEW CARD RARITY
+    description: UNLOCK STRONGER CARD RARITIES
+    icon: {fileID: 0}
+    tiers:
+    - cost: 0
+      valueText: COMMON / RARE
+      intValue: 0
+      floatValue: 0
+    - cost: 1
+      valueText: EPIC
+      intValue: 1
+      floatValue: 0
+    - cost: 5
+      valueText: LEGENDARY
+      intValue: 2
+      floatValue: 0
+  - upgradeId: CriticalHits
+    displayName: CRITICAL HITS
+    description: UNLOCK 1% CHANCE TO DO CRITICAL HIT FOR 2X DAMAGE AND NEW CARDS
+    icon: {fileID: 0}
+    tiers:
+    - cost: 0
+      valueText: LOCKED
+      intValue: 0
+      floatValue: 0
+    - cost: 12
+      valueText: UNLOCKED
+      intValue: 1
+      floatValue: 0

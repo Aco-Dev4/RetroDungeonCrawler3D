@@ -26,4 +26,5 @@ public class CardData : ScriptableObject
     [Header("Rules")]
     public bool canAppearInChest = true;
     public bool requiresWeapon;
+    public bool requiresCriticalHits;
 }

@@ -36,6 +36,7 @@ public class CardManager : MonoBehaviour
     [SerializeField] private CardDatabase cardDatabase;
     [SerializeField] private PlayerController playerController;
     [SerializeField] private WaveManager waveManager;
+    [SerializeField] private RunCardInventory runCardInventory;
     #endregion
 
     #region Luck Settings
@@ -93,14 +94,25 @@ public class CardManager : MonoBehaviour
 
         for (int i = 0; i < amount; i++)
         {
-            CardRarity rolledRarity = RollAvailableRarity();
-            CardData chosenCard = GetRandomCardByRarity(rolledRarity, chosenCards);
+            CardData chosenCard = null;
+
+            for (int attempt = 0; attempt < 10; attempt++)
+            {
+                CardRarity rolledRarity = RollAvailableRarity();
+                chosenCard = GetRandomCardByRarity(rolledRarity, chosenCards);
+
+                if (chosenCard != null)
+                {
+                    Debug.Log($"Rolled rarity for slot {i + 1}: {rolledRarity}");
+                    break;
+                }
+            }
 
             if (chosenCard == null)
-                continue;
+                chosenCard = GetAnyValidCard(chosenCards);
 
-            chosenCards.Add(chosenCard);
-            Debug.Log($"Rolled rarity for slot {i + 1}: {rolledRarity}");
+            if (chosenCard != null)
+                chosenCards.Add(chosenCard);
         }
 
         return chosenCards;
@@ -113,14 +125,14 @@ public class CardManager : MonoBehaviour
 
         for (int i = 0; i < pool.Count; i++)
         {
-            if (excludedCards.Contains(pool[i])) continue;
-            validPool.Add(pool[i]);
-        }
+            CardData card = pool[i];
 
-        if (validPool.Count == 0)
-        {
-            for (int i = 0; i < pool.Count; i++)
-                validPool.Add(pool[i]);
+            if (card == null) continue;
+            if (excludedCards.Contains(card)) continue;
+            if (runCardInventory != null && runCardInventory.HasCard(card)) continue;
+            if (!IsCardAllowed(card)) continue;
+
+            validPool.Add(card);
         }
 
         if (validPool.Count == 0)
@@ -161,6 +173,53 @@ public class CardManager : MonoBehaviour
         }
 
         return CardRarity.COMMON;
+    }
+
+    private CardData GetAnyValidCard(List<CardData> excludedCards)
+    {
+        List<CardData> validPool = new();
+
+        for (int i = 0; i < cardDatabase.cards.Count; i++)
+        {
+            CardData card = cardDatabase.cards[i];
+
+            if (card == null) continue;
+            if (excludedCards.Contains(card)) continue;
+            if (runCardInventory != null && runCardInventory.HasCard(card)) continue;
+            if (!IsCardAllowed(card)) continue;
+
+            validPool.Add(card);
+        }
+
+        if (validPool.Count == 0)
+            return null;
+
+        int index = UnityEngine.Random.Range(0, validPool.Count);
+        return validPool[index];
+    }
+
+    private bool IsCardAllowed(CardData card)
+    {
+        if (card == null) return false;
+        if (!card.canAppearInChest) return false;
+
+        if (card.rarity == CardRarity.EPIC &&
+            (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedEpicCards()))
+            return false;
+
+        if (card.rarity == CardRarity.LEGENDARY &&
+            (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedLegendaryCards()))
+            return false;
+
+        if (card.requiresWeapon &&
+            (GameDataManager.Instance == null || !GameDataManager.Instance.HasSword()))
+            return false;
+
+        if (card.requiresCriticalHits &&
+            (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedCriticalHits()))
+            return false;
+
+        return true;
     }
 
     private List<CardRarityRuntimeWeight> BuildAvailableRarityWeights(int luck)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class MenuManager : MonoBehaviour
 {
@@ -9,7 +10,15 @@ public class MenuManager : MonoBehaviour
 
     [Header("Map Buttons")]
     [SerializeField] private List<MenuMapButton> mapButtons = new();
+
+    [Header("Shop")]
+    [SerializeField] private GameObject shopPanel;
+    [SerializeField] private MenuShopCamera shopCamera;
     #endregion
+
+    [Header("Debug")]
+    [SerializeField] private Key giveGoldKey = Key.G;
+    [SerializeField] private int debugGoldAmount = 10;
 
     private void Start()
     {
@@ -17,6 +26,17 @@ public class MenuManager : MonoBehaviour
             mapSelectPanel.SetActive(false);
 
         RefreshMapButtons();
+    }
+
+    private void Update()
+    {
+        if (Keyboard.current == null) return;
+
+        if (Keyboard.current[giveGoldKey].wasPressedThisFrame)
+        {
+            CurrencyManager.Instance?.AddGold(debugGoldAmount);
+            Debug.Log($"+{debugGoldAmount} Gold");
+        }
     }
 
     #region Buttons
@@ -41,6 +61,25 @@ public class MenuManager : MonoBehaviour
             if (mapButtons[i] != null)
                 mapButtons[i].RefreshState();
         }
+    }
+
+    public void OnShopPressed()
+    {
+        if (shopPanel != null)
+            shopPanel.SetActive(true);
+
+        if (mapSelectPanel != null)
+            mapSelectPanel.SetActive(false);
+
+        shopCamera?.MoveToShopView();
+    }
+
+    public void OnCloseShopPressed()
+    {
+        if (shopPanel != null)
+            shopPanel.SetActive(false);
+
+        shopCamera?.MoveToNormalView();
     }
 
     public void OnSwordBought()

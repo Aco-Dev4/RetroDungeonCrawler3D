@@ -4292,6 +4292,7 @@ MonoBehaviour:
   cardDatabase: {fileID: 11400000, guid: 6c720ee5a6ebb9749be1f86b83f4ce2a, type: 2}
   playerController: {fileID: 1877961228}
   waveManager: {fileID: 696374774}
+  runCardInventory: {fileID: 1877961231}
   luckPerWave: 10
   commonMinWeight: 15
   rareSettings:
@@ -6729,6 +6730,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 592673983}
+    - target: {fileID: 1106845062248336055, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1304794104435993833, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: target
       value: 
@@ -6817,6 +6822,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2281622122134834824, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: ownedCards.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281622122134834824, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: ownedCards.Array.data[0].level
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281622122134834824, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: ownedCards.Array.data[0].cardData
+      value: 
+      objectReference: {fileID: 11400000, guid: dc11a7cf9216f79488dee22cf4b6aa5b, type: 2}
     - target: {fileID: 2438224261915071567, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -6869,14 +6886,54 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3611402837874153444, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: swordRangeBonus
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3858191691804747029, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4591835482249067302, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4591835482249067302, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4591835482249067302, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5128773416036617954, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 592673983}
+    - target: {fileID: 5412184983714882885, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412184983714882885, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412184983714882885, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412184983714882885, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5413728530402982185, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5413728530402982185, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6049628149255245743, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: m_Name
       value: PlayerPrefab
@@ -6948,8 +7005,24 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4506099667333373222, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1877961233}
+    - targetCorrespondingSourceObject: {fileID: 4506099667333373222, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1877961232}
   m_SourcePrefab: {fileID: 100100000, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+--- !u!1 &563333383 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4506099667333373222, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+  m_PrefabInstance: {fileID: 563333382}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &563333384 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8805544316759202396, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+  m_PrefabInstance: {fileID: 563333382}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &567650190
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8270,10 +8343,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaveManager
   waves:
   - {fileID: 11400000, guid: b38e6944ae813e24ea31a256c4ae65e5, type: 2}
-  - {fileID: 11400000, guid: 25efaf69c51f14d4b9d05e2393c33548, type: 2}
-  - {fileID: 11400000, guid: 472cc8d24fcc18c4aaae45cbac0b3b00, type: 2}
-  - {fileID: 11400000, guid: 925bd0901fa56e54f904d6bc0a193ac8, type: 2}
-  - {fileID: 11400000, guid: 84c11d8844422b34bb21ad4fd7d10c55, type: 2}
+  - {fileID: 11400000, guid: b38e6944ae813e24ea31a256c4ae65e5, type: 2}
+  - {fileID: 11400000, guid: b38e6944ae813e24ea31a256c4ae65e5, type: 2}
+  - {fileID: 11400000, guid: b38e6944ae813e24ea31a256c4ae65e5, type: 2}
+  - {fileID: 11400000, guid: b38e6944ae813e24ea31a256c4ae65e5, type: 2}
+  - {fileID: 11400000, guid: b38e6944ae813e24ea31a256c4ae65e5, type: 2}
+  - {fileID: 11400000, guid: b38e6944ae813e24ea31a256c4ae65e5, type: 2}
+  - {fileID: 11400000, guid: b38e6944ae813e24ea31a256c4ae65e5, type: 2}
+  - {fileID: 11400000, guid: b38e6944ae813e24ea31a256c4ae65e5, type: 2}
+  - {fileID: 11400000, guid: b38e6944ae813e24ea31a256c4ae65e5, type: 2}
   spawners:
   - {fileID: 1930867910}
   - {fileID: 1989097116}
@@ -23511,12 +23589,54 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3611402837874153444, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
   m_PrefabInstance: {fileID: 563333382}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 563333383}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4018882934d990f4f8866fe75ebc463c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+--- !u!114 &1877961231 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2281622122134834824, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+  m_PrefabInstance: {fileID: 563333382}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563333383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7e90fb62d5c2b34fb182189f664c56a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RunCardInventory
+--- !u!114 &1877961232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563333383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 298f1b9a0f6846141bb74cd71a04eff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSavedColorLoader
+  colorDatabase: {fileID: 11400000, guid: d0ed5e1188addd046834f3ea4fb682bc, type: 2}
+  playerColorApplier: {fileID: 1877961233}
+--- !u!114 &1877961233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563333383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f96c8573f23b2645914ce33fdaf60e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerColorApplier
+  colorRenderers:
+  - {fileID: 563333384}
+  colorMaterialIndex: 4
+  baseColorProperty: _BaseColor
+  rimColorProperty: _RimLightColor
 --- !u!4 &1880020079 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3783293008798372767, guid: f39d6d89b5092134993c828dfa615390, type: 3}

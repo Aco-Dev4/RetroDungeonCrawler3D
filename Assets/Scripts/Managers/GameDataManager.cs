@@ -14,6 +14,12 @@ public class PersistentPlayerData
 
     public List<string> boughtUpgradeIds = new();
     public List<string> completedMapIds = new();
+
+    public List<string> upgradeTierIds = new();
+    public List<int> upgradeTierValues = new();
+
+    public string selectedColorId = "Blue";
+    public List<string> ownedColorIds = new() { "Blue" };
 }
 
 public class GameDataManager : MonoBehaviour
@@ -206,9 +212,36 @@ public class GameDataManager : MonoBehaviour
         return true;
     }
 
+    public int GetUpgradeTier(string upgradeId)
+    {
+        int index = _data.upgradeTierIds.IndexOf(upgradeId);
+
+        if (index < 0)
+            return 0;
+
+        return _data.upgradeTierValues[index];
+    }
+
+    public void SetUpgradeTier(string upgradeId, int tier)
+    {
+        int index = _data.upgradeTierIds.IndexOf(upgradeId);
+
+        if (index < 0)
+        {
+            _data.upgradeTierIds.Add(upgradeId);
+            _data.upgradeTierValues.Add(tier);
+        }
+        else
+        {
+            _data.upgradeTierValues[index] = tier;
+        }
+
+        Save();
+    }
+
     public bool HasSword()
     {
-        return HasBoughtUpgrade("Sword");
+        return GetUpgradeTier("Sword") > 0;
     }
 
     public void UnlockSword()
@@ -216,6 +249,73 @@ public class GameDataManager : MonoBehaviour
         if (_data.boughtUpgradeIds.Contains("Sword")) return;
 
         _data.boughtUpgradeIds.Add("Sword");
+        Save();
+    }
+
+    public int GetExtraLuck()
+    {
+        int tier = GetUpgradeTier("ExtraLuck");
+
+        if (tier <= 0) return 0;
+        if (tier == 1) return 5;
+        if (tier == 2) return 8;
+        if (tier == 3) return 12;
+        if (tier == 4) return 15;
+        return 20;
+    }
+
+    public float GetExtraSilverMultiplier()
+    {
+        int tier = GetUpgradeTier("ExtraSilver");
+
+        if (tier <= 0) return 0f;
+        if (tier == 1) return 0.10f;
+        if (tier == 2) return 0.20f;
+        return 0.35f;
+    }
+
+    public bool HasUnlockedEpicCards()
+    {
+        return GetUpgradeTier("NewRarity") >= 1;
+    }
+
+    public bool HasUnlockedLegendaryCards()
+    {
+        return GetUpgradeTier("NewRarity") >= 2;
+    }
+
+    public bool HasUnlockedCriticalHits()
+    {
+        return GetUpgradeTier("CriticalHits") >= 1;
+    }
+    #endregion
+
+    #region Player Colors
+    public bool HasColor(string colorId)
+    {
+        return _data.ownedColorIds.Contains(colorId);
+    }
+
+    public void BuyColor(string colorId)
+    {
+        if (string.IsNullOrWhiteSpace(colorId)) return;
+        if (_data.ownedColorIds.Contains(colorId)) return;
+
+        _data.ownedColorIds.Add(colorId);
+        Save();
+    }
+
+    public string GetSelectedColor()
+    {
+        return _data.selectedColorId;
+    }
+
+    public void SetSelectedColor(string colorId)
+    {
+        if (string.IsNullOrWhiteSpace(colorId)) return;
+        if (!_data.ownedColorIds.Contains(colorId)) return;
+
+        _data.selectedColorId = colorId;
         Save();
     }
     #endregion

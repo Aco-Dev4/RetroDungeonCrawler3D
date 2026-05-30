@@ -66,6 +66,8 @@ public class PlayerController : MonoBehaviour
     private int _luck;
     private float _knockbackStrength;
     private float _silverGainMultiplier;
+    private float _critChance;
+    private float _critDamageMultiplier;
     #endregion
 
     private float AttackInterval => 1f / _attackSpeed;
@@ -112,9 +114,12 @@ public class PlayerController : MonoBehaviour
             _attackDamage = tutorialBaseDamage;
         _attackSpeed = playerData.attackSpeed * 1.5f;
 
-        _luck = 0;
+        _luck = ignorePermanentUpgrades || GameDataManager.Instance == null ? 0 : GameDataManager.Instance.GetExtraLuck();
         _knockbackStrength = 0f;
-        _silverGainMultiplier = 1f;
+        _silverGainMultiplier = ignorePermanentUpgrades || GameDataManager.Instance == null ? 1f : 1f + GameDataManager.Instance.GetExtraSilverMultiplier();
+
+        _critChance = ignorePermanentUpgrades || GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedCriticalHits() ? 0f : 0.01f;
+        _critDamageMultiplier = 2f;
     }
 
     private void Update()
@@ -221,6 +226,14 @@ public class PlayerController : MonoBehaviour
     {
         float finalRange = _hasSword ? _attackRange + swordRangeBonus : _attackRange;
         int finalDamage = _hasSword ? _attackDamage + swordDamageBonus : _attackDamage;
+
+        bool isCrit = _critChance > 0f && UnityEngine.Random.value <= _critChance;
+
+        if (isCrit)
+            finalDamage = Mathf.RoundToInt(finalDamage * _critDamageMultiplier);
+
+        if (isCrit)
+            Debug.Log($"CRIT! {finalDamage} damage");
 
         Vector3 attackOrigin = transform.position + transform.forward * (finalRange * 0.5f);
         Collider[] hits = Physics.OverlapSphere(attackOrigin, finalRange * 0.5f, enemyLayer);
@@ -353,6 +366,14 @@ public class PlayerController : MonoBehaviour
 
                 case CardStatType.SilverGain:
                     _silverGainMultiplier += value;
+                    break;
+
+                case CardStatType.CritChance:
+                    _critChance += value;
+                    break;
+
+                case CardStatType.CritDamage:
+                    _critDamageMultiplier += value;
                     break;
             }
         }

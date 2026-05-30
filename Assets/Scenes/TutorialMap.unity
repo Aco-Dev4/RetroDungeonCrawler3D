@@ -1641,6 +1641,7 @@ MonoBehaviour:
   cardDatabase: {fileID: 11400000, guid: 6c720ee5a6ebb9749be1f86b83f4ce2a, type: 2}
   playerController: {fileID: 3611402837361188578}
   waveManager: {fileID: 696374774}
+  runCardInventory: {fileID: 0}
   luckPerWave: 5
   commonMinWeight: 15
   rareSettings:
@@ -12939,6 +12940,8 @@ GameObject:
   - component: {fileID: 879775245363931764}
   - component: {fileID: 1877961220}
   - component: {fileID: 1877961237}
+  - component: {fileID: 7499131379845903815}
+  - component: {fileID: 7499131379845903814}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -14816,6 +14819,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerVignetteController
   volume: {fileID: 4798796730141733359}
+--- !u!114 &7499131379845903814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4506099666772464672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 298f1b9a0f6846141bb74cd71a04eff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSavedColorLoader
+  colorDatabase: {fileID: 11400000, guid: d0ed5e1188addd046834f3ea4fb682bc, type: 2}
+  playerColorApplier: {fileID: 7499131379845903815}
+--- !u!114 &7499131379845903815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4506099666772464672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f96c8573f23b2645914ce33fdaf60e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerColorApplier
+  colorRenderers:
+  - {fileID: 8805544316248757082}
+  colorMaterialIndex: 4
+  baseColorProperty: _BaseColor
+  rimColorProperty: _RimLightColor
 --- !u!4 &7505675231022226910
 Transform:
   m_ObjectHideFlags: 0

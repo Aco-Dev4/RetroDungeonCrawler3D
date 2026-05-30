@@ -38,6 +38,12 @@ public class RewardChest : MonoBehaviour, IInteractable
         if (outlineObject != null)
             outlineObject.SetActive(false);
 
+        if (_playerInteract != null)
+        {
+            _playerInteract.Unregister(this);
+            _playerInteract = null;
+        }
+
         animator.SetTrigger("Opened");
     }
 
@@ -69,6 +75,8 @@ public class RewardChest : MonoBehaviour, IInteractable
     {
         if (_activeChest == this)
             _activeChest = null;
+
+        _playerInteract = null;
 
         StartCoroutine(Despawn());
     }
@@ -109,6 +117,18 @@ public class RewardChest : MonoBehaviour, IInteractable
 
         _playerInteract?.Unregister(this);
         _playerInteract = null;
+    }
+
+    private void OnDestroy()
+    {
+        if (_activeChest == this)
+            _activeChest = null;
+
+        if (_playerInteract != null)
+        {
+            _playerInteract.Unregister(this);
+            _playerInteract = null;
+        }
     }
 }
 

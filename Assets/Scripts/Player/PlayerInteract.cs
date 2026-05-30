@@ -12,7 +12,25 @@ public class PlayerInteract : MonoBehaviour
     {
         if (!context.started) return;
 
+        CleanupInvalidTargets();
+        SelectBestTarget();
+
         _current?.Interact();
+    }
+
+    private void CleanupInvalidTargets()
+    {
+        for (int i = _inRange.Count - 1; i >= 0; i--)
+        {
+            if (_inRange[i] == null || _inRange[i] is MonoBehaviour behaviour && behaviour == null)
+                _inRange.RemoveAt(i);
+        }
+
+        if (_current == null)
+            return;
+
+        if (_current is MonoBehaviour currentBehaviour && currentBehaviour == null)
+            _current = null;
     }
 
     // Chooses the highest-priority interactable

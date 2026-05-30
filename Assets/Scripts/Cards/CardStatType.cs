@@ -10,5 +10,7 @@ public enum CardStatType
     JumpCount,
     Luck,
     Knockback,
-    SilverGain
+    SilverGain,
+    CritChance,
+    CritDamage
 }
