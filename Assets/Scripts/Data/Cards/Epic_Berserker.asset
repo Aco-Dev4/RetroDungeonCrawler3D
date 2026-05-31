@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e3bfa3e3e537fb47a2254f5dc63b3ab, type: 3}
-  m_Name: Rare_CritDamage
+  m_Name: Epic_Berserker
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: CRITICAL DAMAGE
-  description: CRITICAL HITS DEAL +0.5X MORE DAMAGE (2.5X)
+  cardName: BERSERKER
+  description: THE LOWER YOUR HP GETS THE MORE DAMAGE YOUR ATTACKS DO
   icon: {fileID: 0}
-  rarity: 1
-  statType: 12
+  rarity: 2
+  statType: 15
   usePercent: 0
   baseValue: 0.5
-  valuePerUpgrade: 0.2
-  baseUpgradeCost: 12
-  costIncreasePerLevel: 8
-  valueDisplayType: 5
+  valuePerUpgrade: 0.35
+  baseUpgradeCost: 6
+  costIncreasePerLevel: 4
+  valueDisplayType: 2
   canAppearInChest: 1
   requiresWeapon: 0
-  requiresCriticalHits: 1
+  requiresCriticalHits: 0

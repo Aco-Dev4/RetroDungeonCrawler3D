@@ -119,11 +119,15 @@ public class Health : MonoBehaviour
 
     private void Die()
     {
+        PlayerController player = GetComponent<PlayerController>();
+        if (player != null && player.TryPreventDeath())
+            return;
+
         if (TryGetComponent(out EnemyAI enemy))
         {
             enemy.HandleDeath();
         }
-        else if (TryGetComponent(out PlayerController player))
+        else if (player != null)
         {
             player.HandleDeath();
             GameManager.Instance?.SetState(GameState.GameOver);

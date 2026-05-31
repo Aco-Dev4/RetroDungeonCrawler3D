@@ -20,8 +20,7 @@ public class CardData : ScriptableObject
     public int costIncreasePerLevel = 10;
 
     [Header("Upgrade Display")]
-    public bool showUpgradeAsMultiplier = true;
-    public float displayBaseValue = 1f;
+    public CardValueDisplayType valueDisplayType = CardValueDisplayType.FlatNumber;
 
     [Header("Rules")]
     public bool canAppearInChest = true;

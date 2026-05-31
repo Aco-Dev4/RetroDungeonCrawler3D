@@ -22,8 +22,7 @@ MonoBehaviour:
   valuePerUpgrade: 0.1
   baseUpgradeCost: 7
   costIncreasePerLevel: 8
-  showUpgradeAsMultiplier: 1
-  displayBaseValue: 1
+  valueDisplayType: 2
   canAppearInChest: 1
   requiresWeapon: 0
   requiresCriticalHits: 0

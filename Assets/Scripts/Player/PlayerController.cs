@@ -8,11 +8,16 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     #region Components
+    private PlayerRuntimeStats _stats = new();
     private CharacterController _characterController;
     private Camera _mainCamera;
     [SerializeField] private PlayerData playerData;
     [SerializeField] private Animator _animator;
     [SerializeField] private RunCardInventory runCardInventory;
+    [SerializeField] private PlayerCombatEffectHandler combatEffectHandler;
+    [SerializeField] private PlayerRunEffectHandler runEffectHandler;
+    [SerializeField] private PlayerDeathEffectHandler deathEffectHandler;
+    [SerializeField] private PlayerRewardEffectHandler rewardEffectHandler;
 
     [Header("Tutorial Override")]
     [SerializeField] private bool ignorePermanentUpgrades;
@@ -79,8 +84,19 @@ public class PlayerController : MonoBehaviour
         _mainCamera = Camera.main;
         if (runCardInventory == null)
             runCardInventory = GetComponent<RunCardInventory>();
+        if (combatEffectHandler == null)
+            combatEffectHandler = GetComponent<PlayerCombatEffectHandler>();
+        if (runEffectHandler == null)
+            runEffectHandler = GetComponent<PlayerRunEffectHandler>();
+        if (deathEffectHandler == null)
+            deathEffectHandler = GetComponent<PlayerDeathEffectHandler>();
+        if (rewardEffectHandler == null)
+            rewardEffectHandler = GetComponent<PlayerRewardEffectHandler>();
 
         ApplyBaseStats();
+
+        rewardEffectHandler?.SetRerolls(_stats.rewardRerolls);
+        deathEffectHandler?.SetRevives(_stats.guardianAngelRevives);
 
         _hasSword = !ignorePermanentUpgrades && GameDataManager.Instance != null && GameDataManager.Instance.HasSword();
 
@@ -98,28 +114,51 @@ public class PlayerController : MonoBehaviour
         CursorManager.Instance.LockCursor();
     }
 
+    public void OnWaveCompleted()
+    {
+        runEffectHandler?.OnWaveCompleted();
+    }
+
+    public bool TryPreventDeath()
+    {
+        return deathEffectHandler != null && deathEffectHandler.TryPreventDeath();
+    }
+
+    public PlayerRewardEffectHandler GetRewardEffectHandler()
+    {
+        return rewardEffectHandler;
+    }
+
+    public int GetRewardRerolls()
+    {
+        return rewardEffectHandler != null ? rewardEffectHandler.RewardRerolls : 0;
+    }
+
     private void ApplyBaseStats()
     {
-        _maxHealth = playerData.startingHealth;
+        _stats.LoadBaseStats(playerData, ignorePermanentUpgrades, tutorialBaseDamage);
+        CopyStatsToFields();
+    }
 
-        _moveSpeed = playerData.moveSpeed;
-        _rotationSpeed = playerData.rotationSpeed;
-        _jumpPower = playerData.jumpPower;
-        _maxJumps = playerData.maxJumps;
-        _gravityMultiplier = playerData.gravityMultiplier;
+    private void CopyStatsToFields()
+    {
+        _maxHealth = _stats.maxHealth;
+        _moveSpeed = _stats.moveSpeed;
+        _rotationSpeed = _stats.rotationSpeed;
+        _jumpPower = _stats.jumpPower;
+        _maxJumps = _stats.maxJumps;
+        _gravityMultiplier = _stats.gravityMultiplier;
 
-        _attackRange = playerData.attackRange;
-        _attackDamage = playerData.attackDamage;
-        if (ignorePermanentUpgrades)
-            _attackDamage = tutorialBaseDamage;
-        _attackSpeed = playerData.attackSpeed * 1.5f;
+        _attackRange = _stats.attackRange;
+        _attackDamage = _stats.attackDamage;
+        _attackSpeed = _stats.attackSpeed;
 
-        _luck = ignorePermanentUpgrades || GameDataManager.Instance == null ? 0 : GameDataManager.Instance.GetExtraLuck();
-        _knockbackStrength = 0f;
-        _silverGainMultiplier = ignorePermanentUpgrades || GameDataManager.Instance == null ? 1f : 1f + GameDataManager.Instance.GetExtraSilverMultiplier();
+        _luck = _stats.luck;
+        _knockbackStrength = _stats.knockbackStrength;
+        _silverGainMultiplier = _stats.silverGainMultiplier;
 
-        _critChance = ignorePermanentUpgrades || GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedCriticalHits() ? 0f : 0.01f;
-        _critDamageMultiplier = 2f;
+        _critChance = _stats.critChance;
+        _critDamageMultiplier = _stats.critDamageMultiplier;
     }
 
     private void Update()
@@ -224,15 +263,12 @@ public class PlayerController : MonoBehaviour
     #region Attack Logic
     public void ApplyAttackDamage()
     {
-        float finalRange = _hasSword ? _attackRange + swordRangeBonus : _attackRange;
-        int finalDamage = _hasSword ? _attackDamage + swordDamageBonus : _attackDamage;
+        float finalRange = PlayerDamageCalculator.GetAttackRange(_stats, _hasSword, swordRangeBonus);
+        Health playerHealth = GetComponent<Health>();
+        PlayerAttackResult attackResult = PlayerDamageCalculator.GetAttackResult(_stats, _hasSword, swordDamageBonus, playerHealth);
+        int finalDamage = attackResult.damage;
 
-        bool isCrit = _critChance > 0f && UnityEngine.Random.value <= _critChance;
-
-        if (isCrit)
-            finalDamage = Mathf.RoundToInt(finalDamage * _critDamageMultiplier);
-
-        if (isCrit)
+        if (attackResult.isCrit)
             Debug.Log($"CRIT! {finalDamage} damage");
 
         Vector3 attackOrigin = transform.position + transform.forward * (finalRange * 0.5f);
@@ -249,11 +285,13 @@ public class PlayerController : MonoBehaviour
             if (target == null)
                 continue;
 
-            target.TakeDamage(finalDamage, gameObject);
-
             EnemyAI enemy = hit.GetComponent<EnemyAI>();
             if (enemy == null)
                 enemy = hit.GetComponentInParent<EnemyAI>();
+
+            target.TakeDamage(finalDamage, gameObject);
+
+            combatEffectHandler?.OnDamageDealt(attackResult, target, enemy);
 
             if (enemy != null && _knockbackStrength > 0f)
                 enemy.ApplyKnockback(transform.position, _knockbackStrength);
@@ -311,72 +349,19 @@ public class PlayerController : MonoBehaviour
     public void RecalculateStats()
     {
         Health health = GetComponent<Health>();
-        int oldMaxHealth = health != null ? health.GetMaxHealth() : _maxHealth;
 
-        ApplyBaseStats();
+        _stats.LoadBaseStats(playerData, ignorePermanentUpgrades, tutorialBaseDamage);
 
-        if (runCardInventory == null) return;
-
-        foreach (var ownedCard in runCardInventory.OwnedCards)
+        if (runCardInventory != null)
         {
-            if (ownedCard.cardData == null) continue;
-
-            float value = ownedCard.GetCurrentValue();
-
-            switch (ownedCard.cardData.statType)
-            {
-                case CardStatType.MaxHealth:
-                    _maxHealth += ownedCard.cardData.usePercent ? Mathf.RoundToInt(_maxHealth * value) : Mathf.RoundToInt(value);
-                    break;
-
-                case CardStatType.Heal:
-                    break;
-
-                case CardStatType.MoveSpeed:
-                    _moveSpeed += ownedCard.cardData.usePercent ? _moveSpeed * value : value;
-                    break;
-
-                case CardStatType.JumpPower:
-                    _jumpPower += ownedCard.cardData.usePercent ? _jumpPower * value : value;
-                    break;
-
-                case CardStatType.AttackDamage:
-                    _attackDamage += ownedCard.cardData.usePercent ? Mathf.RoundToInt(_attackDamage * value) : Mathf.RoundToInt(value);
-                    break;
-
-                case CardStatType.AttackSpeed:
-                    _attackSpeed += ownedCard.cardData.usePercent ? _attackSpeed * value : value;
-                    break;
-
-                case CardStatType.AttackRange:
-                    _attackRange += ownedCard.cardData.usePercent ? _attackRange * value : value;
-                    break;
-
-                case CardStatType.JumpCount:
-                    _maxJumps += ownedCard.cardData.usePercent ? Mathf.RoundToInt(_maxJumps * value) : Mathf.RoundToInt(value);
-                    break;
-
-                case CardStatType.Luck:
-                    _luck += ownedCard.cardData.usePercent ? Mathf.RoundToInt(_luck * value) : Mathf.RoundToInt(value);
-                    break;
-
-                case CardStatType.Knockback:
-                    _knockbackStrength += ownedCard.cardData.usePercent ? _knockbackStrength * value : value;
-                    break;
-
-                case CardStatType.SilverGain:
-                    _silverGainMultiplier += value;
-                    break;
-
-                case CardStatType.CritChance:
-                    _critChance += value;
-                    break;
-
-                case CardStatType.CritDamage:
-                    _critDamageMultiplier += value;
-                    break;
-            }
+            foreach (OwnedCard ownedCard in runCardInventory.OwnedCards)
+                PlayerCardStatApplier.ApplyCard(_stats, ownedCard);
         }
+
+        CopyStatsToFields();
+
+        rewardEffectHandler?.SetRerolls(_stats.rewardRerolls);
+        deathEffectHandler?.SetRevives(_stats.guardianAngelRevives);
 
         if (health != null)
             health.SetMaxHealth(_maxHealth, true);
@@ -392,6 +377,12 @@ public class PlayerController : MonoBehaviour
     public float GetKnockbackStrength() { return _knockbackStrength; }
     public int GetOwnedCardCount() { return runCardInventory != null ? runCardInventory.OwnedCards.Count : 0; }
     public float GetSilverGainMultiplier() { return _silverGainMultiplier; }
+    public float GetWaveHealPercent() { return _stats.waveHealPercent; }
+    public float GetLifestealPercent() { return _stats.lifestealPercent; }
+    public int GetMaxHealth() { return _maxHealth; }
+    public float GetCritChance() { return _stats.critChance; }
+    public float GetCritDamageMultiplier() { return _stats.critDamageMultiplier; }
+    public float GetCritKnockbackStrength() { return _stats.critKnockbackStrength; }
     #endregion
 }
 

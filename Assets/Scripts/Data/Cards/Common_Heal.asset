@@ -18,11 +18,11 @@ MonoBehaviour:
   rarity: 0
   statType: 1
   usePercent: 0
-  baseValue: 0.6
-  valuePerUpgrade: 0.3
+  baseValue: 0.5
+  valuePerUpgrade: 0.25
   baseUpgradeCost: 15
   costIncreasePerLevel: 15
-  showUpgradeAsMultiplier: 1
-  displayBaseValue: 1
+  valueDisplayType: 0
   canAppearInChest: 1
   requiresWeapon: 0
+  requiresCriticalHits: 0

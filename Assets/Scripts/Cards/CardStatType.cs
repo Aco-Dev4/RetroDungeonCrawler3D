@@ -12,5 +12,12 @@ public enum CardStatType
     Knockback,
     SilverGain,
     CritChance,
-    CritDamage
+    CritDamage,
+    WaveHeal,
+    Lifesteal,
+    Berserker,
+    RewardReroll,
+    CritKnockback,
+    GuardianAngel,
+    GuaranteedCrit
 }

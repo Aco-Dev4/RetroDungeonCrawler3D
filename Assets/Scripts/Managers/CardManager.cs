@@ -5,13 +5,13 @@ using UnityEngine;
 [System.Serializable]
 public class RarityLuckSettings
 {
-    public int unlockAt;
-    public int growthMultiplier = 1;
-    public int maxWeight = 75;
+    public int peakAt = 50;
+    public int peakWeight = 100;
+    public int minWeight = 1;
 
-    [Header("Late Game Falloff")]
-    public int falloffStart = -1;
-    public int falloffMin = 0;
+    [Header("Curve Shape")]
+    public float risePower = 1.5f;
+    public float fallPower = 1.2f;
 }
 
 [Serializable]
@@ -247,47 +247,56 @@ public class CardManager : MonoBehaviour
     #region Weight Calculations
     private int GetCommonWeight(int luck)
     {
-        return Mathf.Max(100 - luck, commonMinWeight);
+        float t = Mathf.Clamp01(luck / Mathf.Max(1f, rareSettings.peakAt));
+
+        float weight = Mathf.Lerp(100f, commonMinWeight, Mathf.Pow(t, 1.2f));
+
+        return Mathf.RoundToInt(weight);
     }
 
     private int GetRareWeight(int luck)
     {
-        if (luck < rareSettings.unlockAt) return 0;
-
-        int value = (luck - rareSettings.unlockAt) * rareSettings.growthMultiplier;
-        value = Mathf.Min(value, rareSettings.maxWeight);
-
-        if (rareSettings.falloffStart > 0 && luck > rareSettings.falloffStart)
-        {
-            int falloff = luck - rareSettings.falloffStart;
-            value = Mathf.Max(value - falloff, rareSettings.falloffMin);
-        }
-
-        return value;
+        return GetPeakWeight(luck, rareSettings);
     }
 
     private int GetEpicWeight(int luck)
     {
-        if (luck < epicSettings.unlockAt) return 0;
+        if (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedEpicCards())
+            return 0;
 
-        int value = (luck - epicSettings.unlockAt) * epicSettings.growthMultiplier;
-        value = Mathf.Min(value, epicSettings.maxWeight);
-
-        if (epicSettings.falloffStart > 0 && luck > epicSettings.falloffStart)
-        {
-            int falloff = luck - epicSettings.falloffStart;
-            value = Mathf.Max(value - falloff, epicSettings.falloffMin);
-        }
-
-        return value;
+        return GetPeakWeight(luck, epicSettings);
     }
 
     private int GetLegendaryWeight(int luck)
     {
-        if (luck < legendarySettings.unlockAt) return 0;
+        if (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedLegendaryCards())
+            return 0;
 
-        int value = (luck - legendarySettings.unlockAt) * legendarySettings.growthMultiplier;
-        return value;
+        float t = Mathf.Clamp01(luck / Mathf.Max(1f, legendarySettings.peakAt));
+
+        float weight = Mathf.Lerp(legendarySettings.minWeight, legendarySettings.peakWeight, Mathf.Pow(t, legendarySettings.risePower));
+
+        return Mathf.RoundToInt(weight);
+    }
+
+    private int GetPeakWeight(int luck, RarityLuckSettings settings)
+    {
+        if (settings == null) return 0;
+
+        float peak = Mathf.Max(1f, settings.peakAt);
+
+        if (luck <= peak)
+        {
+            float t = Mathf.Clamp01(luck / peak);
+            float weight = Mathf.Lerp(settings.minWeight, settings.peakWeight, Mathf.Pow(t, settings.risePower));
+            return Mathf.RoundToInt(weight);
+        }
+        else
+        {
+            float t = Mathf.Clamp01((luck - peak) / peak);
+            float weight = Mathf.Lerp(settings.peakWeight, settings.minWeight, Mathf.Pow(t, settings.fallPower));
+            return Mathf.RoundToInt(weight);
+        }
     }
     #endregion
 }

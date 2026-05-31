@@ -17,12 +17,12 @@ MonoBehaviour:
   icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   rarity: 1
   statType: 10
-  usePercent: 1
-  baseValue: 0.25
+  usePercent: 0
+  baseValue: 0.2
   valuePerUpgrade: 0.1
   baseUpgradeCost: 10
   costIncreasePerLevel: 15
-  showUpgradeAsMultiplier: 1
-  displayBaseValue: 1
+  valueDisplayType: 2
   canAppearInChest: 1
   requiresWeapon: 0
+  requiresCriticalHits: 0

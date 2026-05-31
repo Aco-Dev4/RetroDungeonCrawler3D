@@ -15,7 +15,7 @@ MonoBehaviour:
   startingHealth: 100
   moveSpeed: 5
   rotationSpeed: 1500
-  jumpPower: 3
+  jumpPower: 2.5
   maxJumps: 1
   gravityMultiplier: 1
   attackRange: 2

@@ -181,6 +181,10 @@ public class WaveManager : MonoBehaviour
 
         RunStatsManager.Instance?.AddWaveCompleted();
 
+        PlayerController player = FindFirstObjectByType<PlayerController>();
+        if (player != null)
+            player.OnWaveCompleted();
+
         if (wavePopupUI != null)
             wavePopupUI.Show($"Wave {wave.waveNumber} Completed", WavePopupType.WaveCompleted);
 

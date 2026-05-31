@@ -13,17 +13,16 @@ MonoBehaviour:
   m_Name: Common_CritChance
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: CRITICAL CHANCE
-  description: +2% CHANCE YOUR ATTACK WILL BE A CRITICAL HIT
+  description: +3% CHANCE YOUR ATTACK WILL BE A CRITICAL HIT
   icon: {fileID: 0}
   rarity: 0
   statType: 11
   usePercent: 0
-  baseValue: 0.02
+  baseValue: 0.03
   valuePerUpgrade: 0.01
-  baseUpgradeCost: 6
-  costIncreasePerLevel: 4
-  showUpgradeAsMultiplier: 0
-  displayBaseValue: 0.01
+  baseUpgradeCost: 2
+  costIncreasePerLevel: 2
+  valueDisplayType: 4
   canAppearInChest: 1
   requiresWeapon: 0
   requiresCriticalHits: 1

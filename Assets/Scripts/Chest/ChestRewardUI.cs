@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class ChestRewardUI : MonoBehaviour
 {
@@ -19,6 +21,10 @@ public class ChestRewardUI : MonoBehaviour
     private RewardChest _currentChest;
     private readonly List<CardUI> _spawnedCards = new();
     #endregion
+
+    [Header("Reroll")]
+    [SerializeField] private Button rerollButton;
+    [SerializeField] private TMP_Text rerollCountText;
 
     private void Awake()
     {
@@ -43,6 +49,7 @@ public class ChestRewardUI : MonoBehaviour
         rootPanel.SetActive(true);
         GameManager.Instance.PauseGame();
         ShowRandomCards(2);
+        RefreshRerollUI();
     }
 
     public void Close()
@@ -56,6 +63,32 @@ public class ChestRewardUI : MonoBehaviour
             _currentChest.OnRewardUIClosed();
             _currentChest = null;
         }
+    }
+
+    public void OnRerollPressed()
+    {
+        if (playerController == null) return;
+
+        PlayerRewardEffectHandler rewardHandler = playerController.GetRewardEffectHandler();
+        if (rewardHandler == null) return;
+
+        if (!rewardHandler.TrySpendReroll())
+            return;
+
+        ShowRandomCards(2);
+        RefreshRerollUI();
+    }
+
+    private void RefreshRerollUI()
+    {
+        PlayerRewardEffectHandler rewardHandler = playerController != null ? playerController.GetRewardEffectHandler() : null;
+        int rerolls = rewardHandler != null ? rewardHandler.RewardRerolls : 0;
+
+        if (rerollCountText != null)
+            rerollCountText.text = rerolls.ToString();
+
+        if (rerollButton != null)
+            rerollButton.interactable = rerolls > 0;
     }
 
     #region Card Display
