@@ -2,6 +2,7 @@ using UnityEngine;
 
 public static class PlayerCardStatApplier
 {
+    #region Public
     public static void ApplyCard(PlayerRuntimeStats stats, OwnedCard ownedCard)
     {
         if (stats == null || ownedCard == null || ownedCard.cardData == null)
@@ -10,45 +11,52 @@ public static class PlayerCardStatApplier
         CardData cardData = ownedCard.cardData;
         float value = ownedCard.GetCurrentValue();
 
+        ApplyStat(stats, cardData, value, ownedCard.level);
+    }
+    #endregion
+
+    #region Stat Applying
+    private static void ApplyStat(PlayerRuntimeStats stats, CardData cardData, float value, int level)
+    {
         switch (cardData.statType)
         {
             case CardStatType.MaxHealth:
-                stats.maxHealth += cardData.usePercent ? UnityEngine.Mathf.RoundToInt(stats.maxHealth * value) : UnityEngine.Mathf.RoundToInt(value);
+                stats.maxHealth += GetIntBonus(stats.maxHealth, value, cardData.usePercent);
                 break;
 
             case CardStatType.Heal:
                 break;
 
             case CardStatType.MoveSpeed:
-                stats.moveSpeed += cardData.usePercent ? stats.moveSpeed * value : value;
+                stats.moveSpeed += GetFloatBonus(stats.moveSpeed, value, cardData.usePercent);
                 break;
 
             case CardStatType.JumpPower:
-                stats.jumpPower += cardData.usePercent ? stats.jumpPower * value : value;
+                stats.jumpPower += GetFloatBonus(stats.jumpPower, value, cardData.usePercent);
                 break;
 
             case CardStatType.AttackDamage:
-                stats.attackDamage += cardData.usePercent ? UnityEngine.Mathf.RoundToInt(stats.attackDamage * value) : UnityEngine.Mathf.RoundToInt(value);
+                stats.attackDamage += GetIntBonus(stats.attackDamage, value, cardData.usePercent);
                 break;
 
             case CardStatType.AttackSpeed:
-                stats.attackSpeed += cardData.usePercent ? stats.attackSpeed * value : value;
+                stats.attackSpeed += GetFloatBonus(stats.attackSpeed, value, cardData.usePercent);
                 break;
 
             case CardStatType.AttackRange:
-                stats.attackRange += cardData.usePercent ? stats.attackRange * value : value;
+                stats.attackRange += GetFloatBonus(stats.attackRange, value, cardData.usePercent);
                 break;
 
             case CardStatType.JumpCount:
-                stats.maxJumps += cardData.usePercent ? UnityEngine.Mathf.RoundToInt(stats.maxJumps * value) : UnityEngine.Mathf.RoundToInt(value);
+                stats.maxJumps += GetIntBonus(stats.maxJumps, value, cardData.usePercent);
                 break;
 
             case CardStatType.Luck:
-                stats.luck += cardData.usePercent ? UnityEngine.Mathf.RoundToInt(stats.luck * value) : UnityEngine.Mathf.RoundToInt(value);
+                stats.luck += GetIntBonus(stats.luck, value, cardData.usePercent);
                 break;
 
             case CardStatType.Knockback:
-                stats.knockbackStrength += cardData.usePercent ? stats.knockbackStrength * value : value;
+                stats.knockbackStrength += GetFloatBonus(stats.knockbackStrength, value, cardData.usePercent);
                 break;
 
             case CardStatType.SilverGain:
@@ -88,8 +96,40 @@ public static class PlayerCardStatApplier
                 break;
 
             case CardStatType.GuaranteedCrit:
-                stats.guaranteedCritEveryXHits = Mathf.RoundToInt(value);
+                stats.guaranteedCritEveryXHits = Mathf.Max(1, Mathf.RoundToInt(value));
+                break;
+
+            case CardStatType.AllPowerful:
+                ApplyAllPowerful(stats, level);
+                break;
+
+            case CardStatType.EarthquakeJump:
+                stats.earthquakeJumpLevel += Mathf.RoundToInt(value);
                 break;
         }
     }
+    #endregion
+
+    #region Helpers
+    private static float GetFloatBonus(float baseValue, float value, bool usePercent)
+    {
+        return usePercent ? baseValue * value : value;
+    }
+
+    private static int GetIntBonus(int baseValue, float value, bool usePercent)
+    {
+        return usePercent ? Mathf.RoundToInt(baseValue * value) : Mathf.RoundToInt(value);
+    }
+
+    private static void ApplyAllPowerful(PlayerRuntimeStats stats, int level)
+    {
+        if (stats == null) return;
+
+        stats.attackDamage += Mathf.RoundToInt(stats.attackDamage * (0.002f + 0.001f * (level - 1)));
+        stats.attackSpeed += stats.attackSpeed * (0.001f + 0.0005f * (level - 1));
+        stats.maxHealth += 20 + 10 * (level - 1);
+        stats.moveSpeed += 0.2f + 0.1f * (level - 1);
+        stats.jumpPower += 0.5f + 0.25f * (level - 1);
+    }
+    #endregion
 }

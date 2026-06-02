@@ -24,6 +24,7 @@ public class PlayerRuntimeStats
     public int rewardRerolls;
     public int guardianAngelRevives;
     public int guaranteedCritEveryXHits;
+    public int earthquakeJumpLevel;
 
     public void LoadBaseStats(PlayerData playerData, bool ignorePermanentUpgrades, int tutorialBaseDamage)
     {
@@ -54,5 +55,6 @@ public class PlayerRuntimeStats
         rewardRerolls = 0;
         guardianAngelRevives = 0;
         guaranteedCritEveryXHits = 0;
+        earthquakeJumpLevel = 0;
     }
 }

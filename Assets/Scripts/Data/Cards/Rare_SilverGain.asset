@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rare_SilverGain
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: SILVER GAIN
-  description: YOU GAIN +25% MORE SILVER
+  description: YOU GAIN +20% MORE SILVER
   icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   rarity: 1
   statType: 10
@@ -21,7 +21,7 @@ MonoBehaviour:
   baseValue: 0.2
   valuePerUpgrade: 0.1
   baseUpgradeCost: 10
-  costIncreasePerLevel: 15
+  costIncreasePerLevel: 5
   valueDisplayType: 2
   canAppearInChest: 1
   requiresWeapon: 0

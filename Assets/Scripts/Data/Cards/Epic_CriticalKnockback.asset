@@ -20,8 +20,8 @@ MonoBehaviour:
   usePercent: 0
   baseValue: 8
   valuePerUpgrade: 4
-  baseUpgradeCost: 4
-  costIncreasePerLevel: 4
+  baseUpgradeCost: 5
+  costIncreasePerLevel: 2
   valueDisplayType: 0
   canAppearInChest: 1
   requiresWeapon: 0

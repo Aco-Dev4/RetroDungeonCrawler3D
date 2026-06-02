@@ -1638,30 +1638,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd725a45fe3d56943b98cd8c07830892, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardManager
-  cardDatabase: {fileID: 11400000, guid: 6c720ee5a6ebb9749be1f86b83f4ce2a, type: 2}
+  cardDatabase: {fileID: 11400000, guid: 2f2afa1b0169fef42abbb56442762112, type: 2}
   playerController: {fileID: 3611402837361188578}
   waveManager: {fileID: 696374774}
-  runCardInventory: {fileID: 0}
-  luckPerWave: 5
+  runCardInventory: {fileID: 1877961220}
+  luckPerWave: 0
   commonMinWeight: 15
   rareSettings:
-    unlockAt: 0
-    growthMultiplier: 1
-    maxWeight: 75
-    falloffStart: -1
-    falloffMin: 0
+    peakAt: 50
+    peakWeight: 100
+    minWeight: 1
+    risePower: 1.5
+    fallPower: 1.2
   epicSettings:
-    unlockAt: 10
-    growthMultiplier: 1
-    maxWeight: 75
-    falloffStart: -1
-    falloffMin: 0
+    peakAt: 50
+    peakWeight: 100
+    minWeight: 1
+    risePower: 1.5
+    fallPower: 1.2
   legendarySettings:
-    unlockAt: 20
-    growthMultiplier: 1
-    maxWeight: 50
-    falloffStart: -1
-    falloffMin: 0
+    peakAt: 50
+    peakWeight: 100
+    minWeight: 1
+    risePower: 1.5
+    fallPower: 1.2
+  upgradeLevelLuckWeight: 0.015
+  upgradeSilverLuckWeight: 0.001
+  baseUpgradeOptionWeight: 100
 --- !u!1 &352605716
 GameObject:
   m_ObjectHideFlags: 0
@@ -12498,7 +12501,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   playerData: {fileID: 11400000, guid: 8439c326bb8bfb84987ab49d933a9fdd, type: 2}
   _animator: {fileID: 6747788677741951698}
+  orbitPivot: {fileID: 5462828756637691405}
   runCardInventory: {fileID: 1877961220}
+  combatEffectHandler: {fileID: 0}
+  runEffectHandler: {fileID: 0}
+  deathEffectHandler: {fileID: 0}
+  rewardEffectHandler: {fileID: 0}
   ignorePermanentUpgrades: 1
   tutorialBaseDamage: 30
   enemyLayer:
@@ -12509,7 +12517,8 @@ MonoBehaviour:
   swordAttackClip: {fileID: 0}
   swordRangeBonus: 1
   swordDamageBonus: 5
-  orbitPivot: {fileID: 5462828756637691405}
+  baseSwordScale: {x: 1, y: 1, z: 1}
+  swordScalePerBonusRange: 0.15
 --- !u!114 &3616877801597610039
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15181,6 +15190,13 @@ MonoBehaviour:
   runCardInventory: {fileID: 1877961220}
   playerController: {fileID: 3611402837361188578}
   cardManager: {fileID: 352164931}
+  rerollButton: {fileID: 0}
+  rerollCountText: {fileID: 0}
+  rerollButtonImage: {fileID: 0}
+  rerollSilverIcon: {fileID: 0}
+  canAffordRerollColor: {r: 0, g: 0, b: 1, a: 1}
+  cannotAffordRerollColor: {r: 1, g: 0, b: 0, a: 1}
+  freeRerollColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!114 &7984882220323559520
 MonoBehaviour:
   m_ObjectHideFlags: 0

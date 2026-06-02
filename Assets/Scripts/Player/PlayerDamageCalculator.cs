@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class PlayerDamageCalculator
 {
-    public static PlayerAttackResult GetAttackResult(PlayerRuntimeStats stats, bool hasSword, int swordDamageBonus, Health playerHealth)
+    public static PlayerAttackResult GetAttackResult(PlayerRuntimeStats stats, bool hasSword, int swordDamageBonus, Health playerHealth, bool forceCrit = false)
     {
         if (stats == null)
             return new PlayerAttackResult(0, false);
@@ -11,12 +11,13 @@ public static class PlayerDamageCalculator
 
         damage = ApplyBerserkerDamage(damage, stats, playerHealth);
 
-        bool isCrit = stats.critChance > 0f && Random.value <= stats.critChance;
+        bool randomCrit = stats.critChance > 0f && Random.value <= stats.critChance;
+        bool isCrit = forceCrit || randomCrit;
 
         if (isCrit)
             damage = Mathf.RoundToInt(damage * stats.critDamageMultiplier);
 
-        return new PlayerAttackResult(damage, isCrit);
+        return new PlayerAttackResult(damage, isCrit, forceCrit);
     }
 
     private static int ApplyBerserkerDamage(int damage, PlayerRuntimeStats stats, Health playerHealth)

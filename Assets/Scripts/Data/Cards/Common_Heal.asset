@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: Common_Heal
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: HEAL
-  description: HEAL 60% OF MAX HEALTH
+  description: HEAL 50% OF MAX HEALTH
   icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   rarity: 0
   statType: 1
   usePercent: 0
   baseValue: 0.5
   valuePerUpgrade: 0.25
-  baseUpgradeCost: 15
-  costIncreasePerLevel: 15
+  baseUpgradeCost: 10
+  costIncreasePerLevel: 10
   valueDisplayType: 0
   canAppearInChest: 1
   requiresWeapon: 0

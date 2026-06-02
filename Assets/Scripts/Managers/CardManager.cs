@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+#region Helper Classes
 [System.Serializable]
 public class RarityLuckSettings
 {
@@ -26,6 +27,7 @@ public class CardRarityRuntimeWeight
         this.weight = weight;
     }
 }
+#endregion
 
 public class CardManager : MonoBehaviour
 {
@@ -56,6 +58,14 @@ public class CardManager : MonoBehaviour
     [SerializeField] private RarityLuckSettings legendarySettings;
     #endregion
 
+    #region Upgrade Reward Weighting
+    [Header("Upgrade Reward Weighting")]
+    [SerializeField] private float upgradeLevelLuckWeight = 0.015f;
+    [SerializeField] private float upgradeSilverLuckWeight = 0.001f;
+    [SerializeField] private float baseUpgradeOptionWeight = 100f;
+    #endregion
+
+    #region Unity
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -66,6 +76,7 @@ public class CardManager : MonoBehaviour
 
         Instance = this;
     }
+    #endregion
 
     #region Public Getters
     public int GetCurrentWaveLuck()
@@ -76,7 +87,8 @@ public class CardManager : MonoBehaviour
 
     public int GetCurrentEffectiveLuck()
     {
-        return GetCurrentWaveLuck() + (playerController != null ? playerController.GetLuck() : 0);
+        int cardLuck = playerController != null ? playerController.GetLuck() : 0;
+        return GetCurrentWaveLuck() + cardLuck;
     }
 
     public CardDatabase GetCardDatabase()
@@ -85,43 +97,186 @@ public class CardManager : MonoBehaviour
     }
     #endregion
 
-    #region Card Rolling
+    #region Public Reward Rolling
+    public List<RewardOption> GetRandomRewardOptions(int amount, List<RewardOption> blockedOptions = null)
+    {
+        List<RewardOption> rewardOptions = new();
+        RewardOption previousOption = null;
+
+        for (int i = 0; i < amount; i++)
+        {
+            RewardOption option = RollRewardOption(i, previousOption, rewardOptions, blockedOptions);
+
+            if (option == null)
+                continue;
+
+            rewardOptions.Add(option);
+            previousOption = option;
+        }
+
+        return rewardOptions;
+    }
+
     public List<CardData> GetRandomChestCards(int amount)
     {
         List<CardData> chosenCards = new();
 
-        if (cardDatabase == null) return chosenCards;
-
         for (int i = 0; i < amount; i++)
         {
-            CardData chosenCard = null;
+            RewardOption option = GetRandomNewCardOptionOfAnyRarity(ConvertCardsToRewardOptions(chosenCards), null);
 
-            for (int attempt = 0; attempt < 10; attempt++)
-            {
-                CardRarity rolledRarity = RollAvailableRarity();
-                chosenCard = GetRandomCardByRarity(rolledRarity, chosenCards);
-
-                if (chosenCard != null)
-                {
-                    Debug.Log($"Rolled rarity for slot {i + 1}: {rolledRarity}");
-                    break;
-                }
-            }
-
-            if (chosenCard == null)
-                chosenCard = GetAnyValidCard(chosenCards);
-
-            if (chosenCard != null)
-                chosenCards.Add(chosenCard);
+            if (option != null && option.cardData != null)
+                chosenCards.Add(option.cardData);
         }
 
         return chosenCards;
     }
+    #endregion
 
-    private CardData GetRandomCardByRarity(CardRarity rarity, List<CardData> excludedCards)
+    #region Reward Option Rolling
+    private RewardOption RollRewardOption(int optionIndex, RewardOption previousOption, List<RewardOption> currentOptions, List<RewardOption> blockedOptions)
     {
+        CardRarity rolledRarity = RollAvailableRarity();
+
+        RewardOption option = RollRewardOptionForRarity(rolledRarity, optionIndex, previousOption, currentOptions, blockedOptions);
+
+        if (option != null)
+            return option;
+
+        return GetAnyValidRewardOption(currentOptions, blockedOptions);
+    }
+
+    private RewardOption RollRewardOptionForRarity(CardRarity rarity, int optionIndex, RewardOption previousOption, List<RewardOption> currentOptions, List<RewardOption> blockedOptions)
+    {
+        bool shouldUpgrade = ShouldCreateUpgradeOptionForRarity(rarity, optionIndex, previousOption);
+
+        RewardOption option = shouldUpgrade
+            ? GetRandomUpgradeOptionByRarity(rarity, currentOptions, blockedOptions)
+            : GetRandomNewCardOptionByRarity(rarity, currentOptions, blockedOptions);
+
+        if (option != null)
+            return option;
+
+        return shouldUpgrade
+            ? GetRandomNewCardOptionByRarity(rarity, currentOptions, blockedOptions)
+            : GetRandomUpgradeOptionByRarity(rarity, currentOptions, blockedOptions);
+    }
+
+    private bool ShouldCreateUpgradeOptionForRarity(CardRarity rarity, int optionIndex, RewardOption previousOption)
+    {
+        List<CardData> newCards = GetAvailableNewCardsByRarity(rarity);
+        List<OwnedCard> upgradeCards = GetAvailableUpgradeCardsByRarity(rarity);
+
+        if (upgradeCards.Count == 0)
+            return false;
+
+        if (newCards.Count == 0)
+            return true;
+
+        float ownedRatio = GetOwnedAvailableCardRatioByRarity(rarity);
+        float upgradeChance = GetBaseUpgradeChance(optionIndex, ownedRatio);
+
+        upgradeChance = ApplyRepeatTypeBias(upgradeChance, previousOption);
+
+        return UnityEngine.Random.value < upgradeChance;
+    }
+
+    private float GetBaseUpgradeChance(int optionIndex, float ownedRatio)
+    {
+        if (ownedRatio < 0.2f)
+            return optionIndex == 0 ? 0.20f : 0.08f;
+
+        if (ownedRatio < 0.4f)
+            return optionIndex == 0 ? 0.35f : 0.20f;
+
+        if (ownedRatio < 0.6f)
+            return optionIndex == 0 ? 0.50f : 0.40f;
+
+        if (ownedRatio < 0.8f)
+            return optionIndex == 0 ? 0.55f : 0.55f;
+
+        return optionIndex == 0 ? 0.65f : 0.75f;
+    }
+
+    private float ApplyRepeatTypeBias(float upgradeChance, RewardOption previousOption)
+    {
+        if (previousOption == null)
+            return upgradeChance;
+
+        float repeatPenalty = 0.55f;
+
+        if (previousOption.isUpgrade)
+            return upgradeChance * repeatPenalty;
+
+        return 1f - ((1f - upgradeChance) * repeatPenalty);
+    }
+    #endregion
+
+    #region New Card Options
+    private RewardOption GetRandomNewCardOptionByRarity(CardRarity rarity, List<RewardOption> excludedOptions, List<RewardOption> blockedOptions)
+    {
+        List<CardData> excludedCards = GetExcludedCards(excludedOptions);
+        List<CardData> validCards = GetValidNewCardsByRarity(rarity, excludedCards, blockedOptions);
+
+        if (validCards.Count == 0)
+            return null;
+
+        int index = UnityEngine.Random.Range(0, validCards.Count);
+        return new RewardOption(validCards[index], false);
+    }
+
+    private RewardOption GetRandomNewCardOptionOfAnyRarity(List<RewardOption> excludedOptions, List<RewardOption> blockedOptions)
+    {
+        for (int attempt = 0; attempt < 10; attempt++)
+        {
+            CardRarity rarity = RollAvailableRarity();
+            RewardOption option = GetRandomNewCardOptionByRarity(rarity, excludedOptions, blockedOptions);
+
+            if (option != null)
+                return option;
+        }
+
+        return GetAnyValidNewCardOption(excludedOptions, blockedOptions);
+    }
+
+    private RewardOption GetAnyValidNewCardOption(List<RewardOption> excludedOptions, List<RewardOption> blockedOptions)
+    {
+        List<CardData> excludedCards = GetExcludedCards(excludedOptions);
+        List<CardData> validCards = new();
+
+        if (cardDatabase == null)
+            return null;
+
+        for (int i = 0; i < cardDatabase.cards.Count; i++)
+        {
+            CardData card = cardDatabase.cards[i];
+
+            if (card == null) continue;
+            if (excludedCards.Contains(card)) continue;
+            if (runCardInventory != null && runCardInventory.HasCard(card)) continue;
+            if (!IsCardAllowed(card)) continue;
+
+            RewardOption option = new RewardOption(card, false);
+            if (IsBlockedOption(option, blockedOptions)) continue;
+
+            validCards.Add(card);
+        }
+
+        if (validCards.Count == 0)
+            return null;
+
+        int index = UnityEngine.Random.Range(0, validCards.Count);
+        return new RewardOption(validCards[index], false);
+    }
+
+    private List<CardData> GetValidNewCardsByRarity(CardRarity rarity, List<CardData> excludedCards, List<RewardOption> blockedOptions)
+    {
+        List<CardData> validCards = new();
+
+        if (cardDatabase == null)
+            return validCards;
+
         List<CardData> pool = cardDatabase.GetCardsByRarity(rarity);
-        List<CardData> validPool = new();
 
         for (int i = 0; i < pool.Count; i++)
         {
@@ -132,31 +287,216 @@ public class CardManager : MonoBehaviour
             if (runCardInventory != null && runCardInventory.HasCard(card)) continue;
             if (!IsCardAllowed(card)) continue;
 
-            validPool.Add(card);
+            RewardOption option = new RewardOption(card, false);
+            if (IsBlockedOption(option, blockedOptions)) continue;
+
+            validCards.Add(card);
         }
 
-        if (validPool.Count == 0)
+        return validCards;
+    }
+    #endregion
+
+    #region Upgrade Options
+    private RewardOption GetRandomUpgradeOptionByRarity(CardRarity rarity, List<RewardOption> excludedOptions, List<RewardOption> blockedOptions)
+    {
+        List<OwnedCard> validCards = GetValidUpgradeCardsByRarity(rarity, excludedOptions, blockedOptions);
+
+        if (validCards.Count == 0)
             return null;
 
-        int index = UnityEngine.Random.Range(0, validPool.Count);
-        return validPool[index];
+        OwnedCard chosenCard = GetWeightedUpgradeCard(validCards);
+
+        return chosenCard != null
+            ? new RewardOption(chosenCard.cardData, true)
+            : null;
     }
 
+    private List<OwnedCard> GetValidUpgradeCardsByRarity(CardRarity rarity, List<RewardOption> excludedOptions, List<RewardOption> blockedOptions)
+    {
+        List<OwnedCard> validCards = new();
+
+        if (runCardInventory == null)
+            return validCards;
+
+        for (int i = 0; i < runCardInventory.OwnedCards.Count; i++)
+        {
+            OwnedCard ownedCard = runCardInventory.OwnedCards[i];
+
+            if (ownedCard == null || ownedCard.cardData == null) continue;
+            if (ownedCard.cardData.rarity != rarity) continue;
+            if (!IsCardAllowed(ownedCard.cardData)) continue;
+
+            RewardOption option = new RewardOption(ownedCard.cardData, true);
+
+            if (IsBlockedOption(option, blockedOptions)) continue;
+            if (IsAlreadyChosenUpgrade(option, excludedOptions)) continue;
+
+            validCards.Add(ownedCard);
+        }
+
+        return validCards;
+    }
+
+    private OwnedCard GetWeightedUpgradeCard(List<OwnedCard> validCards)
+    {
+        if (validCards == null || validCards.Count == 0)
+            return null;
+
+        int luck = GetCurrentEffectiveLuck();
+
+        float totalWeight = 0f;
+        List<float> weights = new();
+
+        for (int i = 0; i < validCards.Count; i++)
+        {
+            float weight = GetUpgradeCardWeight(validCards[i], luck);
+            weights.Add(weight);
+            totalWeight += weight;
+        }
+
+        if (totalWeight <= 0f)
+            return validCards[UnityEngine.Random.Range(0, validCards.Count)];
+
+        float roll = UnityEngine.Random.Range(0f, totalWeight);
+        float current = 0f;
+
+        for (int i = 0; i < validCards.Count; i++)
+        {
+            current += weights[i];
+
+            if (roll <= current)
+                return validCards[i];
+        }
+
+        return validCards[validCards.Count - 1];
+    }
+
+    private float GetUpgradeCardWeight(OwnedCard ownedCard, int luck)
+    {
+        if (ownedCard == null)
+            return 0f;
+
+        float levelBonus = (ownedCard.level - 1) * luck * upgradeLevelLuckWeight;
+        float silverBonus = ownedCard.silverInvested * luck * upgradeSilverLuckWeight;
+
+        return baseUpgradeOptionWeight + levelBonus + silverBonus;
+    }
+    #endregion
+
+    #region Fallback Reward Options
+    private RewardOption GetAnyValidRewardOption(List<RewardOption> excludedOptions, List<RewardOption> blockedOptions)
+    {
+        RewardOption newOption = GetAnyValidNewCardOption(excludedOptions, blockedOptions);
+
+        if (newOption != null)
+            return newOption;
+
+        return GetAnyValidUpgradeOption(excludedOptions, blockedOptions);
+    }
+
+    private RewardOption GetAnyValidUpgradeOption(List<RewardOption> excludedOptions, List<RewardOption> blockedOptions)
+    {
+        List<OwnedCard> validCards = new();
+
+        if (runCardInventory == null)
+            return null;
+
+        for (int i = 0; i < runCardInventory.OwnedCards.Count; i++)
+        {
+            OwnedCard ownedCard = runCardInventory.OwnedCards[i];
+
+            if (ownedCard == null || ownedCard.cardData == null) continue;
+            if (!IsCardAllowed(ownedCard.cardData)) continue;
+
+            RewardOption option = new RewardOption(ownedCard.cardData, true);
+
+            if (IsBlockedOption(option, blockedOptions)) continue;
+            if (IsAlreadyChosenUpgrade(option, excludedOptions)) continue;
+
+            validCards.Add(ownedCard);
+        }
+
+        if (validCards.Count == 0)
+            return null;
+
+        OwnedCard chosenCard = GetWeightedUpgradeCard(validCards);
+
+        return chosenCard != null
+            ? new RewardOption(chosenCard.cardData, true)
+            : null;
+    }
+    #endregion
+
+    #region Available Pools
+    private List<CardData> GetAvailableNewCardsByRarity(CardRarity rarity)
+    {
+        List<CardData> result = new();
+
+        if (cardDatabase == null)
+            return result;
+
+        List<CardData> pool = cardDatabase.GetCardsByRarity(rarity);
+
+        for (int i = 0; i < pool.Count; i++)
+        {
+            CardData card = pool[i];
+
+            if (card == null) continue;
+            if (!IsCardAllowed(card)) continue;
+            if (runCardInventory != null && runCardInventory.HasCard(card)) continue;
+
+            result.Add(card);
+        }
+
+        return result;
+    }
+
+    private List<OwnedCard> GetAvailableUpgradeCardsByRarity(CardRarity rarity)
+    {
+        List<OwnedCard> result = new();
+
+        if (runCardInventory == null)
+            return result;
+
+        for (int i = 0; i < runCardInventory.OwnedCards.Count; i++)
+        {
+            OwnedCard ownedCard = runCardInventory.OwnedCards[i];
+
+            if (ownedCard == null || ownedCard.cardData == null) continue;
+            if (ownedCard.cardData.rarity != rarity) continue;
+            if (!IsCardAllowed(ownedCard.cardData)) continue;
+
+            result.Add(ownedCard);
+        }
+
+        return result;
+    }
+
+    private float GetOwnedAvailableCardRatioByRarity(CardRarity rarity)
+    {
+        List<CardData> newCards = GetAvailableNewCardsByRarity(rarity);
+        List<OwnedCard> upgradeCards = GetAvailableUpgradeCardsByRarity(rarity);
+
+        int ownedCount = upgradeCards.Count;
+        int totalAvailableCount = ownedCount + newCards.Count;
+
+        if (totalAvailableCount <= 0)
+            return 0f;
+
+        return (float)ownedCount / totalAvailableCount;
+    }
+    #endregion
+
+    #region Rarity Rolling
     private CardRarity RollAvailableRarity()
     {
         int effectiveLuck = GetCurrentEffectiveLuck();
         List<CardRarityRuntimeWeight> weights = BuildAvailableRarityWeights(effectiveLuck);
-        int totalWeight = 0;
 
-        Debug.Log($"Wave Luck = {GetCurrentWaveLuck()}");
-        Debug.Log($"Card Luck = {(playerController != null ? playerController.GetLuck() : 0)}");
-        Debug.Log($"Effective Luck = {effectiveLuck}");
+        int totalWeight = GetTotalRarityWeight(weights);
 
-        for (int i = 0; i < weights.Count; i++)
-        {
-            totalWeight += weights[i].weight;
-            Debug.Log($"{weights[i].rarity} weight = {weights[i].weight}");
-        }
+        LogRarityWeights(effectiveLuck, weights);
 
         if (totalWeight <= 0)
             return CardRarity.COMMON;
@@ -175,53 +515,6 @@ public class CardManager : MonoBehaviour
         return CardRarity.COMMON;
     }
 
-    private CardData GetAnyValidCard(List<CardData> excludedCards)
-    {
-        List<CardData> validPool = new();
-
-        for (int i = 0; i < cardDatabase.cards.Count; i++)
-        {
-            CardData card = cardDatabase.cards[i];
-
-            if (card == null) continue;
-            if (excludedCards.Contains(card)) continue;
-            if (runCardInventory != null && runCardInventory.HasCard(card)) continue;
-            if (!IsCardAllowed(card)) continue;
-
-            validPool.Add(card);
-        }
-
-        if (validPool.Count == 0)
-            return null;
-
-        int index = UnityEngine.Random.Range(0, validPool.Count);
-        return validPool[index];
-    }
-
-    private bool IsCardAllowed(CardData card)
-    {
-        if (card == null) return false;
-        if (!card.canAppearInChest) return false;
-
-        if (card.rarity == CardRarity.EPIC &&
-            (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedEpicCards()))
-            return false;
-
-        if (card.rarity == CardRarity.LEGENDARY &&
-            (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedLegendaryCards()))
-            return false;
-
-        if (card.requiresWeapon &&
-            (GameDataManager.Instance == null || !GameDataManager.Instance.HasSword()))
-            return false;
-
-        if (card.requiresCriticalHits &&
-            (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedCriticalHits()))
-            return false;
-
-        return true;
-    }
-
     private List<CardRarityRuntimeWeight> BuildAvailableRarityWeights(int luck)
     {
         List<CardRarityRuntimeWeight> result = new();
@@ -237,18 +530,37 @@ public class CardManager : MonoBehaviour
     private void AddWeightIfAvailable(List<CardRarityRuntimeWeight> list, CardRarity rarity, int weight)
     {
         if (weight <= 0) return;
-        if (cardDatabase == null) return;
-        if (cardDatabase.GetCardsByRarity(rarity).Count == 0) return;
+        if (!HasAnyAllowedCardOrUpgradeByRarity(rarity)) return;
 
         list.Add(new CardRarityRuntimeWeight(rarity, weight));
     }
+
+    private bool HasAnyAllowedCardOrUpgradeByRarity(CardRarity rarity)
+    {
+        if (GetAvailableNewCardsByRarity(rarity).Count > 0)
+            return true;
+
+        if (GetAvailableUpgradeCardsByRarity(rarity).Count > 0)
+            return true;
+
+        return false;
+    }
+
+    private int GetTotalRarityWeight(List<CardRarityRuntimeWeight> weights)
+    {
+        int totalWeight = 0;
+
+        for (int i = 0; i < weights.Count; i++)
+            totalWeight += weights[i].weight;
+
+        return totalWeight;
+    }
     #endregion
 
-    #region Weight Calculations
+    #region Rarity Weight Calculations
     private int GetCommonWeight(int luck)
     {
         float t = Mathf.Clamp01(luck / Mathf.Max(1f, rareSettings.peakAt));
-
         float weight = Mathf.Lerp(100f, commonMinWeight, Mathf.Pow(t, 1.2f));
 
         return Mathf.RoundToInt(weight);
@@ -273,7 +585,6 @@ public class CardManager : MonoBehaviour
             return 0;
 
         float t = Mathf.Clamp01(luck / Mathf.Max(1f, legendarySettings.peakAt));
-
         float weight = Mathf.Lerp(legendarySettings.minWeight, legendarySettings.peakWeight, Mathf.Pow(t, legendarySettings.risePower));
 
         return Mathf.RoundToInt(weight);
@@ -281,7 +592,8 @@ public class CardManager : MonoBehaviour
 
     private int GetPeakWeight(int luck, RarityLuckSettings settings)
     {
-        if (settings == null) return 0;
+        if (settings == null)
+            return 0;
 
         float peak = Mathf.Max(1f, settings.peakAt);
 
@@ -289,14 +601,117 @@ public class CardManager : MonoBehaviour
         {
             float t = Mathf.Clamp01(luck / peak);
             float weight = Mathf.Lerp(settings.minWeight, settings.peakWeight, Mathf.Pow(t, settings.risePower));
+
             return Mathf.RoundToInt(weight);
         }
-        else
+
+        float fallT = Mathf.Clamp01((luck - peak) / peak);
+        float fallWeight = Mathf.Lerp(settings.peakWeight, settings.minWeight, Mathf.Pow(fallT, settings.fallPower));
+
+        return Mathf.RoundToInt(fallWeight);
+    }
+    #endregion
+
+    #region Card Rules
+    private bool IsCardAllowed(CardData card)
+    {
+        if (card == null) return false;
+        if (!card.canAppearInChest) return false;
+
+        if (card.rarity == CardRarity.EPIC &&
+            (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedEpicCards()))
+            return false;
+
+        if (card.rarity == CardRarity.LEGENDARY &&
+            (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedLegendaryCards()))
+            return false;
+
+        if (card.requiresWeapon &&
+            (GameDataManager.Instance == null || !GameDataManager.Instance.HasSword()))
+            return false;
+
+        if (card.requiresCriticalHits &&
+            (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedCriticalHits()))
+            return false;
+
+        return true;
+    }
+    #endregion
+
+    #region Helpers
+    private bool IsBlockedOption(RewardOption option, List<RewardOption> blockedOptions)
+    {
+        if (option == null || blockedOptions == null)
+            return false;
+
+        for (int i = 0; i < blockedOptions.Count; i++)
         {
-            float t = Mathf.Clamp01((luck - peak) / peak);
-            float weight = Mathf.Lerp(settings.peakWeight, settings.minWeight, Mathf.Pow(t, settings.fallPower));
-            return Mathf.RoundToInt(weight);
+            if (option.Matches(blockedOptions[i]))
+                return true;
         }
+
+        return false;
+    }
+
+    private bool IsAlreadyChosenUpgrade(RewardOption option, List<RewardOption> chosenOptions)
+    {
+        if (option == null || chosenOptions == null)
+            return false;
+
+        for (int i = 0; i < chosenOptions.Count; i++)
+        {
+            RewardOption chosenOption = chosenOptions[i];
+
+            if (chosenOption == null) continue;
+            if (!chosenOption.isUpgrade) continue;
+
+            if (option.cardData == chosenOption.cardData)
+                return true;
+        }
+
+        return false;
+    }
+
+    private List<CardData> GetExcludedCards(List<RewardOption> rewardOptions)
+    {
+        List<CardData> excludedCards = new();
+
+        if (rewardOptions == null)
+            return excludedCards;
+
+        for (int i = 0; i < rewardOptions.Count; i++)
+        {
+            if (rewardOptions[i] != null && rewardOptions[i].cardData != null)
+                excludedCards.Add(rewardOptions[i].cardData);
+        }
+
+        return excludedCards;
+    }
+
+    private List<RewardOption> ConvertCardsToRewardOptions(List<CardData> cards)
+    {
+        List<RewardOption> options = new();
+
+        if (cards == null)
+            return options;
+
+        for (int i = 0; i < cards.Count; i++)
+        {
+            if (cards[i] != null)
+                options.Add(new RewardOption(cards[i], false));
+        }
+
+        return options;
+    }
+
+    private void LogRarityWeights(int effectiveLuck, List<CardRarityRuntimeWeight> weights)
+    {
+        Debug.Log($"Wave Luck = {GetCurrentWaveLuck()}");
+        Debug.Log($"Card Luck = {(playerController != null ? playerController.GetLuck() : 0)}");
+        Debug.Log($"Effective Luck = {effectiveLuck}");
+
+        for (int i = 0; i < weights.Count; i++)
+            Debug.Log($"{weights[i].rarity} weight = {weights[i].weight}");
     }
     #endregion
 }

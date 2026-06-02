@@ -156,8 +156,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
   m_EffectColor: {r: 1, g: 1, b: 1, a: 1}
-  m_EffectDistance: {x: 3, y: 3}
-  m_UseGraphicAlpha: 1
+  m_EffectDistance: {x: 2, y: 2}
+  m_UseGraphicAlpha: 0
 --- !u!1 &2486715538739544845
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,6 +292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f62ed2a98cbcf64d8a6df659ed6d6ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardUI
+  playerController: {fileID: 0}
   nameText: {fileID: 3977532196137421366}
   descriptionText: {fileID: 3359527204929547240}
   rarityText: {fileID: 7908894684145652338}
@@ -299,6 +300,12 @@ MonoBehaviour:
   background: {fileID: 3950378024521867319}
   cardImage: {fileID: 6780275486247899985}
   chooseButton: {fileID: 1255815643530403262}
+  buttonText: {fileID: 4307632370268956130}
+  chooseButtonImage: {fileID: 2395048440564417614}
+  chooseButtonColor: {r: 0, g: 1, b: 0, a: 1}
+  upgradeButtonColor: {r: 0, g: 1, b: 1, a: 1}
+  chooseDescriptionColor: {r: 1, g: 1, b: 1, a: 1}
+  upgradeDescriptionColor: {r: 0, g: 1, b: 0, a: 1}
   rarityColors:
   - rarity: 0
     bannerColor: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 1}
@@ -962,7 +969,7 @@ MonoBehaviour:
   m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 18
+  m_fontSizeMin: 12
   m_fontSizeMax: 25
   m_fontStyle: 1
   m_HorizontalAlignment: 2

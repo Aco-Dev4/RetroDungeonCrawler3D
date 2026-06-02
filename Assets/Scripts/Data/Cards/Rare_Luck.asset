@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Rare_Luck
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: LUCK
-  description: HIGHER CHANCE OF BETTER RARITY CARDS IN CHESTS
+  description: HIGHER CHANCE OF BETTER RARITY CARDS AND UPGRADED CARDS
   icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   rarity: 1
   statType: 8
   usePercent: 0
   baseValue: 20
   valuePerUpgrade: 10
-  baseUpgradeCost: 5
-  costIncreasePerLevel: 5
-  showUpgradeAsMultiplier: 0
-  displayBaseValue: 0
+  baseUpgradeCost: 7
+  costIncreasePerLevel: 6
+  valueDisplayType: 0
   canAppearInChest: 1
   requiresWeapon: 0
+  requiresCriticalHits: 0

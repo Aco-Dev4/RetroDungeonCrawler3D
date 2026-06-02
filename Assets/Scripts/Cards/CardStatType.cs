@@ -19,5 +19,7 @@ public enum CardStatType
     RewardReroll,
     CritKnockback,
     GuardianAngel,
-    GuaranteedCrit
+    GuaranteedCrit,
+    AllPowerful,
+    EarthquakeJump
 }

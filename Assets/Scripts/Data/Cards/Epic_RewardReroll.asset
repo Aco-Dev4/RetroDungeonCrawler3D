@@ -20,7 +20,7 @@ MonoBehaviour:
   usePercent: 0
   baseValue: 1
   valuePerUpgrade: 1
-  baseUpgradeCost: 5
+  baseUpgradeCost: 3
   costIncreasePerLevel: 1
   valueDisplayType: 3
   canAppearInChest: 1

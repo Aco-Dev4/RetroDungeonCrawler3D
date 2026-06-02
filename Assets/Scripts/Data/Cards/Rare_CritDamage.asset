@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rare_CritDamage
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: CRITICAL DAMAGE
-  description: CRITICAL HITS DEAL +0.5X MORE DAMAGE (2.5X)
+  description: CRITICAL HITS DEAL +0.5X MORE DAMAGE
   icon: {fileID: 0}
   rarity: 1
   statType: 12

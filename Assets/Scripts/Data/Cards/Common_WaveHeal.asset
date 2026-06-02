@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Common_WaveHeal
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: WAVE HEAL
-  description: HEAL 8% MAX HP AFTER EVERY WAVE
+  description: HEAL 8% OF MAX HEALTH AFTER EVERY WAVE
   icon: {fileID: 0}
   rarity: 0
   statType: 13

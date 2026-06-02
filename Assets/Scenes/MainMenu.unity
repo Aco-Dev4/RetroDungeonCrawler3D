@@ -12411,6 +12411,10 @@ MonoBehaviour:
   playerData: {fileID: 11400000, guid: 8439c326bb8bfb84987ab49d933a9fdd, type: 2}
   _animator: {fileID: 6747788678196512399}
   runCardInventory: {fileID: 451655013}
+  combatEffectHandler: {fileID: 0}
+  runEffectHandler: {fileID: 0}
+  deathEffectHandler: {fileID: 0}
+  rewardEffectHandler: {fileID: 0}
   ignorePermanentUpgrades: 0
   tutorialBaseDamage: 15
   enemyLayer:
