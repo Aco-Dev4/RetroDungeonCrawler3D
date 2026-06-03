@@ -27,6 +27,13 @@ public class CardRarityRuntimeWeight
         this.weight = weight;
     }
 }
+
+[Serializable]
+public class UpgradeChanceSettings
+{
+    [Range(0f, 1f)] public float optionOneChance = 0.2f;
+    [Range(0f, 1f)] public float optionTwoChance = 0.08f;
+}
 #endregion
 
 public class CardManager : MonoBehaviour
@@ -39,6 +46,18 @@ public class CardManager : MonoBehaviour
     [SerializeField] private PlayerController playerController;
     [SerializeField] private WaveManager waveManager;
     [SerializeField] private RunCardInventory runCardInventory;
+    #endregion
+
+    #region Upgrade Chance Settings
+    [Header("Upgrade Chance By Owned Ratio")]
+    [SerializeField] private UpgradeChanceSettings ownedRatioUnder20 = new() { optionOneChance = 0.15f, optionTwoChance = 0.05f };
+    [SerializeField] private UpgradeChanceSettings ownedRatioUnder40 = new() { optionOneChance = 0.25f, optionTwoChance = 0.12f };
+    [SerializeField] private UpgradeChanceSettings ownedRatioUnder60 = new() { optionOneChance = 0.40f, optionTwoChance = 0.25f };
+    [SerializeField] private UpgradeChanceSettings ownedRatioUnder80 = new() { optionOneChance = 0.45f, optionTwoChance = 0.40f };
+    [SerializeField] private UpgradeChanceSettings ownedRatioOver80 = new() { optionOneChance = 0.55f, optionTwoChance = 0.60f };
+
+    [Header("Repeat Type Bias")]
+    [SerializeField] private float repeatTypePenalty = 0.55f;
     #endregion
 
     #region Luck Settings
@@ -183,19 +202,29 @@ public class CardManager : MonoBehaviour
 
     private float GetBaseUpgradeChance(int optionIndex, float ownedRatio)
     {
+        UpgradeChanceSettings settings = GetUpgradeChanceSettings(ownedRatio);
+
+        if (optionIndex == 0)
+            return settings.optionOneChance;
+
+        return settings.optionTwoChance;
+    }
+
+    private UpgradeChanceSettings GetUpgradeChanceSettings(float ownedRatio)
+    {
         if (ownedRatio < 0.2f)
-            return optionIndex == 0 ? 0.20f : 0.08f;
+            return ownedRatioUnder20;
 
         if (ownedRatio < 0.4f)
-            return optionIndex == 0 ? 0.35f : 0.20f;
+            return ownedRatioUnder40;
 
         if (ownedRatio < 0.6f)
-            return optionIndex == 0 ? 0.50f : 0.40f;
+            return ownedRatioUnder60;
 
         if (ownedRatio < 0.8f)
-            return optionIndex == 0 ? 0.55f : 0.55f;
+            return ownedRatioUnder80;
 
-        return optionIndex == 0 ? 0.65f : 0.75f;
+        return ownedRatioOver80;
     }
 
     private float ApplyRepeatTypeBias(float upgradeChance, RewardOption previousOption)
@@ -203,7 +232,7 @@ public class CardManager : MonoBehaviour
         if (previousOption == null)
             return upgradeChance;
 
-        float repeatPenalty = 0.55f;
+        float repeatPenalty = repeatTypePenalty;
 
         if (previousOption.isUpgrade)
             return upgradeChance * repeatPenalty;
@@ -496,8 +525,6 @@ public class CardManager : MonoBehaviour
 
         int totalWeight = GetTotalRarityWeight(weights);
 
-        LogRarityWeights(effectiveLuck, weights);
-
         if (totalWeight <= 0)
             return CardRarity.COMMON;
 
@@ -702,16 +729,6 @@ public class CardManager : MonoBehaviour
         }
 
         return options;
-    }
-
-    private void LogRarityWeights(int effectiveLuck, List<CardRarityRuntimeWeight> weights)
-    {
-        Debug.Log($"Wave Luck = {GetCurrentWaveLuck()}");
-        Debug.Log($"Card Luck = {(playerController != null ? playerController.GetLuck() : 0)}");
-        Debug.Log($"Effective Luck = {effectiveLuck}");
-
-        for (int i = 0; i < weights.Count; i++)
-            Debug.Log($"{weights[i].rarity} weight = {weights[i].weight}");
     }
     #endregion
 }

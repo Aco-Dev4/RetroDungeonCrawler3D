@@ -14,13 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
   maxAliveEnemies: 6
   enemies:
-  - enemy: {fileID: 11400000, guid: 525e31117d61a6f4395a14f905cf9a1b, type: 2}
-    count: 3
-  - enemy: {fileID: 11400000, guid: 65f451b3bd431754fbe5ccfefc967ace, type: 2}
-    count: 1
   - enemy: {fileID: 11400000, guid: 9f56cbf75ff282c42976fb74268a2bfc, type: 2}
-    count: 4
-  - enemy: {fileID: 11400000, guid: 65f451b3bd431754fbe5ccfefc967ace, type: 2}
+    count: 6
+  - enemy: {fileID: 11400000, guid: 525e31117d61a6f4395a14f905cf9a1b, type: 2}
     count: 2
+  miniBossEnemy: {fileID: 11400000, guid: 525e31117d61a6f4395a14f905cf9a1b, type: 2}
   rewardPrefab: {fileID: 1089913685205598432, guid: 0d84a0bdf00a0dd45b8dc5fa1aa6ed0a, type: 3}
-  goldReward: 2
+  goldReward: 1

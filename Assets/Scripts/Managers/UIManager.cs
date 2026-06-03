@@ -13,6 +13,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private CanvasGroup gameOverCanvasGroup;
     [SerializeField] private GameObject pausePanel;
 
+    [Header("Settings")]
+    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private SettingsManager settingsManager;
+
     [Header("Panels closed on Game Over")]
     [SerializeField] private GameObject[] closeOnGameOverPanels;
 
@@ -194,7 +198,22 @@ public class UIManager : MonoBehaviour
 
     public void OnSettingsPressed()
     {
-        Debug.Log("Settings panel will show up later");
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        if (settingsPanel != null)
+            settingsPanel.SetActive(true);
+
+        settingsManager?.LoadSettingsToUI();
+    }
+
+    public void OnCloseSettingsPressed()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+
+        if (pausePanel != null)
+            pausePanel.SetActive(true);
     }
 
     public void OnMenuPressed()

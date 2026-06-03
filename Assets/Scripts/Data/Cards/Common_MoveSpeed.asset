@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: MOVE SPEED
   description: MOVEMENT SPEED +20%
-  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  icon: {fileID: 21300000, guid: dee16ad40c72ee847b02688a0c2007a4, type: 3}
   rarity: 0
   statType: 2
   usePercent: 1

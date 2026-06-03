@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: REWARD REROLL
   description: YOU GAIN 1 REWARD CHEST REROLL
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: e5c6887b5f7b81a44816ef04f36ce6e9, type: 3}
   rarity: 2
   statType: 16
   usePercent: 0

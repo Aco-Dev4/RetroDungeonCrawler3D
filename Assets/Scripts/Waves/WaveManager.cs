@@ -86,9 +86,7 @@ public class WaveManager : MonoBehaviour
             return;
         }
 
-        wave.aliveEnemies--;
-        wave.lastDeathPosition = position;
-        wave.lastDeathRotation = enemy.transform.rotation;
+        wave.UnregisterEnemy(enemy, position, enemy.transform.rotation);
     }
 
     public void OnTutorialUpgradeCompleted()
@@ -112,7 +110,7 @@ public class WaveManager : MonoBehaviour
     {
         if (_nextWaveIndex >= waves.Count)
         {
-            Debug.Log("All waves have already been started.");
+            //Debug.Log("All waves have already been started.");
             return;
         }
 
@@ -129,7 +127,7 @@ public class WaveManager : MonoBehaviour
         wavePopupUI?.Show($"Wave {waveNumber} Started", WavePopupType.WaveStarted);
         upgradeTableArrow?.HideArrow();
 
-        Debug.Log($"Wave {waveNumber} started.");
+        //Debug.Log($"Wave {waveNumber} started.");
 
         StartCoroutine(SpawnLoop(wave));
         UpdateNextWavePrompt();
@@ -144,6 +142,8 @@ public class WaveManager : MonoBehaviour
 
             TrySpawnEnemy(wave);
 
+            wave.aliveEnemies = wave.GetAliveEnemyCount();
+
             yield return null;
         }
 
@@ -154,7 +154,7 @@ public class WaveManager : MonoBehaviour
     {
         if (wave == null) return;
 
-        Debug.Log($"Wave {wave.waveNumber} completed.");
+        //Debug.Log($"Wave {wave.waveNumber} completed.");
 
         _completedWaveCount++;
 
@@ -178,32 +178,57 @@ public class WaveManager : MonoBehaviour
     {
         if (wave == null) return;
         if (wave.remainingToSpawn <= 0) return;
-        if (wave.aliveEnemies >= wave.data.maxAliveEnemies) return;
+        if (wave.GetAliveEnemyCount() >= wave.data.maxAliveEnemies) return;
 
         EnemySpawner spawner = GetRandomReadySpawner();
 
         if (spawner == null)
+            return;
+
+        EnemySpawnData spawnData = GetNextEnemy(wave);
+
+        if (spawnData == null || spawnData.enemyData == null)
         {
-            Debug.LogWarning("Missing Spawner!");
+            Debug.LogWarning($"Wave {wave.waveNumber} had missing spawn data. Forcing remaining spawn count down.");
+            wave.ForceNoRemainingEnemiesToSpawn();
             return;
         }
 
-        EnemyData enemyData = GetNextEnemy(wave);
-
-        if (enemyData == null)
-        {
-            Debug.LogWarning("Missing Enemy!");
-            return;
-        }
-
-        GameObject spawnedEnemy = spawner.TrySpawn(enemyData);
+        GameObject spawnedEnemy = spawner.TrySpawn(spawnData.enemyData);
         if (spawnedEnemy == null) return;
 
         EnemyAI enemyAI = spawnedEnemy.GetComponent<EnemyAI>();
-        enemyAI?.InitWave(wave);
+
+        if (enemyAI == null)
+        {
+            Debug.LogError($"{spawnedEnemy.name} spawned without EnemyAI!");
+            Destroy(spawnedEnemy);
+            return;
+        }
+
+        enemyAI.InitWave(wave);
+
+        if (spawnData.isMiniBoss)
+            InitMiniBoss(enemyAI);
 
         wave.remainingToSpawn--;
-        wave.aliveEnemies++;
+        wave.RegisterEnemy(enemyAI);
+    }
+
+    private void InitMiniBoss(EnemyAI enemyAI)
+    {
+        if (enemyAI == null) return;
+        if (RunDifficultyManager.Instance == null) return;
+
+        RunDifficultyManager.Instance.GetRandomMiniBossBoosts(out MiniBossStatType firstBoost, out MiniBossStatType secondBoost);
+
+        enemyAI.InitMiniBoss(
+            RunDifficultyManager.Instance.GetMiniBossScaleMultiplier(),
+            RunDifficultyManager.Instance.GetMiniBossStatBoostMultiplier(),
+            RunDifficultyManager.Instance.GetMiniBossStatNerfMultiplier(),
+            firstBoost,
+            secondBoost
+        );
     }
 
     private EnemySpawner GetRandomReadySpawner()
@@ -223,7 +248,7 @@ public class WaveManager : MonoBehaviour
         return readySpawners[index];
     }
 
-    private EnemyData GetNextEnemy(WaveInstance wave)
+    private EnemySpawnData GetNextEnemy(WaveInstance wave)
     {
         if (wave == null) return null;
         if (wave.spawnQueue.Count == 0) return null;
@@ -280,6 +305,27 @@ public class WaveManager : MonoBehaviour
         if (chest != null)
             chest.SetWaveNumber(wave.waveNumber);
     }
+
+    private void GiveHardModeClearReward()
+    {
+        if (RunDifficultyManager.Instance == null) return;
+        if (!RunDifficultyManager.Instance.IsHardMode()) return;
+        if (GameDataManager.Instance == null) return;
+        if (CurrencyManager.Instance == null) return;
+
+        string hardMapId = $"{mapName}_Hard";
+        bool alreadyCompletedHard = GameDataManager.Instance.HasCompletedHardMap(hardMapId);
+
+        int reward = alreadyCompletedHard
+            ? RunDifficultyManager.Instance.GetHardRepeatClearGoldReward()
+            : RunDifficultyManager.Instance.GetHardFirstClearGoldReward();
+
+        if (reward > 0)
+            CurrencyManager.Instance.AddGold(reward);
+
+        if (!alreadyCompletedHard)
+            GameDataManager.Instance.SetHardMapCompleted(hardMapId);
+    }
     #endregion
 
     #region UI / Completion
@@ -295,6 +341,7 @@ public class WaveManager : MonoBehaviour
         }
 
         finishPromptUI.Hide();
+        GiveHardModeClearReward();
         VictoryUI.Instance?.Show(mapName);
         return true;
     }
@@ -339,7 +386,7 @@ public class WaveManager : MonoBehaviour
 
         _allWavesCompletedTriggered = true;
 
-        Debug.Log("All waves completed.");
+        //Debug.Log("All waves completed.");
 
         if (!isTutorial)
             finishPromptUI?.Show(mapName);

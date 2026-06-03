@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: ATTACK SPEED
   description: SPEED BETWEEN ATTACKS +10%
-  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  icon: {fileID: 21300000, guid: 9f9b4855bd35be548a314d2cc4122516, type: 3}
   rarity: 0
   statType: 5
   usePercent: 1
   baseValue: 0.1
   valuePerUpgrade: 0.05
   baseUpgradeCost: 3
-  costIncreasePerLevel: 4
+  costIncreasePerLevel: 3
   valueDisplayType: 2
   canAppearInChest: 1
   requiresWeapon: 0

@@ -16,7 +16,7 @@ MonoBehaviour:
   - upgradeId: Sword
     displayName: SWORD
     description: UNLOCK A SWORD WITH BETTER ATTACKS
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: b4a471022ff21404391e1e7aa4251465, type: 3}
     tiers:
     - cost: 0
       valueText: LOCKED
@@ -29,7 +29,7 @@ MonoBehaviour:
   - upgradeId: ExtraLuck
     displayName: EXTRA LUCK
     description: INCREASES YOUR BASE LUCK
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 481bf6ad3088ea24da0e98b3d9124881, type: 3}
     tiers:
     - cost: 0
       valueText: +0
@@ -58,28 +58,28 @@ MonoBehaviour:
   - upgradeId: ExtraSilver
     displayName: EXTRA SILVER
     description: INCREASES SILVER GAINED FROM ENEMIES
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 4d0f8956263ee01448df80f7bdd3172f, type: 3}
     tiers:
     - cost: 0
       valueText: +0%
       intValue: 0
       floatValue: 0
     - cost: 3
+      valueText: +5%
+      intValue: 0
+      floatValue: 0.05
+    - cost: 10
       valueText: +10%
       intValue: 0
       floatValue: 0.1
-    - cost: 10
-      valueText: +20%
-      intValue: 0
-      floatValue: 0.2
     - cost: 20
-      valueText: +35%
+      valueText: +15%
       intValue: 0
-      floatValue: 0.35
+      floatValue: 0.15
   - upgradeId: NewRarity
     displayName: NEW CARD RARITY
     description: UNLOCK STRONGER CARD RARITIES
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: c362d844a2805484792a86006e346abc, type: 3}
     tiers:
     - cost: 0
       valueText: COMMON / RARE
@@ -95,14 +95,14 @@ MonoBehaviour:
       floatValue: 0
   - upgradeId: CriticalHits
     displayName: CRITICAL HITS
-    description: UNLOCK 1% CHANCE TO DO CRITICAL HIT FOR 2X DAMAGE AND NEW CARDS
-    icon: {fileID: 0}
+    description: UNLOCK 1% CHANCE TO DO CRITICAL HIT FOR 1.5X DAMAGE AND NEW CARDS
+    icon: {fileID: 21300000, guid: 2be0ee88531b94f48af681628f446a85, type: 3}
     tiers:
     - cost: 0
       valueText: LOCKED
       intValue: 0
       floatValue: 0
-    - cost: 12
+    - cost: 10
       valueText: UNLOCKED
       intValue: 1
       floatValue: 0

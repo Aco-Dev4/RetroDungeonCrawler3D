@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: HEAL
   description: HEAL 50% OF MAX HEALTH
-  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  icon: {fileID: 21300000, guid: f586e5239b16d5845bc4adfe37489bf7, type: 3}
   rarity: 0
   statType: 1
   usePercent: 0

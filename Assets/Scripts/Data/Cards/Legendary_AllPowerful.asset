@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: ALL POWERFUL
   description: UPGRADES ALL BASIC STATS
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: de743bc09036fbe4d8900ab1904d016f, type: 3}
   rarity: 3
   statType: 20
   usePercent: 0
   baseValue: 1
   valuePerUpgrade: 1
-  baseUpgradeCost: 10
-  costIncreasePerLevel: 10
+  baseUpgradeCost: 30
+  costIncreasePerLevel: 20
   valueDisplayType: 0
   canAppearInChest: 1
   requiresWeapon: 0

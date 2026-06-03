@@ -354,6 +354,7 @@ GameObject:
   - component: {fileID: 1137894194250465688}
   - component: {fileID: 6780275486247899985}
   - component: {fileID: 6218156938973567200}
+  - component: {fileID: 1211384425873544610}
   m_Layer: 5
   m_Name: CardImage
   m_TagString: Untagged
@@ -375,10 +376,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7487322820107020676}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 125, y: -168}
+  m_SizeDelta: {x: 120, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1137894194250465688
 CanvasRenderer:
@@ -433,11 +434,25 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 150
-  m_PreferredHeight: 150
+  m_PreferredWidth: 120
+  m_PreferredHeight: 120
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &1211384425873544610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2518748948372371130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.AspectRatioFitter
+  m_AspectMode: 1
+  m_AspectRatio: 1
 --- !u!1 &5110489620935989759
 GameObject:
   m_ObjectHideFlags: 0

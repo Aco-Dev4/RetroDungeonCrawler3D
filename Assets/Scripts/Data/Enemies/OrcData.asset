@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: Orc
   prefab: {fileID: 580938970311413625, guid: 8f31a847232131c4ca79ad98e945b0e3, type: 3}
-  maxHealth: 200
-  damage: 50
+  maxHealth: 160
+  damage: 45
   attackSpeed: 0.5
-  attackRange: 3
+  attackRange: 3.3
   moveSpeed: 2.5
   weight: 5
   minSilverDrop: 5
-  maxSilverDrop: 10
+  maxSilverDrop: 7

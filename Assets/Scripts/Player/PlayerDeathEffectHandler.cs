@@ -35,7 +35,7 @@ public class PlayerDeathEffectHandler : MonoBehaviour
         if (_isReviving) return true;
         if (_guardianAngelRevives <= 0) return false;
 
-        Debug.Log("Guardian Angel activated!");
+        //Debug.Log("Guardian Angel activated!");
         _guardianAngelRevives--;
         StartCoroutine(ReviveRoutine());
 

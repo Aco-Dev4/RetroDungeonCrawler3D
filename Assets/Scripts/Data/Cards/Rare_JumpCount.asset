@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: JUMP COUNT
   description: +1 JUMPS
-  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  icon: {fileID: 21300000, guid: 92255dc06a906b240bc2c0f85872a1b5, type: 3}
   rarity: 1
   statType: 7
   usePercent: 0

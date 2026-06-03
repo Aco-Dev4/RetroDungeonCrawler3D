@@ -1,42 +1,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
     #region References
     [Header("Panels")]
     [SerializeField] private GameObject mapSelectPanel;
+    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private SettingsManager settingsManager;
 
     [Header("Map Buttons")]
     [SerializeField] private List<MenuMapButton> mapButtons = new();
+
+    [Header("Difficulty Panel")]
+    [SerializeField] private GameObject difficultyPanel;
+    [SerializeField] private Button normalDifficultyButton;
+    [SerializeField] private Button hardDifficultyButton;
+    [SerializeField] private GameObject hardLockedVisual;
+    [SerializeField] private string selectedMapSceneName;
+    [SerializeField] private string selectedMapId;
 
     [Header("Shop")]
     [SerializeField] private GameObject shopPanel;
     [SerializeField] private MenuShopCamera shopCamera;
     #endregion
 
-    [Header("Debug")]
-    [SerializeField] private Key giveGoldKey = Key.G;
-    [SerializeField] private int debugGoldAmount = 10;
-
     private void Start()
     {
         if (mapSelectPanel != null)
             mapSelectPanel.SetActive(false);
 
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+
         RefreshMapButtons();
-    }
-
-    private void Update()
-    {
-        if (Keyboard.current == null) return;
-
-        if (Keyboard.current[giveGoldKey].wasPressedThisFrame)
-        {
-            CurrencyManager.Instance?.AddGold(debugGoldAmount);
-            Debug.Log($"+{debugGoldAmount} Gold");
-        }
     }
 
     #region Buttons
@@ -63,6 +63,50 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    public void OpenDifficultyPanel(string sceneName, string mapId)
+    {
+        selectedMapSceneName = sceneName;
+        selectedMapId = mapId;
+
+        if (difficultyPanel != null)
+            difficultyPanel.SetActive(true);
+
+        bool hardUnlocked = GameDataManager.Instance != null && GameDataManager.Instance.HasCompletedMap(mapId);
+
+        if (normalDifficultyButton != null)
+            normalDifficultyButton.interactable = true;
+
+        if (hardDifficultyButton != null)
+            hardDifficultyButton.interactable = hardUnlocked;
+
+        if (hardLockedVisual != null)
+            hardLockedVisual.SetActive(!hardUnlocked);
+    }
+
+    public void OnNormalDifficultyPressed()
+    {
+        LoadSelectedMap(RunDifficulty.Normal);
+    }
+
+    public void OnHardDifficultyPressed()
+    {
+        LoadSelectedMap(RunDifficulty.Hard);
+    }
+
+    public void OnCloseDifficultyPanelPressed()
+    {
+        if (difficultyPanel != null)
+            difficultyPanel.SetActive(false);
+    }
+
+    private void LoadSelectedMap(RunDifficulty difficulty)
+    {
+        if (string.IsNullOrWhiteSpace(selectedMapSceneName)) return;
+
+        SelectedRunSettings.Difficulty = difficulty;
+        SceneManager.LoadScene(selectedMapSceneName);
+    }
+
     public void OnShopPressed()
     {
         if (shopPanel != null)
@@ -85,7 +129,38 @@ public class MenuManager : MonoBehaviour
     public void OnSwordBought()
     {
         GameDataManager.Instance?.UnlockSword();
-        Debug.Log("Sword bought");
+        //Debug.Log("Sword bought");
+    }
+
+    public void OnSettingsPressed()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(true);
+
+        settingsManager?.LoadSettingsToUI();
+
+        if (mapSelectPanel != null)
+            mapSelectPanel.SetActive(false);
+
+        if (shopPanel != null)
+            shopPanel.SetActive(false);
+
+        shopCamera?.MoveToNormalView();
+    }
+
+    public void OnCloseSettingsPressed()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+    }
+
+    public void OnExitPressed()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit();
+#endif
     }
     #endregion
 }

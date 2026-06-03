@@ -22,6 +22,6 @@ public class PlayerRunEffectHandler : MonoBehaviour
 
         health.HealPercent(waveHealPercent);
 
-        Debug.Log($"Wave Heal: healed {waveHealPercent * 100f:0}%");
+        //Debug.Log($"Wave Heal: healed {waveHealPercent * 100f:0}%");
     }
 }

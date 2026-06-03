@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: KNOCKBACK
   description: ATTACKS PUSH ENEMIES
-  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  icon: {fileID: 21300000, guid: 9c469bb72b11be8499ecbc7cba592573, type: 3}
   rarity: 1
   statType: 9
   usePercent: 0
   baseValue: 3
   valuePerUpgrade: 1.5
-  baseUpgradeCost: 3
+  baseUpgradeCost: 6
   costIncreasePerLevel: 4
   valueDisplayType: 3
   canAppearInChest: 1

@@ -53,25 +53,25 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float swordScalePerBonusRange = 0.15f;
     #endregion
 
-    #region Earthquake Jump
-    [Header("Earthquake Jump")]
-    [SerializeField] private LayerMask earthquakeEnemyLayer;
-    [SerializeField] private float earthquakeMinFallDistance = 2f;
-    [SerializeField] private float earthquakeBaseRadius = 2f;
-    [SerializeField] private float earthquakeRadiusPerLevel = 0.4f;
-    [SerializeField] private float earthquakeDamagePerFallUnit = 5f;
-    [SerializeField] private float earthquakeDamagePerLevel = 3f;
-    [SerializeField] private float earthquakeBaseKnockback = 5f;
-    [SerializeField] private float earthquakeKnockbackPerLevel = 1.5f;
-    [SerializeField] private int earthquakeMaxEnemiesHit = 8;
-    [SerializeField] private float earthquakeCooldown = 0.25f;
+    // #region Earthquake Jump
+    // [Header("Earthquake Jump")]
+    // [SerializeField] private LayerMask earthquakeEnemyLayer;
+    // [SerializeField] private float earthquakeMinFallDistance = 2f;
+    // [SerializeField] private float earthquakeBaseRadius = 2f;
+    // [SerializeField] private float earthquakeRadiusPerLevel = 0.4f;
+    // [SerializeField] private float earthquakeDamagePerFallUnit = 5f;
+    // [SerializeField] private float earthquakeDamagePerLevel = 3f;
+    // [SerializeField] private float earthquakeBaseKnockback = 5f;
+    // [SerializeField] private float earthquakeKnockbackPerLevel = 1.5f;
+    // [SerializeField] private int earthquakeMaxEnemiesHit = 8;
+    // [SerializeField] private float earthquakeCooldown = 0.25f;
 
-    private bool _wasGroundedLastFrame = true;
-    private bool _isTrackingFall;
-    private float _fallStartY;
-    private float _lastEarthquakeTime = -999f;
-    private readonly Collider[] _earthquakeHits = new Collider[32];
-    #endregion
+    // private bool _wasGroundedLastFrame = true;
+    // private bool _isTrackingFall;
+    // private float _fallStartY;
+    // private float _lastEarthquakeTime = -999f;
+    // private readonly Collider[] _earthquakeHits = new Collider[32];
+    // #endregion
 
     #region Attack Runtime
     private bool _canAttack = true;
@@ -124,7 +124,7 @@ public class PlayerController : MonoBehaviour
         HandleGravity();
         HandleSlide();
         HandleMovement();
-        HandleEarthquakeLanding();
+        // HandleEarthquakeLanding();
     }
     #endregion
 
@@ -202,7 +202,7 @@ public class PlayerController : MonoBehaviour
 
         if (attackResult.isGuaranteedCrit)
         {
-            Debug.Log("GUARANTEED CRIT USED - counter reset");
+            //Debug.Log("GUARANTEED CRIT USED - counter reset");
             _successfulHitsSinceGuaranteedCrit = 0;
             return;
         }
@@ -326,88 +326,88 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    #region Earthquake Jump
-    private void HandleEarthquakeLanding()
-    {
-        if (_stats.earthquakeJumpLevel <= 0)
-            return;
+    // #region Earthquake Jump
+    // private void HandleEarthquakeLanding()
+    // {
+    //     if (_stats.earthquakeJumpLevel <= 0)
+    //         return;
 
-        bool isGroundedNow = IsGrounded();
+    //     bool isGroundedNow = IsGrounded();
 
-        if (!isGroundedNow && _wasGroundedLastFrame)
-            StartFallTracking();
+    //     if (!isGroundedNow && _wasGroundedLastFrame)
+    //         StartFallTracking();
 
-        if (isGroundedNow && !_wasGroundedLastFrame)
-            TryQueueEarthquakeJump();
+    //     if (isGroundedNow && !_wasGroundedLastFrame)
+    //         TryQueueEarthquakeJump();
 
-        if (_isTrackingFall)
-            _fallStartY = Mathf.Max(_fallStartY, transform.position.y);
+    //     if (_isTrackingFall)
+    //         _fallStartY = Mathf.Max(_fallStartY, transform.position.y);
 
-        _wasGroundedLastFrame = isGroundedNow;
-    }
+    //     _wasGroundedLastFrame = isGroundedNow;
+    // }
 
-    private void StartFallTracking()
-    {
-        _isTrackingFall = true;
-        _fallStartY = transform.position.y;
-    }
+    // private void StartFallTracking()
+    // {
+    //     _isTrackingFall = true;
+    //     _fallStartY = transform.position.y;
+    // }
 
-    private void TryQueueEarthquakeJump()
-    {
-        if (!_isTrackingFall)
-            return;
+    // private void TryQueueEarthquakeJump()
+    // {
+    //     if (!_isTrackingFall)
+    //         return;
 
-        _isTrackingFall = false;
+    //     _isTrackingFall = false;
 
-        if (Time.time < _lastEarthquakeTime + earthquakeCooldown)
-            return;
+    //     if (Time.time < _lastEarthquakeTime + earthquakeCooldown)
+    //         return;
 
-        float fallDistance = _fallStartY - transform.position.y;
+    //     float fallDistance = _fallStartY - transform.position.y;
 
-        if (fallDistance < earthquakeMinFallDistance)
-            return;
+    //     if (fallDistance < earthquakeMinFallDistance)
+    //         return;
 
-        _lastEarthquakeTime = Time.time;
-        StartCoroutine(TriggerEarthquakeNextFrame(fallDistance));
-    }
+    //     _lastEarthquakeTime = Time.time;
+    //     StartCoroutine(TriggerEarthquakeNextFrame(fallDistance));
+    // }
 
-    private IEnumerator TriggerEarthquakeNextFrame(float fallDistance)
-    {
-        yield return null;
+    // private IEnumerator TriggerEarthquakeNextFrame(float fallDistance)
+    // {
+    //     yield return null;
 
-        TriggerEarthquake(fallDistance);
-    }
+    //     TriggerEarthquake(fallDistance);
+    // }
 
-    private void TriggerEarthquake(float fallDistance)
-    {
-        int level = _stats.earthquakeJumpLevel;
+    // private void TriggerEarthquake(float fallDistance)
+    // {
+    //     int level = _stats.earthquakeJumpLevel;
 
-        float radius = earthquakeBaseRadius + earthquakeRadiusPerLevel * (level - 1);
-        int damage = Mathf.RoundToInt(fallDistance * earthquakeDamagePerFallUnit + earthquakeDamagePerLevel * level);
-        float knockback = earthquakeBaseKnockback + earthquakeKnockbackPerLevel * (level - 1);
+    //     float radius = earthquakeBaseRadius + earthquakeRadiusPerLevel * (level - 1);
+    //     int damage = Mathf.RoundToInt(fallDistance * earthquakeDamagePerFallUnit + earthquakeDamagePerLevel * level);
+    //     float knockback = earthquakeBaseKnockback + earthquakeKnockbackPerLevel * (level - 1);
 
-        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, radius, _earthquakeHits, earthquakeEnemyLayer);
-        int enemiesHit = 0;
+    //     int hitCount = Physics.OverlapSphereNonAlloc(transform.position, radius, _earthquakeHits, earthquakeEnemyLayer);
+    //     int enemiesHit = 0;
 
-        for (int i = 0; i < hitCount; i++)
-        {
-            if (enemiesHit >= earthquakeMaxEnemiesHit)
-                break;
+    //     for (int i = 0; i < hitCount; i++)
+    //     {
+    //         if (enemiesHit >= earthquakeMaxEnemiesHit)
+    //             break;
 
-            if (!TryGetEnemyHitData(_earthquakeHits[i], out Health enemyHealth, out EnemyAI enemy))
-                continue;
+    //         if (!TryGetEnemyHitData(_earthquakeHits[i], out Health enemyHealth, out EnemyAI enemy))
+    //             continue;
 
-            enemyHealth.TakeDamage(damage, gameObject);
+    //         enemyHealth.TakeDamage(damage, gameObject);
 
-            if (enemy != null)
-                enemy.ApplyKnockback(transform.position, knockback);
+    //         if (enemy != null)
+    //             enemy.ApplyKnockback(transform.position, knockback);
 
-            enemiesHit++;
-        }
+    //         enemiesHit++;
+    //     }
 
-        Debug.Log($"EARTHQUAKE! Hit: {enemiesHit}, Radius: {radius}, Damage: {damage}, Knockback: {knockback}");
-    }
-    #endregion
+    //     Debug.Log($"EARTHQUAKE! Hit: {enemiesHit}, Radius: {radius}, Damage: {damage}, Knockback: {knockback}");
+    // }
+    // #endregion
 
     #region Attack
     private void StartAttack()
@@ -428,9 +428,6 @@ public class PlayerController : MonoBehaviour
         float finalRange = PlayerDamageCalculator.GetAttackRange(_stats, _hasSword, swordRangeBonus);
         bool forceCrit = ShouldForceGuaranteedCrit();
         PlayerAttackResult attackResult = PlayerDamageCalculator.GetAttackResult(_stats, _hasSword, swordDamageBonus, _health, forceCrit);
-
-        if (attackResult.isCrit)
-            Debug.Log($"CRIT! {attackResult.damage} damage");
 
         Vector3 attackOrigin = transform.position + transform.forward * (finalRange * 0.5f);
         Collider[] hits = Physics.OverlapSphere(attackOrigin, finalRange * 0.5f, enemyLayer);
@@ -507,15 +504,15 @@ public class PlayerController : MonoBehaviour
 
         CursorManager.Instance?.UnlockCursor();
 
-        Debug.Log("PLAYER HANDLE DEATH CALLED");
+        //Debug.Log("PLAYER HANDLE DEATH CALLED");
 
         if (orbitPivot != null)
             orbitPivot.SetParent(null, true);
 
         CameraManager.Instance?.StartOrbit(orbitPivot);
 
-        Debug.Log(orbitPivot != null ? "DeathPivot OK" : "DeathPivot IS NULL");
-        Debug.Log(CameraManager.Instance != null ? "CameraManager OK" : "CameraManager IS NULL");
+        //Debug.Log(orbitPivot != null ? "DeathPivot OK" : "DeathPivot IS NULL");
+        //Debug.Log(CameraManager.Instance != null ? "CameraManager OK" : "CameraManager IS NULL");
     }
 
     public Transform GetOrbitPivot()

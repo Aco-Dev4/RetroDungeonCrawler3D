@@ -115,7 +115,7 @@ public class CardUpgradeUI : MonoBehaviour
 
         if (CurrencyManager.Instance.GetSilver() < cost)
         {
-            Debug.Log("Not enough silver.");
+            //Debug.Log("Not enough silver.");
             return;
         }
 

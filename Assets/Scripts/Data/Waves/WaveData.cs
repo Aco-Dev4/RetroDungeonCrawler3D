@@ -10,6 +10,9 @@ public class WaveData : ScriptableObject
     [Header("Enemies in this Wave")]
     public List<WaveEnemyEntry> enemies = new();
 
+    [Header("Hard Mode Mini Boss")]
+    public EnemyData miniBossEnemy;
+
     [Header("Rewards")]
     public GameObject rewardPrefab;
     public int goldReward = 5;

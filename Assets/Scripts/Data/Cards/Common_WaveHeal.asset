@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Common_WaveHeal
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: WAVE HEAL
-  description: HEAL 8% OF MAX HEALTH AFTER EVERY WAVE
-  icon: {fileID: 0}
+  description: HEAL 6% OF MAX HEALTH AFTER EVERY WAVE
+  icon: {fileID: 21300000, guid: 02eab4d92b2d5c24e8525f77aa80a38f, type: 3}
   rarity: 0
   statType: 13
   usePercent: 0
-  baseValue: 0.08
-  valuePerUpgrade: 0.04
+  baseValue: 0.06
+  valuePerUpgrade: 0.03
   baseUpgradeCost: 8
   costIncreasePerLevel: 6
   valueDisplayType: 1

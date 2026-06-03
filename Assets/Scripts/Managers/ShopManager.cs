@@ -119,14 +119,14 @@ public class ShopManager : MonoBehaviour
 
         if (!GameDataManager.Instance.SpendGold(cost))
         {
-            Debug.Log("Not enough gold.");
+            //Debug.Log("Not enough gold.");
             return;
         }
 
         GameDataManager.Instance.SetUpgradeTier(upgrade.upgradeId, currentTier + 1);
         GoldUI.Instance?.SetGold(GameDataManager.Instance.GetGold());
 
-        Debug.Log($"{upgrade.displayName} bought. Tier {currentTier + 1}");
+        //Debug.Log($"{upgrade.displayName} bought. Tier {currentTier + 1}");
 
         ShowUpgrades();
     }
@@ -194,7 +194,7 @@ public class ShopManager : MonoBehaviour
         {
             if (!GameDataManager.Instance.SpendGold(colorData.cost))
             {
-                Debug.Log("Not enough gold.");
+                //Debug.Log("Not enough gold.");
                 return;
             }
 
@@ -204,7 +204,7 @@ public class ShopManager : MonoBehaviour
 
         GameDataManager.Instance.SetSelectedColor(colorData.colorId);
         playerColorApplier?.ApplyShopColor(colorData);
-        Debug.Log($"Selected color: {colorData.displayName}");
+        //Debug.Log($"Selected color: {colorData.displayName}");
 
         ShowColorsTab();
     }

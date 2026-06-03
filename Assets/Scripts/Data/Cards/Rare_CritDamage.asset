@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: CRITICAL DAMAGE
   description: CRITICAL HITS DEAL +0.5X MORE DAMAGE
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: a99fd3ac282ae8a43a67bcafca5a7f95, type: 3}
   rarity: 1
   statType: 12
   usePercent: 0

@@ -29,7 +29,7 @@ public class PlayerCombatEffectHandler : MonoBehaviour
         int healAmount = Mathf.Max(1, Mathf.RoundToInt(attackResult.damage * lifestealPercent));
         playerHealth.Heal(healAmount);
 
-        Debug.Log($"Lifesteal healed {healAmount} HP");
+        //Debug.Log($"Lifesteal healed {healAmount} HP");
     }
 
     private void ApplyCriticalKnockback(PlayerAttackResult attackResult, EnemyAI enemy)
@@ -43,6 +43,6 @@ public class PlayerCombatEffectHandler : MonoBehaviour
 
         enemy.ApplyKnockback(playerController.transform.position, strength);
 
-        Debug.Log($"Critical Knockback: {strength}");
+        //Debug.Log($"Critical Knockback: {strength}");
     }
 }

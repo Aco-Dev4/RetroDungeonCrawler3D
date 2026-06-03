@@ -11,12 +11,16 @@ public class EnemyAI : MonoBehaviour
 
     private EnemyStats _stats;
     private WaveInstance _waveInstance;
+    private bool _isMiniBoss;
     #endregion
 
     #region Components
     private NavMeshAgent _agent;
     private Animator _animator;
     private Collider _collider;
+
+    [Header("Mini Boss")]
+    [SerializeField] private GameObject miniBossIcon;
     #endregion
 
     #region Target
@@ -148,8 +152,23 @@ public class EnemyAI : MonoBehaviour
 
         _attackInterval = 1f / Mathf.Max(0.01f, _stats.attackSpeed);
 
+        SetMiniBossIcon(false);
+
         Health health = GetComponent<Health>();
         health?.Init(_stats.maxHealth);
+    }
+
+    public void InitMiniBoss(float scaleMultiplier, float statBoostMultiplier, float statNerfMultiplier, MiniBossStatType firstBoost, MiniBossStatType secondBoost)
+    {
+        //Debug.Log($"{name} INIT MINI BOSS CALLED. Icon = {miniBossIcon != null}");
+        _isMiniBoss = true;
+
+        transform.localScale *= scaleMultiplier;
+
+        ApplyMiniBossStatModifiers(statBoostMultiplier, statNerfMultiplier, firstBoost, secondBoost);
+
+        ApplyStats();
+        SetMiniBossIcon(true);
     }
     #endregion
 
@@ -157,11 +176,61 @@ public class EnemyAI : MonoBehaviour
     public void InitWave(WaveInstance waveInstance)
     {
         _waveInstance = waveInstance;
+
+        if (_waveInstance != null && EnemyManager.Instance != null)
+        {
+            _stats = EnemyManager.Instance.GetStats(enemyData, _waveInstance.waveNumber);
+            ApplyStats();
+        }
     }
 
     public WaveInstance GetWaveInstance()
     {
         return _waveInstance;
+    }
+    #endregion
+
+    #region Hard Mode
+    private void SetMiniBossIcon(bool active)
+    {
+        //Debug.Log($"{name} SetMiniBossIcon: {active}");
+        if (miniBossIcon != null)
+            miniBossIcon.SetActive(active);
+    }
+
+    private void ApplyMiniBossStatModifiers(float boostMultiplier, float nerfMultiplier, MiniBossStatType firstBoost, MiniBossStatType secondBoost)
+    {
+        ApplyMiniBossStatModifier(MiniBossStatType.Health, IsBoostedMiniBossStat(MiniBossStatType.Health, firstBoost, secondBoost) ? boostMultiplier : nerfMultiplier);
+        ApplyMiniBossStatModifier(MiniBossStatType.Damage, IsBoostedMiniBossStat(MiniBossStatType.Damage, firstBoost, secondBoost) ? boostMultiplier : nerfMultiplier);
+        ApplyMiniBossStatModifier(MiniBossStatType.MoveSpeed, IsBoostedMiniBossStat(MiniBossStatType.MoveSpeed, firstBoost, secondBoost) ? boostMultiplier : nerfMultiplier);
+        ApplyMiniBossStatModifier(MiniBossStatType.AttackSpeed, IsBoostedMiniBossStat(MiniBossStatType.AttackSpeed, firstBoost, secondBoost) ? boostMultiplier : nerfMultiplier);
+    }
+
+    private bool IsBoostedMiniBossStat(MiniBossStatType statType, MiniBossStatType firstBoost, MiniBossStatType secondBoost)
+    {
+        return statType == firstBoost || statType == secondBoost;
+    }
+
+    private void ApplyMiniBossStatModifier(MiniBossStatType statType, float multiplier)
+    {
+        switch (statType)
+        {
+            case MiniBossStatType.Health:
+                _stats.maxHealth = Mathf.RoundToInt(_stats.maxHealth * multiplier);
+                break;
+
+            case MiniBossStatType.Damage:
+                _stats.damage = Mathf.RoundToInt(_stats.damage * multiplier);
+                break;
+
+            case MiniBossStatType.MoveSpeed:
+                _stats.moveSpeed *= multiplier;
+                break;
+
+            case MiniBossStatType.AttackSpeed:
+                _stats.attackSpeed *= multiplier;
+                break;
+        }
     }
     #endregion
 
@@ -532,11 +601,7 @@ public class EnemyAI : MonoBehaviour
 
     private void UpdateWaveOnDeath()
     {
-        if (_waveInstance == null) return;
-
-        _waveInstance.aliveEnemies = Mathf.Max(0, _waveInstance.aliveEnemies - 1);
-        _waveInstance.lastDeathPosition = transform.position;
-        _waveInstance.lastDeathRotation = transform.rotation;
+        WaveManager.Instance?.OnEnemyKilled(this, transform.position);
     }
 
     private void GiveSilverReward()
@@ -545,6 +610,10 @@ public class EnemyAI : MonoBehaviour
         if (CurrencyManager.Instance == null) return;
 
         int silverAmount = Random.Range(enemyData.minSilverDrop, enemyData.maxSilverDrop + 1);
+
+        if (_isMiniBoss)
+            silverAmount *= 2;
+
         silverAmount = Mathf.RoundToInt(silverAmount * GetPlayerSilverMultiplier());
 
         CurrencyManager.Instance.AddSilver(silverAmount);

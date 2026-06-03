@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: CRITICAL CHANCE
   description: +4% CHANCE YOUR ATTACK WILL BE A CRITICAL HIT
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 3a40a491b84561343be73fe71d46d241, type: 3}
   rarity: 0
   statType: 11
   usePercent: 0

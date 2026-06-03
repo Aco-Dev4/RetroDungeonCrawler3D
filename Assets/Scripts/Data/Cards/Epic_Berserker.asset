@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: BERSERKER
   description: THE LOWER YOUR HP GETS THE MORE DAMAGE YOUR ATTACKS DO
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 90bf02459ff263e4b94e5cb274236395, type: 3}
   rarity: 2
   statType: 15
   usePercent: 0

@@ -41,6 +41,13 @@ public class MenuMapButton : MonoBehaviour
         RefreshState();
     }
 
+    public void OpenDifficultyPanel()
+    {
+        if (menuManager == null) return;
+
+        menuManager.OpenDifficultyPanel(sceneName, displayName);
+    }
+
     public void RefreshState()
     {
         if (GameDataManager.Instance == null)
@@ -100,11 +107,11 @@ public class MenuMapButton : MonoBehaviour
             if (menuManager != null)
                 menuManager.RefreshMapButtons();
 
-            Debug.Log("Tutorial marked as finished for testing.");
+            //Debug.Log("Tutorial marked as finished for testing.");
             return;
         }
 
         if (loadSceneOnClick && !string.IsNullOrWhiteSpace(sceneName))
-            SceneManager.LoadScene(sceneName);
+            menuManager?.OpenDifficultyPanel(sceneName, displayName);
     }
 }

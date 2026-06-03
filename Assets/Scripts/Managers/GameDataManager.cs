@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+#region Persistent Player Data
 [System.Serializable]
 public class PersistentPlayerData
 {
@@ -12,8 +13,14 @@ public class PersistentPlayerData
     public float sensitivity = 1f;
     public int qualityLevel = 2;
 
+    public float masterVolume = 0.5f;
+    public float sfxVolume = 1f;
+    public float musicVolume = 1f;
+    public int resolutionIndex = -1;
+
     public List<string> boughtUpgradeIds = new();
     public List<string> completedMapIds = new();
+    public List<string> completedHardMapIds = new();
 
     public List<string> upgradeTierIds = new();
     public List<int> upgradeTierValues = new();
@@ -21,6 +28,7 @@ public class PersistentPlayerData
     public string selectedColorId = "Blue";
     public List<string> ownedColorIds = new() { "Blue" };
 }
+#endregion
 
 public class GameDataManager : MonoBehaviour
 {
@@ -90,7 +98,7 @@ public class GameDataManager : MonoBehaviour
         _data = new PersistentPlayerData();
         Save();
         ApplySavedSettings();
-        Debug.Log("Saved player data has been reset.");
+        //Debug.Log("Saved player data has been reset.");
     }
     #endregion
 
@@ -121,6 +129,52 @@ public class GameDataManager : MonoBehaviour
     private void ApplySavedSettings()
     {
         QualitySettings.SetQualityLevel(_data.qualityLevel);
+        AudioListener.volume = _data.masterVolume;
+    }
+
+    public void SetMasterVolume(float value)
+    {
+        _data.masterVolume = Mathf.Clamp01(value);
+        AudioListener.volume = _data.masterVolume;
+        Save();
+    }
+
+    public float GetMasterVolume()
+    {
+        return _data.masterVolume;
+    }
+
+    public void SetSfxVolume(float value)
+    {
+        _data.sfxVolume = Mathf.Clamp01(value);
+        Save();
+    }
+
+    public float GetSfxVolume()
+    {
+        return _data.sfxVolume;
+    }
+
+    public void SetMusicVolume(float value)
+    {
+        _data.musicVolume = Mathf.Clamp01(value);
+        Save();
+    }
+
+    public float GetMusicVolume()
+    {
+        return _data.musicVolume;
+    }
+
+    public void SetResolutionIndex(int value)
+    {
+        _data.resolutionIndex = Mathf.Max(0, value);
+        Save();
+    }
+
+    public int GetResolutionIndex()
+    {
+        return _data.resolutionIndex;
     }
     #endregion
 
@@ -189,6 +243,20 @@ public class GameDataManager : MonoBehaviour
         if (_data.completedMapIds.Contains(mapId)) return;
 
         _data.completedMapIds.Add(mapId);
+        Save();
+    }
+
+    public bool HasCompletedHardMap(string mapId)
+    {
+        return _data.completedHardMapIds.Contains(mapId);
+    }
+
+    public void SetHardMapCompleted(string mapId)
+    {
+        if (string.IsNullOrWhiteSpace(mapId)) return;
+        if (_data.completedHardMapIds.Contains(mapId)) return;
+
+        _data.completedHardMapIds.Add(mapId);
         Save();
     }
     #endregion
