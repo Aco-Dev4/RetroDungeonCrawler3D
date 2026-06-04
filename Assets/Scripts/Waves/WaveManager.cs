@@ -125,6 +125,7 @@ public class WaveManager : MonoBehaviour
         RunStatsManager.Instance?.SetCurrentWave(waveNumber);
         waveCounterUI?.SetWave(waveNumber, waves.Count);
         wavePopupUI?.Show($"Wave {waveNumber} Started", WavePopupType.WaveStarted);
+        AudioManager.Instance?.PlaySFX("WaveStart");
         upgradeTableArrow?.HideArrow();
 
         //Debug.Log($"Wave {waveNumber} started.");
@@ -162,6 +163,7 @@ public class WaveManager : MonoBehaviour
 
         ApplyPlayerWaveCompletedEffects();
         ShowWaveCompletedPopup(wave);
+        AudioManager.Instance?.PlaySFX("WaveEnd");
         GiveWaveGoldReward(wave);
         SpawnRewardChest(wave);
 

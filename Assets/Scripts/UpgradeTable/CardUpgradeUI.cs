@@ -115,11 +115,12 @@ public class CardUpgradeUI : MonoBehaviour
 
         if (CurrencyManager.Instance.GetSilver() < cost)
         {
-            //Debug.Log("Not enough silver.");
+            AudioManager.Instance?.PlaySFX("UICancel");
             return;
         }
 
         CurrencyManager.Instance.SetSilver(CurrencyManager.Instance.GetSilver() - cost);
+        AudioManager.Instance?.PlaySFX("UIBuy");
 
         CardData cardData = ownedCard.cardData;
 

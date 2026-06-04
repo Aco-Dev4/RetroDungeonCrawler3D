@@ -53,6 +53,9 @@ public class SettingsManager : MonoBehaviour
         {
             Resolution resolution = availableResolutions[i];
 
+            if (!IsSupportedAspectRatio(resolution.width, resolution.height))
+                continue;
+
             if (ContainsResolution(resolution.width, resolution.height))
                 continue;
 
@@ -60,18 +63,14 @@ public class SettingsManager : MonoBehaviour
             options.Add($"{resolution.width}x{resolution.height}");
         }
 
-        resolutionDropdown.AddOptions(options);
-    }
-
-    private bool ContainsResolution(int width, int height)
-    {
-        for (int i = 0; i < _resolutions.Count; i++)
+        if (_resolutions.Count == 0)
         {
-            if (_resolutions[i].width == width && _resolutions[i].height == height)
-                return true;
+            Resolution currentResolution = Screen.currentResolution;
+            _resolutions.Add(currentResolution);
+            options.Add($"{currentResolution.width}x{currentResolution.height}");
         }
 
-        return false;
+        resolutionDropdown.AddOptions(options);
     }
 
     private void SetupGraphicsDropdown()
@@ -105,7 +104,8 @@ public class SettingsManager : MonoBehaviour
 
         if (graphicsDropdown != null)
         {
-            graphicsDropdown.SetValueWithoutNotify(GameDataManager.Instance.GetQualityLevel());
+            int quality = Mathf.Clamp(GameDataManager.Instance.GetQualityLevel(), 0, 2);
+            graphicsDropdown.SetValueWithoutNotify(quality);
             graphicsDropdown.RefreshShownValue();
         }
 
@@ -123,8 +123,6 @@ public class SettingsManager : MonoBehaviour
         }
 
         Canvas.ForceUpdateCanvases();
-
-        //Debug.Log("Settings UI loaded.");
     }
 
     public void ApplySettings()
@@ -156,24 +154,27 @@ public class SettingsManager : MonoBehaviour
 
         if (resolutionDropdown != null)
         {
-            int resolutionIndex = resolutionDropdown.value;
+            int resolutionIndex = Mathf.Clamp(resolutionDropdown.value, 0, Mathf.Max(0, _resolutions.Count - 1));
             GameDataManager.Instance.SetResolutionIndex(resolutionIndex);
 
 #if !UNITY_EDITOR
-            if (resolutionIndex >= 0 && resolutionIndex < _resolutions.Count)
-            {
-                Resolution resolution = _resolutions[resolutionIndex];
-                Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreenMode);
-            }
+            Resolution resolution = _resolutions[resolutionIndex];
+            Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreenMode);
 #endif
         }
 
-        //Debug.Log("Settings applied and saved.");
+        AudioManager.Instance?.RefreshVolumes();
     }
 
     private void ApplySensitivity(float sensitivity)
     {
         if (cameraInputController == null)
+            return;
+
+        if (cameraInputController.Controllers == null)
+            return;
+
+        if (cameraInputController.Controllers.Count < 2)
             return;
 
         cameraInputController.Controllers[0].Input.Gain = sensitivity;
@@ -182,6 +183,17 @@ public class SettingsManager : MonoBehaviour
     #endregion
 
     #region Helpers
+    private bool ContainsResolution(int width, int height)
+    {
+        for (int i = 0; i < _resolutions.Count; i++)
+        {
+            if (_resolutions[i].width == width && _resolutions[i].height == height)
+                return true;
+        }
+
+        return false;
+    }
+
     private int GetCurrentResolutionIndex()
     {
         for (int i = 0; i < _resolutions.Count; i++)
@@ -191,7 +203,22 @@ public class SettingsManager : MonoBehaviour
                 return i;
         }
 
+        for (int i = 0; i < _resolutions.Count; i++)
+        {
+            if (_resolutions[i].width == Screen.width &&
+                _resolutions[i].height == Screen.height)
+                return i;
+        }
+
         return Mathf.Max(0, _resolutions.Count - 1);
+    }
+
+    private bool IsSupportedAspectRatio(int width, int height)
+    {
+        float aspect = (float)width / height;
+        float target = 16f / 9f;
+
+        return Mathf.Abs(aspect - target) < 0.02f;
     }
 
     private void ApplyExtraGraphicsSettings(int qualityIndex)

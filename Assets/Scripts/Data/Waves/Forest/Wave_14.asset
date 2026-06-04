@@ -26,4 +26,4 @@ MonoBehaviour:
     count: 10
   miniBossEnemy: {fileID: 11400000, guid: 65f451b3bd431754fbe5ccfefc967ace, type: 2}
   rewardPrefab: {fileID: 1089913685205598432, guid: 0d84a0bdf00a0dd45b8dc5fa1aa6ed0a, type: 3}
-  goldReward: 6
+  goldReward: 5

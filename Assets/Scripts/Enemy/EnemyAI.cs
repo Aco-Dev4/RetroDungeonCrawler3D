@@ -26,6 +26,7 @@ public class EnemyAI : MonoBehaviour
     #region Target
     private GameObject _player;
     private Health _playerHealth;
+    private Collider _playerCollider;
     private Vector3 _lastValidDestination;
     private float _distanceToPlayer;
     #endregion
@@ -35,6 +36,8 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private GameObject attackPrefab;
     [SerializeField] private Transform attackOrigin;
     [SerializeField] private LayerMask lineOfSightBlockers;
+    [SerializeField] private float attackRangeForgiveness = 0.35f;
+    [SerializeField] private float lineOfSightSphereRadius = 0.12f;
 
     private bool _canAttack = true;
     private bool _canRotate = true;
@@ -48,6 +51,9 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float knockbackDuration = 0.12f;
     [SerializeField] private Transform groundPoint;
     [SerializeField] private LayerMask knockbackBlockers;
+    [SerializeField] private float knockbackWallCheckHeight = 0.35f;
+    [SerializeField] private float knockbackNavMeshSampleRadius = 0.75f;
+    [SerializeField] private float knockbackMaxSampleOffset = 0.8f;
 
     private bool _isBeingKnockedBack;
     private Coroutine _knockbackRoutine;
@@ -109,6 +115,7 @@ public class EnemyAI : MonoBehaviour
         }
 
         _playerHealth = _player.GetComponent<Health>();
+        _playerCollider = _player.GetComponent<Collider>();
     }
 
     private void ResolveStats()
@@ -160,7 +167,6 @@ public class EnemyAI : MonoBehaviour
 
     public void InitMiniBoss(float scaleMultiplier, float statBoostMultiplier, float statNerfMultiplier, MiniBossStatType firstBoost, MiniBossStatType secondBoost)
     {
-        //Debug.Log($"{name} INIT MINI BOSS CALLED. Icon = {miniBossIcon != null}");
         _isMiniBoss = true;
 
         transform.localScale *= scaleMultiplier;
@@ -193,7 +199,6 @@ public class EnemyAI : MonoBehaviour
     #region Hard Mode
     private void SetMiniBossIcon(bool active)
     {
-        //Debug.Log($"{name} SetMiniBossIcon: {active}");
         if (miniBossIcon != null)
             miniBossIcon.SetActive(active);
     }
@@ -240,12 +245,23 @@ public class EnemyAI : MonoBehaviour
         if (_player == null) return;
         if (_isAttacking) return;
 
-        _distanceToPlayer = Vector3.Distance(transform.position, _player.transform.position);
+        _distanceToPlayer = GetHorizontalDistanceToPlayer();
 
-        if (_distanceToPlayer <= _stats.attackRange || IsPlayerTouching())
+        if (_distanceToPlayer <= _stats.attackRange + attackRangeForgiveness || IsPlayerTouching())
             HandlePlayerInAttackRange();
         else
             ChasePlayer();
+    }
+
+    private float GetHorizontalDistanceToPlayer()
+    {
+        Vector3 enemyPosition = transform.position;
+        Vector3 playerPosition = _player.transform.position;
+
+        enemyPosition.y = 0f;
+        playerPosition.y = 0f;
+
+        return Vector3.Distance(enemyPosition, playerPosition);
     }
 
     private void HandlePlayerInAttackRange()
@@ -271,14 +287,32 @@ public class EnemyAI : MonoBehaviour
         if (_player == null || attackOrigin == null)
             return false;
 
-        Vector3 direction = _player.transform.position - attackOrigin.position;
+        Vector3 origin = attackOrigin.position;
+        Vector3 target = GetPlayerAimPosition();
+        Vector3 direction = target - origin;
 
-        return !Physics.Raycast(
-            attackOrigin.position,
+        if (direction.sqrMagnitude <= 0.01f)
+            return true;
+
+        float distance = direction.magnitude;
+
+        return !Physics.SphereCast(
+            origin,
+            lineOfSightSphereRadius,
             direction.normalized,
-            direction.magnitude,
-            lineOfSightBlockers
+            out _,
+            distance,
+            lineOfSightBlockers,
+            QueryTriggerInteraction.Ignore
         );
+    }
+
+    private Vector3 GetPlayerAimPosition()
+    {
+        if (_playerCollider != null)
+            return _playerCollider.bounds.center;
+
+        return _player.transform.position + Vector3.up;
     }
 
     private bool IsPlayerTouching()
@@ -286,10 +320,12 @@ public class EnemyAI : MonoBehaviour
         if (_player == null || _collider == null)
             return false;
 
-        Collider playerCollider = _player.GetComponent<Collider>();
-        if (playerCollider == null) return false;
+        if (_playerCollider == null)
+            _playerCollider = _player.GetComponent<Collider>();
 
-        return _collider.bounds.Intersects(playerCollider.bounds);
+        if (_playerCollider == null) return false;
+
+        return _collider.bounds.Intersects(_playerCollider.bounds);
     }
 
     private void StopMovement()
@@ -413,6 +449,8 @@ public class EnemyAI : MonoBehaviour
 
     public void ApplyAttackDamage()
     {
+        PlayAttackSound();
+
         if (_player == null) return;
         if (attackPrefab == null || attackOrigin == null) return;
 
@@ -476,7 +514,7 @@ public class EnemyAI : MonoBehaviour
         if (direction.sqrMagnitude < 0.001f)
             direction = -transform.forward;
 
-        return direction;
+        return direction.normalized;
     }
 
     private IEnumerator KnockbackRoutine(Vector3 direction, float distance)
@@ -498,17 +536,17 @@ public class EnemyAI : MonoBehaviour
         while (elapsed < knockbackDuration)
         {
             if (_agent == null || !_agent.enabled || !gameObject.activeInHierarchy)
-                yield break;
+                break;
 
             elapsed += Time.deltaTime;
 
-            float t = elapsed / knockbackDuration;
+            float t = Mathf.Clamp01(elapsed / knockbackDuration);
             Vector3 desiredGroundPosition = startGroundPosition + direction * distance * t;
 
             if (IsKnockbackBlocked(lastValidGroundPosition, desiredGroundPosition))
                 break;
 
-            if (!TryMoveKnockbackPosition(desiredGroundPosition, visualOffset, out lastValidGroundPosition))
+            if (!TryMoveKnockbackPosition(lastValidGroundPosition, desiredGroundPosition, visualOffset, out lastValidGroundPosition))
                 break;
 
             transform.rotation = lockedRotation;
@@ -524,6 +562,8 @@ public class EnemyAI : MonoBehaviour
 
     private void BeginKnockbackMovement()
     {
+        if (_agent == null || !_agent.enabled || !_agent.isOnNavMesh) return;
+
         _agent.isStopped = true;
         _agent.updatePosition = false;
 
@@ -533,17 +573,23 @@ public class EnemyAI : MonoBehaviour
 
     private bool IsKnockbackBlocked(Vector3 lastValidGroundPosition, Vector3 desiredGroundPosition)
     {
-        Vector3 rayStart = lastValidGroundPosition + Vector3.up * 0.2f;
-        Vector3 rayEnd = desiredGroundPosition + Vector3.up * 0.2f;
+        Vector3 rayStart = lastValidGroundPosition + Vector3.up * knockbackWallCheckHeight;
+        Vector3 rayEnd = desiredGroundPosition + Vector3.up * knockbackWallCheckHeight;
 
-        return Physics.Linecast(rayStart, rayEnd, knockbackBlockers);
+        return Physics.Linecast(rayStart, rayEnd, knockbackBlockers, QueryTriggerInteraction.Ignore);
     }
 
-    private bool TryMoveKnockbackPosition(Vector3 desiredGroundPosition, Vector3 visualOffset, out Vector3 lastValidGroundPosition)
+    private bool TryMoveKnockbackPosition(Vector3 previousGroundPosition, Vector3 desiredGroundPosition, Vector3 visualOffset, out Vector3 lastValidGroundPosition)
     {
-        lastValidGroundPosition = desiredGroundPosition;
+        lastValidGroundPosition = previousGroundPosition;
 
-        if (!NavMesh.SamplePosition(desiredGroundPosition, out NavMeshHit hit, 1.5f, NavMesh.AllAreas))
+        if (!NavMesh.SamplePosition(desiredGroundPosition, out NavMeshHit hit, knockbackNavMeshSampleRadius, NavMesh.AllAreas))
+            return false;
+
+        if (Vector3.Distance(hit.position, desiredGroundPosition) > knockbackMaxSampleOffset)
+            return false;
+
+        if (IsKnockbackBlocked(previousGroundPosition, hit.position))
             return false;
 
         lastValidGroundPosition = hit.position;
@@ -554,14 +600,17 @@ public class EnemyAI : MonoBehaviour
 
     private void EndKnockbackMovement(Vector3 finalGroundPosition, Vector3 visualOffset)
     {
-        if (_agent == null || !_agent.enabled || !_agent.isOnNavMesh)
+        if (_agent == null || !_agent.enabled)
             return;
 
-        if (NavMesh.SamplePosition(finalGroundPosition, out NavMeshHit finalHit, 1f, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(finalGroundPosition, out NavMeshHit finalHit, 0.5f, NavMesh.AllAreas))
             transform.position = finalHit.position + visualOffset;
 
-        _agent.Warp(transform.position);
-        _agent.updatePosition = true;
+        if (_agent.isOnNavMesh)
+        {
+            _agent.Warp(transform.position);
+            _agent.updatePosition = true;
+        }
 
         if (_isAttacking)
             StopMovement();
@@ -576,6 +625,12 @@ public class EnemyAI : MonoBehaviour
 
         _knockbackRoutine = null;
         _isBeingKnockedBack = false;
+
+        if (_agent != null && _agent.enabled && _agent.isOnNavMesh)
+        {
+            _agent.updatePosition = true;
+            _agent.Warp(transform.position);
+        }
     }
 
     private Vector3 GetGroundPosition()
@@ -590,9 +645,37 @@ public class EnemyAI : MonoBehaviour
     }
     #endregion
 
+    #region Audio
+    public void PlayAttackSound()
+    {
+        if (enemyData == null) return;
+        if (string.IsNullOrWhiteSpace(enemyData.attackSoundName)) return;
+
+        AudioManager.Instance?.PlaySFX(enemyData.attackSoundName);
+    }
+
+    public void PlayHitSound()
+    {
+        if (enemyData == null) return;
+        if (string.IsNullOrWhiteSpace(enemyData.hitSoundName)) return;
+
+        AudioManager.Instance?.PlaySFX(enemyData.hitSoundName);
+    }
+
+    private void PlayDeathSound()
+    {
+        if (enemyData == null) return;
+        if (string.IsNullOrWhiteSpace(enemyData.deathSoundName)) return;
+
+        AudioManager.Instance?.PlaySFX(enemyData.deathSoundName);
+    }
+    #endregion
+
     #region Death
     public void HandleDeath()
     {
+        PlayDeathSound();
+
         UpdateWaveOnDeath();
         GiveSilverReward();
 

@@ -87,7 +87,12 @@ public class ChestRewardUI : MonoBehaviour
     public void OnRerollPressed()
     {
         if (!TryPayForReroll())
+        {
+            AudioManager.Instance?.PlaySFX("UICancel");
             return;
+        }
+
+        AudioManager.Instance?.PlaySFX("UIBuy");
 
         _previousOptions.Clear();
         _previousOptions.AddRange(_currentOptions);
@@ -147,6 +152,8 @@ public class ChestRewardUI : MonoBehaviour
     {
         if (rewardOption == null || rewardOption.cardData == null) return;
         if (runCardInventory == null || playerController == null) return;
+
+        AudioManager.Instance?.PlaySFX("UIBuy");
 
         if (rewardOption.isUpgrade)
             ApplyUpgradeReward(rewardOption.cardData);

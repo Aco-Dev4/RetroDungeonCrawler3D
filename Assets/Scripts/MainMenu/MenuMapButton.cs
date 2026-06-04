@@ -22,6 +22,8 @@ public class MenuMapButton : MonoBehaviour
     [SerializeField] private bool markTutorialFinishedForTesting;
     [SerializeField] private bool alwaysLocked;
     [SerializeField] private bool loadSceneOnClick = true;
+    [SerializeField] private string mapId;
+    [SerializeField] private bool useDifficultyPanel;
     #endregion
 
     #region Text Colors
@@ -112,6 +114,11 @@ public class MenuMapButton : MonoBehaviour
         }
 
         if (loadSceneOnClick && !string.IsNullOrWhiteSpace(sceneName))
-            menuManager?.OpenDifficultyPanel(sceneName, displayName);
+        {
+            if (useDifficultyPanel)
+                menuManager?.OpenDifficultyPanel(sceneName, mapId);
+            else
+                SceneManager.LoadScene(sceneName);
+        }
     }
 }

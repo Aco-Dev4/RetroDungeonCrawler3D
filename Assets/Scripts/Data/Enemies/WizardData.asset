@@ -14,11 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: Wizard
   prefab: {fileID: 5987976300149318567, guid: 5d2be4e348caaf040ba1c9a980b50ee5, type: 3}
+  attackSoundName: WizardAttack
+  hitSoundName: WizardHit
+  deathSoundName: EnemyDeath
   maxHealth: 50
   damage: 15
   attackSpeed: 0.45
   attackRange: 10
   moveSpeed: 3
   weight: 1
-  minSilverDrop: 2
+  minSilverDrop: 1
   maxSilverDrop: 4

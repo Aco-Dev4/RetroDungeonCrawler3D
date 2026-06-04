@@ -1,0 +1,175 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fd09f7b5f1bedf40a7e8440e344c709, type: 3}
+  m_Name: SoundEffectDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::SoundEffectDatabase
+  sounds:
+  - soundName: UIClick
+    clips:
+    - {fileID: 8300000, guid: 602529ad696225849ad1cb0f2883f095, type: 3}
+    playMode: 2
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: UICancel
+    clips:
+    - {fileID: 8300000, guid: 1c0fe2b20c4103744a746b4efa47bc23, type: 3}
+    playMode: 2
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: UIBuy
+    clips:
+    - {fileID: 8300000, guid: e35ffaf2dadbfe24e87e30f0385a794d, type: 3}
+    playMode: 2
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: ChestOpen
+    clips:
+    - {fileID: 8300000, guid: 2a3c5709a185b464abf17f8e72d72501, type: 3}
+    playMode: 2
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: GameOver
+    clips:
+    - {fileID: 8300000, guid: c4f28b8c98e351d4583cb59938069caf, type: 3}
+    playMode: 2
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: Victory
+    clips:
+    - {fileID: 8300000, guid: 28e46d09a226f154799b86211d05ee94, type: 3}
+    playMode: 2
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: WaveEnd
+    clips:
+    - {fileID: 8300000, guid: 3c833cb13aafa3e4ba682c80074e5d76, type: 3}
+    playMode: 2
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: WaveStart
+    clips:
+    - {fileID: 8300000, guid: bf4aa613a37087d428a6a683f7602b0d, type: 3}
+    playMode: 2
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: CriticalHit
+    clips:
+    - {fileID: 8300000, guid: 64244310b731a634f896720f7198f5f2, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: Footstep
+    clips:
+    - {fileID: 8300000, guid: 97228736cb950cc4db4b9af2cb9f624b, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: PlayerDeath
+    clips:
+    - {fileID: 8300000, guid: e90a6bf6fb300d546991e42efe4ff4e3, type: 3}
+    playMode: 2
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: PlayerHit
+    clips:
+    - {fileID: 8300000, guid: f9a843ad2ab55e545952ec75fef64e3e, type: 3}
+    - {fileID: 8300000, guid: 7a8bc2514f7b9e54a95a8ab7ef2b07e0, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: PlayerJump
+    clips:
+    - {fileID: 8300000, guid: 3f78390fae780224b946f2c5dc0130d7, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: PlayerPunch
+    clips:
+    - {fileID: 8300000, guid: 2d28d080d72b2e54dbd97d737faf9576, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: PlayerSword
+    clips:
+    - {fileID: 8300000, guid: a332b0296f33cf144942e2bc292434f9, type: 3}
+    playMode: 0
+    volume: 0.85
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: EnemyDeath
+    clips:
+    - {fileID: 8300000, guid: 998390d3c5fe08a4694a538aae4bbd23, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: WizardAttack
+    clips:
+    - {fileID: 8300000, guid: 8cd1c40254dabb1489e5106ca6c410ef, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: OrcAttack
+    clips:
+    - {fileID: 8300000, guid: eb9f5b001f403ca4aa3aa86c94aa7c14, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: SkeletonAttack
+    clips:
+    - {fileID: 8300000, guid: f7ab09e0f835a50488e2c270bd7a148c, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: WizardHit
+    clips:
+    - {fileID: 8300000, guid: 7f893c33aef72cc45b09042ea01ab254, type: 3}
+    - {fileID: 8300000, guid: 54654c0790cb3ed46a1117453c9b7539, type: 3}
+    - {fileID: 8300000, guid: 11bdf656244ad224d85c93249cfb2e59, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: OrcHit
+    clips:
+    - {fileID: 8300000, guid: 1b9432d927d3f1345bf1ba083217b9d1, type: 3}
+    - {fileID: 8300000, guid: df988c40976fda34888cc65392eb7b58, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1
+  - soundName: SkeletonHit
+    clips:
+    - {fileID: 8300000, guid: 909fa5cd09bc6784cb3ebfee2fcc5c65, type: 3}
+    - {fileID: 8300000, guid: 56d71be93bf15a04693616f4c735d09d, type: 3}
+    - {fileID: 8300000, guid: 8e1baee7588d1fb4aaf11f282d841e2d, type: 3}
+    playMode: 0
+    volume: 1
+    pitchMin: 1
+    pitchMax: 1

@@ -32,6 +32,7 @@ public class RewardChest : MonoBehaviour, IInteractable
         if (_activeChest != null) return;
 
         _opened = true;
+        AudioManager.Instance?.PlaySFX("ChestOpen");
         _activeChest = this;
         interactionCanvas.SetActive(false);
 

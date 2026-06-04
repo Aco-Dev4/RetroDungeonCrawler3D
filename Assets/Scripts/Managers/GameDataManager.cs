@@ -98,7 +98,7 @@ public class GameDataManager : MonoBehaviour
         _data = new PersistentPlayerData();
         Save();
         ApplySavedSettings();
-        //Debug.Log("Saved player data has been reset.");
+        Debug.Log("Saved player data has been reset.");
     }
     #endregion
 

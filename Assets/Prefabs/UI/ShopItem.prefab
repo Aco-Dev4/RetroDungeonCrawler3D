@@ -530,6 +530,7 @@ GameObject:
   - component: {fileID: 6755377769369175039}
   - component: {fileID: 4752684171699518992}
   - component: {fileID: 7330179172684086701}
+  - component: {fileID: 8955550690307869313}
   m_Layer: 5
   m_Name: UpgradeButton
   m_TagString: Untagged
@@ -639,6 +640,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &8955550690307869313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5621901260860759804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71f3386598e3e714c9b706831476155e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
+  clickSoundName: UIClick
 --- !u!1 &7415174896178186084
 GameObject:
   m_ObjectHideFlags: 0

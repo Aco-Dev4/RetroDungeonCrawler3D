@@ -39,6 +39,9 @@ public class VictoryUI : MonoBehaviour
         if (rootPanel != null)
             rootPanel.SetActive(true);
 
+        AudioManager.Instance?.StopMusic();
+        AudioManager.Instance?.PlaySFX("Victory");
+
         GameManager.Instance?.GameOver();
 
         PlayerController player = FindFirstObjectByType<PlayerController>();

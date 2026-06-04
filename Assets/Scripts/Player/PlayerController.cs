@@ -28,6 +28,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int tutorialBaseDamage = 15;
     #endregion
 
+    #region Audio
+    [Header("Audio")]
+    [SerializeField] private float footstepInterval = 0.35f;
+
+    private float _nextFootstepTime;
+    #endregion
+
     #region Movement Runtime
     private Vector2 _input;
     private Vector3 _direction;
@@ -124,6 +131,7 @@ public class PlayerController : MonoBehaviour
         HandleGravity();
         HandleSlide();
         HandleMovement();
+        HandleFootsteps();
         // HandleEarthquakeLanding();
     }
     #endregion
@@ -228,6 +236,7 @@ public class PlayerController : MonoBehaviour
 
         _numberOfJumps++;
         _velocity = _jumpPower;
+        AudioManager.Instance?.PlaySFX("PlayerJump");
     }
 
     public void OnAttack(InputAction.CallbackContext context)
@@ -302,6 +311,17 @@ public class PlayerController : MonoBehaviour
             float moveAmount = new Vector3(_direction.x, 0f, _direction.z).magnitude;
             _animator.SetFloat("Speed", moveAmount);
         }
+    }
+
+    private void HandleFootsteps()
+    {
+        if (!IsGrounded()) return;
+        if (_isSliding) return;
+        if (_input.sqrMagnitude <= 0.01f) return;
+        if (Time.time < _nextFootstepTime) return;
+
+        AudioManager.Instance?.PlaySFX("Footstep");
+        _nextFootstepTime = Time.time + footstepInterval;
     }
 
     private bool CanJump()
@@ -425,6 +445,8 @@ public class PlayerController : MonoBehaviour
 
     public void ApplyAttackDamage()
     {
+        AudioManager.Instance?.PlaySFX(_hasSword ? "PlayerSword" : "PlayerPunch");
+
         float finalRange = PlayerDamageCalculator.GetAttackRange(_stats, _hasSword, swordRangeBonus);
         bool forceCrit = ShouldForceGuaranteedCrit();
         PlayerAttackResult attackResult = PlayerDamageCalculator.GetAttackResult(_stats, _hasSword, swordDamageBonus, _health, forceCrit);
@@ -437,12 +459,20 @@ public class PlayerController : MonoBehaviour
 
     private void HitEnemies(Collider[] hits, PlayerAttackResult attackResult)
     {
+        bool playedCritSound = false;
+
         for (int i = 0; i < hits.Length; i++)
         {
             if (!TryGetEnemyHitData(hits[i], out Health targetHealth, out EnemyAI enemy))
                 continue;
 
             targetHealth.TakeDamage(attackResult.damage, gameObject);
+
+            if (attackResult.isCrit && !playedCritSound)
+            {
+                AudioManager.Instance?.PlaySFX("CriticalHit");
+                playedCritSound = true;
+            }
 
             RegisterSuccessfulHit(attackResult);
 

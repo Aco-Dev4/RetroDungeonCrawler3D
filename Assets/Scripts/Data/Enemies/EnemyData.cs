@@ -9,6 +9,11 @@ public class EnemyData : ScriptableObject
     [Header("Prefab")]
     public GameObject prefab;
 
+    [Header("Audio")]
+    public string attackSoundName;
+    public string hitSoundName;
+    public string deathSoundName = "EnemyDeath";
+
     [Header("Base Stats")]
     public int maxHealth = 100;
     public int damage = 10;

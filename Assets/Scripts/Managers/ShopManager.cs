@@ -113,17 +113,22 @@ public class ShopManager : MonoBehaviour
         if (GameDataManager.Instance == null) return;
 
         int currentTier = GetUpgradeTier(upgrade.upgradeId);
-        if (currentTier >= upgrade.tiers.Count - 1) return;
+        if (currentTier >= upgrade.tiers.Count - 1)
+        {
+            AudioManager.Instance?.PlaySFX("UICancel");
+            return;
+        }
 
         int cost = upgrade.tiers[currentTier + 1].cost;
 
         if (!GameDataManager.Instance.SpendGold(cost))
         {
-            //Debug.Log("Not enough gold.");
+            AudioManager.Instance?.PlaySFX("UICancel");
             return;
         }
 
         GameDataManager.Instance.SetUpgradeTier(upgrade.upgradeId, currentTier + 1);
+        AudioManager.Instance?.PlaySFX("UIBuy");
         GoldUI.Instance?.SetGold(GameDataManager.Instance.GetGold());
 
         //Debug.Log($"{upgrade.displayName} bought. Tier {currentTier + 1}");
@@ -194,7 +199,7 @@ public class ShopManager : MonoBehaviour
         {
             if (!GameDataManager.Instance.SpendGold(colorData.cost))
             {
-                //Debug.Log("Not enough gold.");
+                AudioManager.Instance?.PlaySFX("UICancel");
                 return;
             }
 
@@ -203,6 +208,7 @@ public class ShopManager : MonoBehaviour
         }
 
         GameDataManager.Instance.SetSelectedColor(colorData.colorId);
+        AudioManager.Instance?.PlaySFX("UIBuy");
         playerColorApplier?.ApplyShopColor(colorData);
         //Debug.Log($"Selected color: {colorData.displayName}");
 

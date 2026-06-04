@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: Skeleton
   prefab: {fileID: 2454594840246160982, guid: 6e46788b95c225a47817f48e6e320927, type: 3}
+  attackSoundName: SkeletonAttack
+  hitSoundName: SkeletonHit
+  deathSoundName: EnemyDeath
   maxHealth: 70
   damage: 10
   attackSpeed: 0.7

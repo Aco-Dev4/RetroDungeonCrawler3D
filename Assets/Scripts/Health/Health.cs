@@ -104,6 +104,14 @@ public class Health : MonoBehaviour
 
         currentHealth = Mathf.Max(currentHealth - amount, 0);
 
+        if (currentHealth > 0)
+        {
+            if (TryGetComponent(out PlayerController player))
+                AudioManager.Instance?.PlaySFX("PlayerHit");
+            else if (TryGetComponent(out EnemyAI enemy))
+                enemy.PlayHitSound();
+        }
+
         ShowEnemyHealthBarAfterFirstHit();
         RefreshHealthVisuals();
 
@@ -155,6 +163,10 @@ public class Health : MonoBehaviour
     private void HandlePlayerDeath(PlayerController player)
     {
         player.HandleDeath();
+
+        AudioManager.Instance?.StopMusic();
+        AudioManager.Instance?.PlaySFX("PlayerDeath");
+        AudioManager.Instance?.PlaySFX("GameOver");
 
         GameManager.Instance?.SetState(GameState.GameOver);
         UIManager.Instance?.ShowGameOver();

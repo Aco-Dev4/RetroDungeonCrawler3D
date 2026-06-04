@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1255815643530403262}
   - component: {fileID: 4372527282856808298}
   - component: {fileID: 5164006052689267537}
+  - component: {fileID: 8887169030655873416}
   m_Layer: 5
   m_Name: ChooseButton
   m_TagString: Untagged
@@ -158,6 +159,19 @@ MonoBehaviour:
   m_EffectColor: {r: 1, g: 1, b: 1, a: 1}
   m_EffectDistance: {x: 2, y: 2}
   m_UseGraphicAlpha: 0
+--- !u!114 &8887169030655873416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1663117890913832428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71f3386598e3e714c9b706831476155e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
+  clickSoundName: UIClick
 --- !u!1 &2486715538739544845
 GameObject:
   m_ObjectHideFlags: 0

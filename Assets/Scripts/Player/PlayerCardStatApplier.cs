@@ -125,11 +125,11 @@ public static class PlayerCardStatApplier
     {
         if (stats == null) return;
 
-        stats.attackDamage += Mathf.RoundToInt(stats.attackDamage * (0.002f + 0.001f * (level - 1)));
-        stats.attackSpeed += stats.attackSpeed * (0.001f + 0.0005f * (level - 1));
+        stats.attackDamage += Mathf.RoundToInt(stats.attackDamage * (0.1f + 0.05f * (level - 1)));
+        stats.attackSpeed += stats.attackSpeed * (0.1f + 0.05f * (level - 1));
         stats.maxHealth += 20 + 10 * (level - 1);
         stats.moveSpeed += 0.2f + 0.1f * (level - 1);
-        stats.jumpPower += 0.5f + 0.25f * (level - 1);
+        stats.jumpPower += 0.2f + 0.1f * (level - 1);
     }
     #endregion
 }
