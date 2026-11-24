@@ -313,13 +313,13 @@ MonoBehaviour:
   rarityBanner: {fileID: 8017178565803076737}
   background: {fileID: 3950378024521867319}
   cardImage: {fileID: 6780275486247899985}
+  cardTypeCatalog: {fileID: 11400000, guid: 9d80b229ca554c96a31a290bd37fbe05, type: 2}
   chooseButton: {fileID: 1255815643530403262}
   buttonText: {fileID: 4307632370268956130}
   chooseButtonImage: {fileID: 2395048440564417614}
   chooseButtonColor: {r: 0, g: 1, b: 0, a: 1}
   upgradeButtonColor: {r: 0, g: 1, b: 1, a: 1}
   chooseDescriptionColor: {r: 1, g: 1, b: 1, a: 1}
-  upgradeDescriptionColor: {r: 0, g: 1, b: 0, a: 1}
   rarityColors:
   - rarity: 0
     bannerColor: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 1}

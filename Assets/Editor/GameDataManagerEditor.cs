@@ -19,7 +19,7 @@ public class GameDataManagerEditor : Editor
         if (canAddGold)
             EditorGUILayout.LabelField("Current Gold", manager.GetGold().ToString());
         else
-            EditorGUILayout.HelpBox("Enter Play Mode to add Gold to the active save.", MessageType.Info);
+            EditorGUILayout.HelpBox("Enter Play Mode to use the test controls on the active save.", MessageType.Info);
 
         using (new EditorGUI.DisabledScope(!canAddGold))
         {
@@ -29,8 +29,28 @@ public class GameDataManagerEditor : Editor
         }
 
         GUILayout.Space(10);
+        EditorGUILayout.LabelField("Test Unlocks", EditorStyles.boldLabel);
+        using (new EditorGUI.DisabledScope(!canAddGold))
+        {
+            if (GUILayout.Button("Unlock Forest"))
+                UnlockForest(manager, false);
+            if (GUILayout.Button("Unlock Hard Mode Forest"))
+                UnlockForest(manager, true);
+        }
+
+        GUILayout.Space(10);
         if (GUILayout.Button("Reset Saved Data"))
             manager.ResetSavedData();
+    }
+
+    private static void UnlockForest(GameDataManager manager, bool hardMode)
+    {
+        if (!manager.HasFinishedTutorial())
+            manager.SetFinishedTutorial(true);
+        if (hardMode)
+            manager.SetMapCompleted("Forest");
+
+        FindFirstObjectByType<MenuManager>()?.RefreshMapButtons();
     }
 
     private static void AddTestGold(GameDataManager manager, int amount)

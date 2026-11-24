@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e3bfa3e3e537fb47a2254f5dc63b3ab, type: 3}
+  m_Name: Rare_FlameSword
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: FLAME SWORD
+  description: SWORD HITS APPLY 10 TOTAL BURN DAMAGE
+  icon: {fileID: 0}
+  rarity: 1
+  cardTypes: 9
+  statType: 22
+  usePercent: 0
+  baseValue: 10
+  valuePerUpgrade: 2
+  baseUpgradeCost: 8
+  costIncreasePerLevel: 5
+  valueDisplayType: 6
+  canAppearInChest: 1
+  requiresWeapon: 1
+  requiresCriticalHits: 0
+  requiresFireCards: 1

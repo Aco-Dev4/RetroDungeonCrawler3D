@@ -16,6 +16,7 @@ MonoBehaviour:
   description: CRITICAL HITS DEAL +0.5X MORE DAMAGE
   icon: {fileID: 21300000, guid: a99fd3ac282ae8a43a67bcafca5a7f95, type: 3}
   rarity: 1
+  cardTypes: 2
   statType: 12
   usePercent: 0
   baseValue: 0.5

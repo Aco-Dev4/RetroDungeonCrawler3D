@@ -11,6 +11,6 @@ public class AnimationEventForwarder : MonoBehaviour
 
     public void ApplyAttackDamage()
     {
-        _playerController.ApplyAttackDamage();
+        _playerController.ApplyAttackDamageFromAnimation();
     }
 }

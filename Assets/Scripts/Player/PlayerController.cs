@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     private Camera _mainCamera;
     private Health _health;
     private PlayerVisualFeedback _visuals;
+    private PlayerPassiveAbilities _passiveAbilities;
 
     [Header("Core References")]
     [SerializeField] private PlayerData playerData;
@@ -24,6 +25,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerDeathEffectHandler deathEffectHandler;
     [SerializeField] private PlayerRewardEffectHandler rewardEffectHandler;
     [SerializeField] private PlayerVisualFeedbackSettings visualFeedbackSettings;
+    [SerializeField] private BurnSettings burnSettings;
+    [SerializeField] private FireballSettings fireballSettings;
+    internal FireballSettings FireballSettings => fireballSettings;
 
     [Header("Tutorial Override")]
     [SerializeField] private bool ignorePermanentUpgrades;
@@ -85,10 +89,16 @@ public class PlayerController : MonoBehaviour
     // #endregion
 
     #region Attack Runtime
-    private bool _canAttack = true;
-    private bool _hasSword;
+    private const float AttackInputBuffer = 0.15f;
+    private const float AttackBlendFraction = 0.07f;
+    private static readonly int PunchState = Animator.StringToHash("Base Layer.Attack");
+    private static readonly int SwordState = Animator.StringToHash("Base Layer.Player_Swing");
+    private static readonly int AttackSpeedParameter = Animator.StringToHash("AttackSpeed");
 
-    private float AttackInterval => 1f / _attackSpeed;
+    private bool _hasSword;
+    private float _nextAttackTime;
+    private float _attackQueuedUntil = float.NegativeInfinity;
+    private bool _attackHitPending;
     #endregion
 
     #region Runtime Stats
@@ -129,14 +139,29 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         if (GameManager.Instance == null || GameManager.Instance.State != GameState.Playing)
+        {
+            _attackQueuedUntil = float.NegativeInfinity;
+            if (GameManager.Instance?.State == GameState.GameOver)
+                _passiveAbilities?.CancelCast();
             return;
+        }
+
+        if (Application.isFocused)
+            TryStartQueuedAttack();
+        else
+            _attackQueuedUntil = float.NegativeInfinity;
 
         ReadMovement();
         HandleGravity();
         HandleSlide();
         HandleMovement();
         HandleFootsteps();
+        _passiveAbilities?.Tick(Time.deltaTime, IsGrounded());
         // HandleEarthquakeLanding();
+    }
+    private void OnDisable()
+    {
+        _passiveAbilities?.CancelCast();
     }
     #endregion
 
@@ -149,6 +174,8 @@ public class PlayerController : MonoBehaviour
         if (visualFeedbackSettings != null)
             _visuals = new PlayerVisualFeedback(_characterController, _animator, visualFeedbackSettings);
         _slideSurfaceLayers = LayerMask.GetMask("Default", "Ground", "Environment");
+        if (fireballSettings != null && burnSettings != null && _characterController != null)
+            _passiveAbilities = new PlayerPassiveAbilities(_characterController, enemyLayer, fireballSettings, burnSettings);
 
         if (runCardInventory == null)
             runCardInventory = GetComponent<RunCardInventory>();
@@ -177,6 +204,8 @@ public class PlayerController : MonoBehaviour
 
         if (swordObject != null)
             baseSwordScale = swordObject.transform.localScale;
+
+        UpdateSwordFlames();
     }
 
     private void UpdateSwordScale()
@@ -200,6 +229,24 @@ public class PlayerController : MonoBehaviour
     {
         rewardEffectHandler?.SetRerolls(_stats.rewardRerolls);
         deathEffectHandler?.SetRevives(_stats.guardianAngelRevives);
+        UpdateSwordFlames();
+        _passiveAbilities?.SetFireballLevel(_stats.fireballLevel, _stats.burnTickRateMultiplier);
+    }
+
+    private void UpdateSwordFlames()
+    {
+        if (swordObject == null || burnSettings == null) return;
+
+        bool hasFlameSword = _hasSword && _stats.swordBurnDamage > 0;
+        _visuals?.SetSwordFlames(swordObject.transform, burnSettings.swordFlames, hasFlameSword);
+    }
+
+    internal void OnEnemyKilled(Health defeatedEnemy)
+    {
+        if (!isActiveAndEnabled || _stats.deathExplosionRadius <= 0f || burnSettings == null) return;
+
+        combatEffectHandler?.PlayDeathExplosion(defeatedEnemy, burnSettings, _stats.deathExplosionRadius,
+            _stats.burnTickRateMultiplier, enemyLayer);
     }
 
     public void PlayGuardianReviveEffect() => _visuals?.PlayGuardianRevive();
@@ -256,9 +303,8 @@ public class PlayerController : MonoBehaviour
     public void OnAttack(InputAction.CallbackContext context)
     {
         if (!context.started || !CanUseGameplayInput()) return;
-        if (!_canAttack) return;
 
-        StartAttack();
+        QueueAttack();
     }
 
     private bool CanUseGameplayInput()
@@ -451,17 +497,36 @@ public class PlayerController : MonoBehaviour
     // #endregion
 
     #region Attack
-    private void StartAttack()
+    private void QueueAttack()
     {
-        _canAttack = false;
+        _attackQueuedUntil = Time.time + AttackInputBuffer;
+    }
 
-        if (_animator != null)
-        {
-            _animator.SetFloat("AttackSpeed", _attackSpeed);
-            _animator.SetTrigger(_hasSword ? "Swing" : "Attack");
-        }
+    private void TryStartQueuedAttack()
+    {
+        if (Time.time < _nextAttackTime || Time.time > _attackQueuedUntil) return;
 
-        StartCoroutine(AttackCooldown());
+        _attackQueuedUntil = float.NegativeInfinity;
+        if (_animator == null) return;
+
+        float attacksPerSecond = Mathf.Max(0.01f, _attackSpeed);
+        float interval = 1f / attacksPerSecond;
+        AnimationClip clip = _hasSword ? swordAttackClip : punchAttackClip;
+        float clipLength = clip != null ? clip.length : 1f;
+
+        _nextAttackTime = Time.time + interval;
+        _attackHitPending = true;
+        // Match both clip lengths and the entry blend to the same attack interval.
+        _animator.SetFloat(AttackSpeedParameter, clipLength * attacksPerSecond);
+        _animator.CrossFadeInFixedTime(_hasSword ? SwordState : PunchState, interval * AttackBlendFraction, 0, 0f);
+    }
+
+    public void ApplyAttackDamageFromAnimation()
+    {
+        if (!_attackHitPending || GameManager.Instance == null || GameManager.Instance.State != GameState.Playing) return;
+
+        _attackHitPending = false;
+        ApplyAttackDamage();
     }
 
     public void ApplyAttackDamage()
@@ -501,7 +566,11 @@ public class PlayerController : MonoBehaviour
             int healthBeforeHit = targetHealth.currentHealth;
             targetHealth.TakeDamage(attackResult.damage, gameObject);
 
-            if (attackResult.isCrit && targetHealth.currentHealth < healthBeforeHit)
+            bool dealtDamage = targetHealth.currentHealth < healthBeforeHit;
+            if (dealtDamage && _hasSword && _stats.swordBurnDamage > 0)
+                targetHealth.ApplyBurn(burnSettings, _stats.swordBurnDamage, _stats.burnTickRateMultiplier, gameObject);
+
+            if (attackResult.isCrit && dealtDamage)
                 combatEffectHandler?.PlayCriticalHitEffect(hits[i].bounds.center);
 
             if (attackResult.isCrit && !playedCritSound)
@@ -550,11 +619,6 @@ public class PlayerController : MonoBehaviour
         enemy.ApplyKnockback(transform.position, _knockbackStrength);
     }
 
-    private IEnumerator AttackCooldown()
-    {
-        yield return new WaitForSeconds(AttackInterval);
-        _canAttack = true;
-    }
     #endregion
 
     #region Death
@@ -676,6 +740,8 @@ public class PlayerController : MonoBehaviour
 
     public float GetWaveHealPercent() { return _stats.waveHealPercent; }
     public float GetLifestealPercent() { return _stats.lifestealPercent; }
+
+    public int GetGuardianAngelRevives() => deathEffectHandler != null ? deathEffectHandler.RemainingRevives : 0;
 
     public int GetRewardRerolls()
     {

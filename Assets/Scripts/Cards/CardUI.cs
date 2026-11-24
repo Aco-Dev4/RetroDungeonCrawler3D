@@ -27,6 +27,8 @@ public class CardUI : MonoBehaviour
     [SerializeField] private Image rarityBanner;
     [SerializeField] private Image background;
     [SerializeField] private Image cardImage;
+    [SerializeField] private CardTypeCatalog cardTypeCatalog;
+    private CardTypeBadges _typeBadges;
     [SerializeField] private Button chooseButton;
     [SerializeField] private TMP_Text buttonText;
     [SerializeField] private Image chooseButtonImage;
@@ -37,7 +39,6 @@ public class CardUI : MonoBehaviour
     [SerializeField] private Color chooseButtonColor = Color.blue;
     [SerializeField] private Color upgradeButtonColor = Color.green;
     [SerializeField] private Color chooseDescriptionColor = Color.white;
-    [SerializeField] private Color upgradeDescriptionColor = Color.green;
     #endregion
 
     #region Rarity Colors
@@ -75,7 +76,9 @@ public class CardUI : MonoBehaviour
         ApplyRewardVisuals(rewardOption.isUpgrade);
 
         if (descriptionText != null)
-            descriptionText.text = rewardOption.isUpgrade ? GetUpgradePreviewText(cardData) : cardData.description;
+            descriptionText.text = rewardOption.isUpgrade
+                ? GetUpgradePreviewText(cardData)
+                : cardData.description;
 
         if (buttonText != null)
             buttonText.text = rewardOption.isUpgrade ? "UPGRADE" : "CHOOSE";
@@ -102,6 +105,7 @@ public class CardUI : MonoBehaviour
 
         ApplyRarityColors(cardData.rarity);
         ApplyIcon(cardData.icon);
+        CardTypeBadges.Apply(ref _typeBadges, (RectTransform)transform, cardTypeCatalog, cardData.cardTypes, nameText);
     }
 
     private void ApplyRewardVisuals(bool isUpgrade)
@@ -110,7 +114,7 @@ public class CardUI : MonoBehaviour
             chooseButtonImage.color = isUpgrade ? upgradeButtonColor : chooseButtonColor;
 
         if (descriptionText != null)
-            descriptionText.color = isUpgrade ? upgradeDescriptionColor : chooseDescriptionColor;
+            descriptionText.color = isUpgrade ? Color.white : chooseDescriptionColor;
     }
 
     private void ApplyRarityColors(CardRarity rarity)
@@ -148,7 +152,9 @@ public class CardUI : MonoBehaviour
         if (ownedCard == null)
             return "";
 
-        return CardUpgradePreviewFormatter.GetPreviewText(ownedCard, playerController);
+        string preview = UpgradeComparisonText.HighlightNextValue(
+            CardUpgradePreviewFormatter.GetPreviewText(ownedCard, playerController));
+        return preview.Contains('\n') ? $"<size=87%>{preview}</size>" : preview;
     }
     #endregion
 

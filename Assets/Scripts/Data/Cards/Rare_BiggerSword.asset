@@ -16,6 +16,7 @@ MonoBehaviour:
   description: YOUR SWORD RANGE AND SIZE GET'S BIGGER
   icon: {fileID: 21300000, guid: a769d64c36135804e9c1523fc8dde742, type: 3}
   rarity: 1
+  cardTypes: 8
   statType: 6
   usePercent: 0
   baseValue: 0.4

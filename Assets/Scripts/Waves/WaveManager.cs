@@ -45,6 +45,9 @@ public class WaveManager : MonoBehaviour
     private bool _allWavesCompletedTriggered;
     private bool _tutorialReadyToFinish;
 
+    internal IReadOnlyList<WaveInstance> ActiveWaves => _activeWaves;
+    private bool IsRunOver => GameManager.Instance?.State == GameState.GameOver;
+
     public Action OnAllWavesCompleted;
     #endregion
 
@@ -62,7 +65,7 @@ public class WaveManager : MonoBehaviour
     #region Public
     public void OnNextWave(InputAction.CallbackContext context)
     {
-        if (!context.started) return;
+        if (!context.started || IsRunOver) return;
 
         if (TryHandleFinishPrompt())
             return;
@@ -99,7 +102,7 @@ public class WaveManager : MonoBehaviour
 
     public void TryShowTutorialFinish()
     {
-        if (!isTutorial) return;
+        if (!isTutorial || IsRunOver) return;
         if (!_tutorialReadyToFinish) return;
 
         finishPromptUI?.Show(mapName);
@@ -138,7 +141,7 @@ public class WaveManager : MonoBehaviour
     {
         while (!wave.IsCompleted)
         {
-            if (GameManager.Instance != null && GameManager.Instance.State == GameState.GameOver)
+            if (IsRunOver)
                 yield break;
 
             TrySpawnEnemy(wave);
@@ -153,7 +156,7 @@ public class WaveManager : MonoBehaviour
 
     private void EndWave(WaveInstance wave)
     {
-        if (wave == null) return;
+        if (wave == null || IsRunOver) return;
 
         //Debug.Log($"Wave {wave.waveNumber} completed.");
 
@@ -340,7 +343,7 @@ public class WaveManager : MonoBehaviour
     #region UI / Completion
     private bool TryHandleFinishPrompt()
     {
-        if (finishPromptUI == null || !finishPromptUI.IsVisible())
+        if (IsRunOver || finishPromptUI == null || !finishPromptUI.IsVisible())
             return false;
 
         if (isTutorial)
@@ -391,7 +394,7 @@ public class WaveManager : MonoBehaviour
 
     private void TryCompleteAllWaves()
     {
-        if (_allWavesCompletedTriggered) return;
+        if (IsRunOver || _allWavesCompletedTriggered) return;
         if (_nextWaveIndex < waves.Count) return;
         if (_activeWaves.Count > 0) return;
 

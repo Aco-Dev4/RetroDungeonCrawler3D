@@ -23,6 +23,30 @@ public class PlayerCombatEffectHandler : MonoBehaviour
             Instantiate(criticalHitEffectPrefab, position, Quaternion.identity);
     }
 
+    internal void PlayDeathExplosion(Health defeatedEnemy, BurnSettings settings, float radius,
+        float tickRateMultiplier, LayerMask enemyLayer)
+    {
+        Vector3 center = defeatedEnemy.TryGetComponent(out Collider body) && body.enabled
+            ? body.bounds.center
+            : defeatedEnemy.transform.position;
+
+        if (settings.deathExplosionParticles != null)
+        {
+            ParticleSystem burst = Instantiate(settings.deathExplosionParticles, center, Quaternion.identity);
+            burst.transform.localScale *= radius;
+            burst.Play(true);
+        }
+
+        Collider[] hits = Physics.OverlapSphere(center, radius, enemyLayer, QueryTriggerInteraction.Ignore);
+        foreach (Collider hit in hits)
+        {
+            Health target = hit.GetComponentInParent<Health>();
+            if (target == null || target == defeatedEnemy || !target.TryGetComponent<EnemyAI>(out _)) continue;
+
+            target.ApplyBurn(settings, settings.deathExplosionBurnDamage, tickRateMultiplier, playerController.gameObject);
+        }
+    }
+
     private void ApplyLifesteal(PlayerAttackResult attackResult)
     {
         if (playerController == null) return;

@@ -25,6 +25,10 @@ public class PlayerRuntimeStats
     public int guardianAngelRevives;
     public int guaranteedCritEveryXHits;
     public int earthquakeJumpLevel;
+    public int swordBurnDamage;
+    public float burnTickRateMultiplier;
+    public float deathExplosionRadius;
+    public int fireballLevel;
 
     public void LoadBaseStats(PlayerData playerData, bool ignorePermanentUpgrades, int tutorialBaseDamage)
     {
@@ -56,5 +60,9 @@ public class PlayerRuntimeStats
         guardianAngelRevives = 0;
         guaranteedCritEveryXHits = 0;
         earthquakeJumpLevel = 0;
+        swordBurnDamage = 0;
+        burnTickRateMultiplier = 1f;
+        deathExplosionRadius = 0f;
+        fireballLevel = 0;
     }
 }

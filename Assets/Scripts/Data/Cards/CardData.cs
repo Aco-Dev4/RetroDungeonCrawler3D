@@ -8,6 +8,7 @@ public class CardData : ScriptableObject
     [TextArea] public string description;
     public Sprite icon;
     public CardRarity rarity;
+    public CardType cardTypes;
     public CardStatType statType;
 
     [Header("Values")]
@@ -29,4 +30,7 @@ public class CardData : ScriptableObject
     public bool canAppearInChest = true;
     public bool requiresWeapon;
     public bool requiresCriticalHits;
+    public bool requiresFireCards;
+    [Tooltip("At least one of these cards must be owned in the current run.")]
+    public CardData[] requiresAnyRunCard;
 }

@@ -18316,7 +18316,7 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
-  punchAttackClip: {fileID: 0}
+  punchAttackClip: {fileID: 7400000, guid: 4a04f72e2dc33474992a66b171c1aac8, type: 2}
   swordObject: {fileID: 0}
   swordAttackClip: {fileID: 0}
   swordRangeBonus: 1

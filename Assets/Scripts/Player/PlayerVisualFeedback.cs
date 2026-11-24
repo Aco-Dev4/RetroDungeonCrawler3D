@@ -2,6 +2,17 @@ using UnityEngine;
 
 public sealed class PlayerVisualFeedback
 {
+    private ParticleSystem _swordFlames;
+
+    public void SetSwordFlames(Transform sword, ParticleSystem prefab, bool active)
+    {
+        if (active && _swordFlames == null && prefab != null)
+            _swordFlames = Object.Instantiate(prefab, sword, false);
+
+        if (_swordFlames != null && _swordFlames.gameObject.activeSelf != active)
+            _swordFlames.gameObject.SetActive(active);
+    }
+
     private const string PunchForearmPath = "Armature/body/arm1.R/arm2.R";
 
     private readonly CharacterController _controller;

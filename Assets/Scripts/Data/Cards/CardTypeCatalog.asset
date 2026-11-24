@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d80b229ca554c96a31a290bd37fbe06, type: 3}
+  m_Name: CardTypeCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::CardTypeCatalog
+  entries:
+  - type: 1
+    label: FIRE
+    icon: {fileID: 0}
+  - type: 2
+    label: CRITICAL HIT
+    icon: {fileID: 0}
+  - type: 4
+    label: ABILITY
+    icon: {fileID: 0}
+  - type: 8
+    label: SWORD
+    icon: {fileID: 0}

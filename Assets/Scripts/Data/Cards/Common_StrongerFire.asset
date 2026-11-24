@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e3bfa3e3e537fb47a2254f5dc63b3ab, type: 3}
+  m_Name: Common_StrongerFire
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: FASTER BURN
+  description: BURN DAMAGE TICKS FASTER
+  icon: {fileID: 0}
+  rarity: 0
+  cardTypes: 1
+  statType: 23
+  usePercent: 1
+  baseValue: 0.25
+  valuePerUpgrade: 0.1
+  baseUpgradeCost: 4
+  costIncreasePerLevel: 5
+  valueDisplayType: 1
+  canAppearInChest: 1
+  requiresWeapon: 1
+  requiresCriticalHits: 0
+  requiresFireCards: 1
+  requiresAnyRunCard:
+  - {fileID: 11400000, guid: 7a534a13b2d94b3cb2f86a2394ee1151, type: 2}
+  - {fileID: 11400000, guid: c149c11374e644088100017c233e4976, type: 2}
+  - {fileID: 11400000, guid: 9d80b229ca554c96a31a290bd37fbe01, type: 2}

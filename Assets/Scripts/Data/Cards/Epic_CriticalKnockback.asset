@@ -16,6 +16,7 @@ MonoBehaviour:
   description: YOUR CRITICAL HITS DEAL A LOT OF KNOCKBACK
   icon: {fileID: 21300000, guid: 2965cc1ddf19321498c282ed69190806, type: 3}
   rarity: 2
+  cardTypes: 2
   statType: 17
   usePercent: 0
   baseValue: 8

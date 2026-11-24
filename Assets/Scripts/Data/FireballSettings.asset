@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d80b229ca554c96a31a290bd37fbe03, type: 3}
+  m_Name: FireballSettings
+  m_EditorClassIdentifier: Assembly-CSharp::FireballSettings
+  cooldown: 15
+  warningTime: 0.65
+  fallTime: 1.4
+  fallHeight: 8
+  landingSurfaces:
+    serializedVersion: 2
+    m_Bits: 8
+  baseImpactDamage: 50
+  impactDamagePerUpgrade: 12
+  baseBurnDamage: 24
+  burnDamagePerUpgrade: 6
+  baseRadius: 3.5
+  radiusPerUpgrade: 0.15
+  landingMarker: {fileID: 3767216481064570956, guid: eda92b18d0fb78f4b8d2f42a2e7167e3, type: 3}
+  fallingFireball: {fileID: 8007383085145717427, guid: 378c4260275fec748a9c27dad95d0f83, type: 3}
+  impactBurst: {fileID: 1338588851276365756, guid: 775d70f2c8bc3db488a782b22d676db0, type: 3}
+  impactSound: WizardImpact

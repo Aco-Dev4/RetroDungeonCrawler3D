@@ -661,6 +661,14 @@ public class CardManager : MonoBehaviour
             (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedCriticalHits()))
             return false;
 
+        if (card.requiresFireCards &&
+            (GameDataManager.Instance == null || !GameDataManager.Instance.HasUnlockedFireCards()))
+            return false;
+
+        if (card.requiresAnyRunCard is { Length: > 0 } &&
+            (runCardInventory == null || !Array.Exists(card.requiresAnyRunCard, runCardInventory.HasCard)))
+            return false;
+
         return true;
     }
     #endregion

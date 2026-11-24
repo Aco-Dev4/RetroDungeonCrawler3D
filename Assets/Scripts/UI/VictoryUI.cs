@@ -36,6 +36,8 @@ public class VictoryUI : MonoBehaviour
 
     public void Show(string mapName)
     {
+        if (GameManager.Instance?.State == GameState.GameOver) return;
+
         if (rootPanel != null)
             rootPanel.SetActive(true);
 

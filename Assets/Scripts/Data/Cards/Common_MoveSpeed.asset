@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Common_MoveSpeed
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: MOVE SPEED
-  description: MOVEMENT SPEED +20%
+  description: MOVEMENT SPEED +18%
   icon: {fileID: 21300000, guid: dee16ad40c72ee847b02688a0c2007a4, type: 3}
   rarity: 0
   statType: 2
   usePercent: 1
-  baseValue: 0.2
-  valuePerUpgrade: 0.1
+  baseValue: 0.18
+  valuePerUpgrade: 0.09
   baseUpgradeCost: 4
   costIncreasePerLevel: 5
   valueDisplayType: 2

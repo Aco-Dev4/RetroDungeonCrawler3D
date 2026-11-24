@@ -13,6 +13,14 @@ public static class CardUpgradePreviewFormatter
         if (cardData.statType == CardStatType.Heal)
             return GetHealPreview(cardData, health);
 
+        if (cardData.statType == CardStatType.Fireball && playerController?.FireballSettings != null)
+        {
+            var settings = playerController.FireballSettings;
+            var current = settings.GetImpact(ownedCard.level);
+            var next = settings.GetImpact(ownedCard.level + 1);
+            return $"HIT {current.damage} -> {next.damage}\nBURN {current.burnDamage} -> {next.burnDamage}\n{current.radius:0.##}m -> {next.radius:0.##}m";
+        }
+
         float currentValue = ownedCard.GetCurrentValue();
         float nextValue = currentValue + cardData.valuePerUpgrade;
 
@@ -50,6 +58,12 @@ public static class CardUpgradePreviewFormatter
 
             case CardValueDisplayType.FinalMultiplierStat:
                 return FormatFinalMultiplierStat(cardData, currentValue, nextValue, playerController);
+
+            case CardValueDisplayType.Damage:
+                return $"{Mathf.RoundToInt(currentValue)} DMG -> {Mathf.RoundToInt(nextValue)} DMG";
+
+            case CardValueDisplayType.Distance:
+                return $"{currentValue:0.##}m -> {nextValue:0.##}m";
 
             case CardValueDisplayType.FlatNumber:
             default:
@@ -118,6 +132,8 @@ public static class CardUpgradePreviewFormatter
                 return playerController.GetLifestealPercent();
             case CardStatType.RewardReroll:
                 return playerController.GetRewardRerolls();
+            case CardStatType.GuardianAngel:
+                return playerController.GetGuardianAngelRevives();
             default:
                 return 0f;
         }

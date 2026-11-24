@@ -5,5 +5,7 @@ public enum CardValueDisplayType
     Multiplier,              // 0.5 -> 1.5x
     FinalFlatStat,           // player 1 jump -> 2 jumps
     FinalPercentStat,        // player 1% crit -> 3%
-    FinalMultiplierStat      // player 1.5x crit dmg -> 2x
+    FinalMultiplierStat,     // player 1.5x crit dmg -> 2x
+    Damage,                  // 10 DMG -> 12 DMG
+    Distance                 // 2.5m -> 3m
 }

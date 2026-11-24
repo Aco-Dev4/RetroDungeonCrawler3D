@@ -16,6 +16,8 @@ public class WaveInstance
 
     private readonly List<EnemyAI> _aliveEnemies = new();
 
+    internal IReadOnlyList<EnemyAI> AliveEnemies => _aliveEnemies;
+
     public bool IsCompleted => remainingToSpawn <= 0 && GetAliveEnemyCount() <= 0;
 
     public WaveInstance(WaveData waveData, int number)

@@ -8491,24 +8491,32 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2281622122134834824, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: ownedCards.Array.size
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2281622122134834824, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: ownedCards.Array.data[0].level
-      value: 1
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2281622122134834824, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: ownedCards.Array.data[1].level
-      value: 1
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281622122134834824, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: ownedCards.Array.data[2].level
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2281622122134834824, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: ownedCards.Array.data[0].cardData
       value: 
-      objectReference: {fileID: 11400000, guid: f82ecdcdb9f43ec408c430db73ed105b, type: 2}
+      objectReference: {fileID: 11400000, guid: 9d80b229ca554c96a31a290bd37fbe01, type: 2}
     - target: {fileID: 2281622122134834824, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: ownedCards.Array.data[1].cardData
       value: 
-      objectReference: {fileID: 11400000, guid: c998a1f92b68c574981abd137b57b449, type: 2}
+      objectReference: {fileID: 11400000, guid: c149c11374e644088100017c233e4976, type: 2}
+    - target: {fileID: 2281622122134834824, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
+      propertyPath: ownedCards.Array.data[2].cardData
+      value: 
+      objectReference: {fileID: 11400000, guid: 7a534a13b2d94b3cb2f86a2394ee1151, type: 2}
     - target: {fileID: 2438224261915071567, guid: fe23d6b96e88b9042be5421a97b6964c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

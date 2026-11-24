@@ -13,6 +13,7 @@ public class Health : MonoBehaviour
     #region Runtime
     private PlayerVignetteController _vignette;
     private HealthFeedback _feedback;
+    private BurnEffect _burn;
     private bool _hasTakenDamage;
     #endregion
 
@@ -29,12 +30,15 @@ public class Health : MonoBehaviour
     private void OnDisable()
     {
         _feedback?.StopDamageFlash();
+        _burn?.Stop();
     }
     #endregion
 
     #region Setup
     public void Init(int maxHealthValue)
     {
+        _burn?.Stop();
+        _hasTakenDamage = false;
         maxHealth = maxHealthValue;
         currentHealth = maxHealth;
 
@@ -109,6 +113,25 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(int amount, GameObject damageSource)
     {
+        ApplyDamage(amount, damageSource, playHitSound: true);
+    }
+
+    public void ApplyBurn(BurnSettings settings, int totalDamage, float tickRateMultiplier = 1f, GameObject damageSource = null)
+    {
+        if (!isActiveAndEnabled || _isInvulnerable || currentHealth <= 0) return;
+        if (settings == null || totalDamage <= 0) return;
+
+        _burn ??= new BurnEffect(this);
+        _burn.Apply(settings, totalDamage, tickRateMultiplier, damageSource);
+    }
+
+    internal void TakeBurnDamage(int amount, GameObject damageSource)
+    {
+        ApplyDamage(amount, damageSource, playHitSound: false);
+    }
+
+    private void ApplyDamage(int amount, GameObject damageSource, bool playHitSound)
+    {
         if (_isInvulnerable) return;
         if (amount <= 0) return;
         if (currentHealth <= 0) return;
@@ -116,10 +139,11 @@ public class Health : MonoBehaviour
         currentHealth = Mathf.Max(currentHealth - amount, 0);
 
         if (currentHealth > 0)
-        {
             _feedback?.PlayDamageFlash();
 
-            if (TryGetComponent(out PlayerController player))
+        if (playHitSound && currentHealth > 0)
+        {
+            if (TryGetComponent<PlayerController>(out _))
                 AudioManager.Instance?.PlaySFX("PlayerHit");
             else if (TryGetComponent(out EnemyAI enemy))
                 enemy.PlayHitSound();
@@ -129,11 +153,19 @@ public class Health : MonoBehaviour
         RefreshHealthVisuals();
 
         if (currentHealth <= 0)
-            Die();
+            Die(damageSource);
     }
     #endregion
 
     #region Visuals
+    internal void SetBurnPreview(int incomingDamage)
+    {
+        if (incomingDamage > 0)
+            ShowEnemyHealthBarAfterFirstHit();
+
+        healthBar?.SetBurnDamage(incomingDamage);
+    }
+
     private void RefreshHealthVisuals()
     {
         if (healthBar != null)
@@ -158,7 +190,7 @@ public class Health : MonoBehaviour
     #endregion
 
     #region Death
-    private void Die()
+    private void Die(GameObject damageSource)
     {
         PlayerController player = GetComponent<PlayerController>();
 
@@ -166,7 +198,11 @@ public class Health : MonoBehaviour
             return;
 
         if (TryGetComponent(out EnemyAI enemy))
+        {
             enemy.HandleDeath();
+            if (damageSource != null && damageSource.TryGetComponent(out PlayerController attacker))
+                attacker.OnEnemyKilled(this);
+        }
         else if (player != null)
             HandlePlayerDeath(player);
 

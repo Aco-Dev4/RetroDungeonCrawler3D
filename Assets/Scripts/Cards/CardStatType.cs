@@ -21,5 +21,9 @@ public enum CardStatType
     GuardianAngel,
     GuaranteedCrit,
     AllPowerful,
-    EarthquakeJump
+    EarthquakeJump,
+    FlameSword,
+    BurnTickRate,
+    ExplosiveDeath,
+    Fireball
 }

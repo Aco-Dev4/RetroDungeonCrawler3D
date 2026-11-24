@@ -103,6 +103,22 @@ public static class PlayerCardStatApplier
                 ApplyAllPowerful(stats, level);
                 break;
 
+            case CardStatType.BurnTickRate:
+                stats.burnTickRateMultiplier += value;
+                break;
+
+            case CardStatType.Fireball:
+                stats.fireballLevel = level;
+                break;
+
+            case CardStatType.ExplosiveDeath:
+                stats.deathExplosionRadius += value;
+                break;
+
+            case CardStatType.FlameSword:
+                stats.swordBurnDamage = Mathf.RoundToInt(value);
+                break;
+
             case CardStatType.EarthquakeJump:
                 stats.earthquakeJumpLevel += Mathf.RoundToInt(value);
                 break;

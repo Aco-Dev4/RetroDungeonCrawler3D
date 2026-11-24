@@ -18,6 +18,8 @@ public class PlayerDeathEffectHandler : MonoBehaviour
     #endregion
 
     #region Public
+    public int RemainingRevives => _guardianAngelRevives;
+
     public void SetRevives(int totalAmountFromCards)
     {
         totalAmountFromCards = Mathf.Max(0, totalAmountFromCards);

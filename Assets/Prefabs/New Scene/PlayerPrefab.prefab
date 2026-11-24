@@ -4297,6 +4297,8 @@ MonoBehaviour:
   _animator: {fileID: 6747788678302921684}
   runCardInventory: {fileID: 2281622122134834824}
   visualFeedbackSettings: {fileID: 11400000, guid: 6c5cdd87793a74c48b5337f5f3ceaec0, type: 2}
+  burnSettings: {fileID: 11400000, guid: 7a534a13b2d94b3cb2f86a2394ee1154, type: 2}
+  fireballSettings: {fileID: 11400000, guid: 9d80b229ca554c96a31a290bd37fbe02, type: 2}
   ignorePermanentUpgrades: 0
   tutorialBaseDamage: 15
   enemyLayer:

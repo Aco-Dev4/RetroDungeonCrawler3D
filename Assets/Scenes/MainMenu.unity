@@ -1120,6 +1120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShopManager
   contentParent: {fileID: 951975997}
   shopItemPrefab: {fileID: 6122939492984881266, guid: c33d5c45b75794d49b18957b82d8c3f2, type: 3}
+  colorsTabButton: {fileID: 65433522}
   playerColorApplier: {fileID: 7499131380736674201}
   upgradeDatabase: {fileID: 11400000, guid: 423b0036c80881e40a730c358cc72a8e, type: 2}
   colorDatabase: {fileID: 11400000, guid: d0ed5e1188addd046834f3ea4fb682bc, type: 2}

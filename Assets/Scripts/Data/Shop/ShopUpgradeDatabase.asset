@@ -104,7 +104,20 @@ MonoBehaviour:
       valueText: LOCKED
       intValue: 0
       floatValue: 0
-    - cost: 10
+    - cost: 9
+      valueText: UNLOCKED
+      intValue: 1
+      floatValue: 0
+  - upgradeId: FireCards
+    displayName: FIRE CARDS
+    description: UNLOCK FIRE CARDS IN CHESTS
+    icon: {fileID: 0}
+    tiers:
+    - cost: 0
+      valueText: LOCKED
+      intValue: 0
+      floatValue: 0
+    - cost: 14
       valueText: UNLOCKED
       intValue: 1
       floatValue: 0

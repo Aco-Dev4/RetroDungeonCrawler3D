@@ -13,6 +13,7 @@ public class UpgradeCardSlotUI : MonoBehaviour
     [SerializeField] private TMP_Text valueText;
     [SerializeField] private TMP_Text costText;
     [SerializeField] private Image cardIcon;
+    [SerializeField] private CardTypeCatalog cardTypeCatalog;
     [SerializeField] private Button upgradeButton;
     [SerializeField] private Image background;
     [SerializeField] private Image upgradeButtonImage;
@@ -29,8 +30,21 @@ public class UpgradeCardSlotUI : MonoBehaviour
 
     #region Runtime
     private OwnedCard _ownedCard;
+    private CardTypeBadges _typeBadges;
+    private Vector2 _valueTextSize;
+    private Vector2 _valueTextPosition;
+    private float _valueFontSize;
     private Action<OwnedCard> _onUpgradePressed;
     #endregion
+
+    private void Awake()
+    {
+        if (valueText == null) return;
+
+        _valueTextSize = valueText.rectTransform.sizeDelta;
+        _valueTextPosition = valueText.rectTransform.anchoredPosition;
+        _valueFontSize = valueText.fontSize;
+    }
 
     #region Setup
     public void Setup(OwnedCard ownedCard, int upgradeCost, int currentSilver, PlayerController playerController, Action<OwnedCard> onUpgradePressed)
@@ -46,6 +60,7 @@ public class UpgradeCardSlotUI : MonoBehaviour
 
         ApplyTexts(ownedCard, upgradeCost, playerController);
         ApplyIcon(cardData.icon);
+        CardTypeBadges.Apply(ref _typeBadges, (RectTransform)transform, cardTypeCatalog, cardData.cardTypes, cardNameText);
         ApplyRarityColor(cardData.rarity);
         ApplyButtonColor(canAfford);
         SetupButton();
@@ -65,7 +80,14 @@ public class UpgradeCardSlotUI : MonoBehaviour
             costText.text = upgradeCost.ToString();
 
         if (valueText != null)
-            valueText.text = CardUpgradePreviewFormatter.GetPreviewText(ownedCard, playerController);
+        {
+            string preview = CardUpgradePreviewFormatter.GetPreviewText(ownedCard, playerController);
+            bool multiline = preview.Contains('\n');
+            valueText.fontSize = multiline ? 10f : _valueFontSize;
+            valueText.rectTransform.sizeDelta = _valueTextSize + Vector2.up * (multiline ? 14f : 0f);
+            valueText.rectTransform.anchoredPosition = _valueTextPosition + Vector2.up * (multiline ? 7f : 0f);
+            valueText.text = UpgradeComparisonText.HighlightNextValue(preview);
+        }
     }
 
     private void ApplyIcon(Sprite icon)

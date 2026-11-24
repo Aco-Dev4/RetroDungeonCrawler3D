@@ -61,6 +61,9 @@ public class MenuManager : MonoBehaviour
             if (mapButtons[i] != null)
                 mapButtons[i].RefreshState();
         }
+
+        if (difficultyPanel != null && difficultyPanel.activeSelf)
+            RefreshDifficultyButtons();
     }
 
     public void OpenDifficultyPanel(string sceneName, string mapId)
@@ -71,7 +74,12 @@ public class MenuManager : MonoBehaviour
         if (difficultyPanel != null)
             difficultyPanel.SetActive(true);
 
-        bool hardUnlocked = GameDataManager.Instance != null && GameDataManager.Instance.HasCompletedMap(mapId);
+        RefreshDifficultyButtons();
+    }
+
+    private void RefreshDifficultyButtons()
+    {
+        bool hardUnlocked = GameDataManager.Instance != null && GameDataManager.Instance.HasCompletedMap(selectedMapId);
 
         if (normalDifficultyButton != null)
             normalDifficultyButton.interactable = true;

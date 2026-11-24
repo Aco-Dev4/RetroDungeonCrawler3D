@@ -343,6 +343,11 @@ public class GameDataManager : MonoBehaviour
         return GetUpgradeTier("NewRarity") >= 2;
     }
 
+    public bool HasUnlockedFireCards()
+    {
+        return GetUpgradeTier("FireCards") >= 1;
+    }
+
     public bool HasUnlockedCriticalHits()
     {
         return GetUpgradeTier("CriticalHits") >= 1;

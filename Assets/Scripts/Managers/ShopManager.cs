@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum ShopTab
 {
@@ -13,6 +14,7 @@ public class ShopManager : MonoBehaviour
     private ShopTab _currentTab = ShopTab.Upgrades;
     [SerializeField] private Transform contentParent;
     [SerializeField] private ShopItemUI shopItemPrefab;
+    [SerializeField] private Button colorsTabButton;
     [SerializeField] private PlayerColorApplier playerColorApplier;
 
     [Header("Upgrades")]
@@ -57,6 +59,12 @@ public class ShopManager : MonoBehaviour
 
     public void ShowColorsTab()
     {
+        if (GameDataManager.Instance?.HasSword() != true)
+        {
+            ShowUpgradesTab();
+            return;
+        }
+
         _currentTab = ShopTab.Colors;
         ClearItems();
 
@@ -68,7 +76,17 @@ public class ShopManager : MonoBehaviour
     {
         ClearItems();
 
+        bool ownsSword = GameDataManager.Instance?.HasSword() == true;
+        if (colorsTabButton != null)
+            colorsTabButton.interactable = ownsSword;
+
         if (upgradeDatabase == null) return;
+
+        if (!ownsSword)
+        {
+            CreateUpgradeItem(upgradeDatabase.GetUpgrade("Sword"));
+            return;
+        }
 
         for (int i = 0; i < upgradeDatabase.upgrades.Count; i++)
             CreateUpgradeItem(upgradeDatabase.upgrades[i]);
@@ -87,7 +105,7 @@ public class ShopManager : MonoBehaviour
         int cost = isMaxed ? 0 : nextTierData.cost;
         string valueText = upgrade.GetTierDisplayText(currentTierData);
         if (nextTierData != null)
-            valueText += $" -> <color=#BBF879>{upgrade.GetTierDisplayText(nextTierData)}</color>";
+            valueText = UpgradeComparisonText.HighlightNextValue($"{valueText} -> {upgrade.GetTierDisplayText(nextTierData)}");
 
         ShopItemUI item = Instantiate(shopItemPrefab, contentParent);
 
@@ -113,6 +131,7 @@ public class ShopManager : MonoBehaviour
     private void BuyUpgrade(ShopUpgradeData upgrade)
     {
         if (GameDataManager.Instance == null) return;
+        if (upgrade.upgradeId != "Sword" && !GameDataManager.Instance.HasSword()) return;
 
         int currentTier = GetUpgradeTier(upgrade.upgradeId);
         if (currentTier >= upgrade.tiers.Count - 1)
@@ -148,8 +167,10 @@ public class ShopManager : MonoBehaviour
     {
         for (int i = _spawnedItems.Count - 1; i >= 0; i--)
         {
-            if (_spawnedItems[i] != null)
-                Destroy(_spawnedItems[i].gameObject);
+            if (_spawnedItems[i] == null) continue;
+
+            _spawnedItems[i].gameObject.SetActive(false);
+            Destroy(_spawnedItems[i].gameObject);
         }
 
         _spawnedItems.Clear();
@@ -193,7 +214,7 @@ public class ShopManager : MonoBehaviour
 
     private void BuyOrSelectColor(ShopColorData colorData)
     {
-        if (GameDataManager.Instance == null) return;
+        if (GameDataManager.Instance?.HasSword() != true) return;
 
         bool isOwned = GameDataManager.Instance.HasColor(colorData.colorId);
 

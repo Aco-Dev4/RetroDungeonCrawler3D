@@ -316,8 +316,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278241791
-  m_fontColor: {r: 1, g: 0.7879016, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -879,8 +879,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4283693718
-  m_fontColor: {r: 0.5882353, g: 0.9803922, b: 0.3254902, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1040,6 +1040,7 @@ MonoBehaviour:
   valueText: {fileID: 649008141058080449}
   costText: {fileID: 8507498546756716392}
   cardIcon: {fileID: 7334237118353789084}
+  cardTypeCatalog: {fileID: 11400000, guid: 9d80b229ca554c96a31a290bd37fbe05, type: 2}
   upgradeButton: {fileID: 7546867612613274193}
   background: {fileID: 4862639626661149895}
   upgradeButtonImage: {fileID: 7485926141377004679}
