@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
@@ -36,6 +37,7 @@ public class WaveManager : MonoBehaviour
 
     #region Runtime
     private readonly List<WaveInstance> _activeWaves = new();
+    private readonly List<EnemySpawner> _readySpawners = new();
 
     private int _nextWaveIndex;
     private int _completedWaveCount;
@@ -51,7 +53,6 @@ public class WaveManager : MonoBehaviour
     {
         Instance = this;
 
-        waveCounterUI?.SetWave(0, waves.Count);
         upgradeTableArrow?.HideArrow();
 
         UpdateNextWavePrompt();
@@ -123,7 +124,6 @@ public class WaveManager : MonoBehaviour
         _activeWaves.Add(wave);
 
         RunStatsManager.Instance?.SetCurrentWave(waveNumber);
-        waveCounterUI?.SetWave(waveNumber, waves.Count);
         wavePopupUI?.Show($"Wave {waveNumber} Started", WavePopupType.WaveStarted);
         AudioManager.Instance?.PlaySFX("WaveStart");
         upgradeTableArrow?.HideArrow();
@@ -235,19 +235,19 @@ public class WaveManager : MonoBehaviour
 
     private EnemySpawner GetRandomReadySpawner()
     {
-        List<EnemySpawner> readySpawners = new();
+        _readySpawners.Clear();
 
         foreach (EnemySpawner spawner in spawners)
         {
             if (spawner != null && spawner.IsReady)
-                readySpawners.Add(spawner);
+                _readySpawners.Add(spawner);
         }
 
-        if (readySpawners.Count == 0)
+        if (_readySpawners.Count == 0)
             return null;
 
-        int index = UnityEngine.Random.Range(0, readySpawners.Count);
-        return readySpawners[index];
+        int index = UnityEngine.Random.Range(0, _readySpawners.Count);
+        return _readySpawners[index];
     }
 
     private EnemySpawnData GetNextEnemy(WaveInstance wave)
@@ -287,25 +287,32 @@ public class WaveManager : MonoBehaviour
         if (wave == null) return;
         if (wave.data.rewardPrefab == null) return;
 
-        Vector3 rayOrigin = wave.lastDeathPosition + Vector3.up * 2f;
-
-        if (!Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 10f, groundLayer))
+        if (!TryGetChestGroundPosition(wave.lastDeathPosition, out Vector3 groundPosition))
             return;
 
-        Vector3 forwardOnGround = Vector3.ProjectOnPlane(wave.lastDeathRotation * Vector3.forward, hit.normal).normalized;
-
-        if (forwardOnGround.sqrMagnitude <= 0.01f)
-            forwardOnGround = Vector3.ProjectOnPlane(transform.forward, hit.normal).normalized;
-
-        Quaternion groundRotation = Quaternion.LookRotation(forwardOnGround, hit.normal);
-        Vector3 spawnPosition = hit.point + hit.normal * 0.5f;
-        Quaternion spawnRotation = groundRotation * Quaternion.Euler(0f, 180f, 0f);
+        Vector3 spawnPosition = groundPosition + Vector3.up * 0.5f;
+        Quaternion spawnRotation = Quaternion.Euler(0f, wave.lastDeathRotation.eulerAngles.y + 180f, 0f);
 
         GameObject chestObject = Instantiate(wave.data.rewardPrefab, spawnPosition, spawnRotation);
         RewardChest chest = chestObject.GetComponent<RewardChest>();
 
         if (chest != null)
             chest.SetWaveNumber(wave.waveNumber);
+    }
+
+    private bool TryGetChestGroundPosition(Vector3 deathPosition, out Vector3 groundPosition)
+    {
+        Vector3 rayOrigin = deathPosition + Vector3.up * 2f;
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 10f, groundLayer,
+                QueryTriggerInteraction.Ignore) && hit.normal.y >= 0.7f)
+        {
+            groundPosition = hit.point;
+            return true;
+        }
+
+        bool found = NavMesh.SamplePosition(deathPosition, out NavMeshHit walkable, 2f, NavMesh.AllAreas);
+        groundPosition = walkable.position;
+        return found;
     }
 
     private void GiveHardModeClearReward()
@@ -350,6 +357,8 @@ public class WaveManager : MonoBehaviour
 
     private void UpdateNextWavePrompt()
     {
+        waveCounterUI?.SetWave(_nextWaveIndex, waves.Count, _activeWaves.Count);
+
         if (nextWavePromptUI == null) return;
 
         bool canStartMoreWaves = _nextWaveIndex < waves.Count;

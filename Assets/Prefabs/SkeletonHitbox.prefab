@@ -66,3 +66,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c220d0e40b4c37340a9b041a31ea08e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackHitbox
+  swingEffectPrefab: {fileID: 500438000711575915, guid: 354fbd0441fdaa44cb0faf014cf5832f, type: 3}

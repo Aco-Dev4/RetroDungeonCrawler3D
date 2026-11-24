@@ -15,6 +15,12 @@ public class ChestRewardUI : MonoBehaviour
     [SerializeField] private RunCardInventory runCardInventory;
     [SerializeField] private PlayerController playerController;
     [SerializeField] private CardManager cardManager;
+
+    [Header("Close Confirmation")]
+    [SerializeField] private ChestDiscardConfirmation discardConfirmationPrefab;
+
+    [Header("Reward")]
+    [SerializeField, Range(2, 3)] private int rewardChoiceCount = 2;
     #endregion
 
     #region Reroll UI
@@ -32,10 +38,12 @@ public class ChestRewardUI : MonoBehaviour
 
     #region Runtime
     private RewardChest _currentChest;
+    private ChestDiscardConfirmation _discardConfirmation;
+
+    private bool IsConfirmingDiscard => _discardConfirmation != null && _discardConfirmation.gameObject.activeSelf;
 
     private readonly List<CardUI> _spawnedCards = new();
     private readonly List<RewardOption> _currentOptions = new();
-    private readonly List<RewardOption> _previousOptions = new();
     #endregion
 
     #region Unity
@@ -60,62 +68,122 @@ public class ChestRewardUI : MonoBehaviour
 
     public void Open(RewardChest chest)
     {
-        _currentChest = chest;
+        if (chest == null || _currentChest != null) return;
 
+        if (rootPanel == null || cardManager == null || cardUIPrefab == null || cardContainer == null ||
+            runCardInventory == null || playerController == null || GameManager.Instance == null ||
+            GameManager.Instance.State != GameState.Playing)
+        {
+            chest.OnRewardUIClosed();
+            return;
+        }
+
+        List<RewardOption> options = cardManager.GetRandomRewardOptions(GetRewardChoiceCount());
+        if (options.Count == 0)
+        {
+            chest.OnRewardUIClosed();
+            return;
+        }
+
+        _currentChest = chest;
         SetPanelVisible(true);
         GameManager.Instance?.PauseGame();
-
-        _previousOptions.Clear();
-
-        ShowRewardOptions(2);
+        ShowRewardOptions(options);
         RefreshRerollUI();
+    }
+
+    public void RequestClose()
+    {
+        if (_currentChest == null || !IsOpen() || IsConfirmingDiscard) return;
+
+        if (discardConfirmationPrefab == null)
+        {
+            Debug.LogError("Assign a discard confirmation prefab on ChestRewardUI.", this);
+            return;
+        }
+
+        if (_discardConfirmation == null)
+            _discardConfirmation = Instantiate(discardConfirmationPrefab, rootPanel.transform);
+
+        _discardConfirmation.Show(Close);
+    }
+
+    public void CancelCloseConfirmation()
+    {
+        if (IsConfirmingDiscard)
+            _discardConfirmation.Hide();
     }
 
     public void Close()
     {
+        RewardChest chest = _currentChest;
+        if (chest == null) return;
+
+        _currentChest = null;
+        CancelCloseConfirmation();
         ClearSpawnedCards();
+        _currentOptions.Clear();
         SetPanelVisible(false);
         GameManager.Instance?.ResumeGame();
-
-        if (_currentChest != null)
-        {
-            _currentChest.OnRewardUIClosed();
-            _currentChest = null;
-        }
+        chest.OnRewardUIClosed();
     }
 
     public void OnRerollPressed()
     {
-        if (!TryPayForReroll())
+        if (_currentChest == null || !IsOpen() || IsConfirmingDiscard) return;
+
+        PlayerRewardEffectHandler handler = playerController.GetRewardEffectHandler();
+        if (handler == null || (!handler.HasRerolls() &&
+            (CurrencyManager.Instance == null || CurrencyManager.Instance.GetSilver() < handler.GetPaidRerollCost())))
         {
             AudioManager.Instance?.PlaySFX("UICancel");
             return;
         }
 
+        List<RewardOption> options = cardManager.GetRandomRewardOptions(GetRewardChoiceCount(), _currentOptions);
+        if (options.Count == 0 || (!handler.TrySpendReroll() && !handler.TryBuyPaidReroll()))
+        {
+            AudioManager.Instance?.PlaySFX("UICancel");
+            return;
+        }
         AudioManager.Instance?.PlaySFX("UIBuy");
-
-        _previousOptions.Clear();
-        _previousOptions.AddRange(_currentOptions);
-
-        ShowRewardOptions(2);
+        ShowRewardOptions(options);
         RefreshRerollUI();
     }
     #endregion
 
     #region Reward Display
-    private void ShowRewardOptions(int amount)
+    private int GetRewardChoiceCount()
+    {
+        GameDataManager data = GameDataManager.Instance;
+        if (playerController.UsesPermanentUpgrades && data != null && data.HasExtraChestChoice())
+            return 3;
+
+        return rewardChoiceCount;
+    }
+
+    private void ShowRewardOptions(List<RewardOption> options)
     {
         ClearSpawnedCards();
         _currentOptions.Clear();
 
-        if (cardManager == null || cardUIPrefab == null || cardContainer == null)
-            return;
+        _currentOptions.AddRange(options);
 
-        List<RewardOption> rewardOptions = cardManager.GetRandomRewardOptions(amount, _previousOptions);
-        _currentOptions.AddRange(rewardOptions);
+        foreach (RewardOption option in options)
+            SpawnRewardCard(option);
 
-        for (int i = 0; i < rewardOptions.Count; i++)
-            SpawnRewardCard(rewardOptions[i]);
+        ResizePanelToCards();
+    }
+
+    private void ResizePanelToCards()
+    {
+        int cardCount = _spawnedCards.Count;
+        if (cardCount == 0 || rootPanel.transform is not RectTransform panel ||
+            !cardContainer.TryGetComponent(out HorizontalLayoutGroup row)) return;
+
+        float cardWidth = LayoutUtility.GetPreferredWidth((RectTransform)_spawnedCards[0].transform);
+        float panelWidth = row.padding.horizontal + cardWidth * cardCount + row.spacing * (cardCount - 1);
+        panel.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, panelWidth);
     }
 
     private void SpawnRewardCard(RewardOption rewardOption)
@@ -124,7 +192,7 @@ public class ChestRewardUI : MonoBehaviour
             return;
 
         CardUI cardUI = Instantiate(cardUIPrefab, cardContainer);
-        cardUI.Setup(rewardOption, OnRewardOptionChosen);
+        cardUI.Setup(rewardOption, OnRewardOptionChosen, playerController);
 
         _spawnedCards.Add(cardUI);
     }
@@ -134,7 +202,10 @@ public class ChestRewardUI : MonoBehaviour
         for (int i = _spawnedCards.Count - 1; i >= 0; i--)
         {
             if (_spawnedCards[i] != null)
+            {
+                _spawnedCards[i].gameObject.SetActive(false);
                 Destroy(_spawnedCards[i].gameObject);
+            }
         }
 
         _spawnedCards.Clear();
@@ -150,78 +221,23 @@ public class ChestRewardUI : MonoBehaviour
     #region Choosing Rewards
     private void OnRewardOptionChosen(RewardOption rewardOption)
     {
+        if (_currentChest == null || !IsOpen() || IsConfirmingDiscard || !_currentOptions.Contains(rewardOption)) return;
         if (rewardOption == null || rewardOption.cardData == null) return;
         if (runCardInventory == null || playerController == null) return;
 
         AudioManager.Instance?.PlaySFX("UIBuy");
 
-        if (rewardOption.isUpgrade)
-            ApplyUpgradeReward(rewardOption.cardData);
-        else
-            ApplyNewCardReward(rewardOption.cardData);
+        OwnedCard ownedCard = runCardInventory.GetOwnedCard(rewardOption.cardData);
+        // Free upgrades retain their value for future reward weighting.
+        int silverInvestment = rewardOption.isUpgrade && ownedCard != null ? ownedCard.GetUpgradeCost() : 0;
+        runCardInventory.ApplyCard(rewardOption.cardData, playerController, silverInvestment);
 
         Close();
     }
 
-    private void ApplyNewCardReward(CardData cardData)
-    {
-        if (cardData == null) return;
-
-        bool alreadyOwned = runCardInventory.HasCard(cardData);
-
-        if (!alreadyOwned)
-            runCardInventory.AddCard(cardData);
-        else
-            runCardInventory.UpgradeCard(cardData);
-
-        playerController.RecalculateStats();
-        ApplyInstantCardEffect(cardData, alreadyOwned);
-    }
-
-    private void ApplyUpgradeReward(CardData cardData)
-    {
-        if (cardData == null) return;
-
-        OwnedCard ownedCard = runCardInventory.GetOwnedCard(cardData);
-        int fakeInvestment = ownedCard != null ? GetUpgradeCost(ownedCard) : 0;
-
-        runCardInventory.UpgradeCard(cardData, fakeInvestment);
-        RunStatsManager.Instance?.AddCardUpgraded();
-
-        playerController.RecalculateStats();
-        ApplyInstantCardEffect(cardData, true);
-    }
-
-    private void ApplyInstantCardEffect(CardData cardData, bool wasUpgrade)
-    {
-        if (cardData == null || playerController == null) return;
-
-        Health health = playerController.GetComponent<Health>();
-        if (health == null) return;
-
-        switch (cardData.statType)
-        {
-            case CardStatType.Heal:
-                health.HealPercent(wasUpgrade ? cardData.valuePerUpgrade : cardData.baseValue);
-                break;
-        }
-    }
     #endregion
 
     #region Rerolls
-    private bool TryPayForReroll()
-    {
-        if (playerController == null) return false;
-
-        PlayerRewardEffectHandler rewardHandler = playerController.GetRewardEffectHandler();
-        if (rewardHandler == null) return false;
-
-        if (rewardHandler.TrySpendReroll())
-            return true;
-
-        return rewardHandler.TryBuyPaidReroll();
-    }
-
     private void RefreshRerollUI()
     {
         PlayerRewardEffectHandler rewardHandler = playerController != null ? playerController.GetRewardEffectHandler() : null;
@@ -273,13 +289,4 @@ public class ChestRewardUI : MonoBehaviour
     }
     #endregion
 
-    #region Costs
-    private int GetUpgradeCost(OwnedCard ownedCard)
-    {
-        if (ownedCard == null || ownedCard.cardData == null)
-            return 0;
-
-        return ownedCard.cardData.baseUpgradeCost + ownedCard.cardData.costIncreasePerLevel * (ownedCard.level - 1);
-    }
-    #endregion
 }

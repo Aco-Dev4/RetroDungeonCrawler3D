@@ -260,6 +260,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   currentHealth: 0
   healthBar: {fileID: 2664658838784728467}
+  feedbackSettings: {fileID: 11400000, guid: bf20fa0caf9a29e4a9b5f960be009049, type: 2}
 --- !u!1 &7941866496728493820
 GameObject:
   m_ObjectHideFlags: 0

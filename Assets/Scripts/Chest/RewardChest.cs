@@ -7,12 +7,16 @@ public class RewardChest : MonoBehaviour, IInteractable
 
     [Header("References")]
     [SerializeField] private Animator animator;
+    [SerializeField] private Transform lid;
     [SerializeField] private GameObject interactionCanvas;
     [SerializeField] private GameObject outlineObject;
+    [SerializeField] private RewardChestLight lightEffectPrefab;
 
     [Header("Set")]
     [SerializeField] private float timeToDespawn = 2f;
+    [SerializeField, Min(0f)] private float beamPreviewTime = 0.18f;
 
+    private RewardChestLight _lightEffect;
     private bool _opened;
     private PlayerInteract _playerInteract;
     private static RewardChest _activeChest;
@@ -21,6 +25,11 @@ public class RewardChest : MonoBehaviour, IInteractable
     private void Awake()
     {
         interactionCanvas.SetActive(false);
+        if (lightEffectPrefab != null)
+        {
+            _lightEffect = Instantiate(lightEffectPrefab, transform);
+            _lightEffect.FollowLid(lid);
+        }
 
         if (outlineObject != null)
             outlineObject.SetActive(false);
@@ -68,6 +77,14 @@ public class RewardChest : MonoBehaviour, IInteractable
 
     public void OnChestOpened()
     {
+        StartCoroutine(ShowReward());
+    }
+
+    private IEnumerator ShowReward()
+    {
+        if (_lightEffect != null && beamPreviewTime > 0f)
+            yield return new WaitForSeconds(beamPreviewTime);
+
         if (ChestRewardUI.Instance != null)
             ChestRewardUI.Instance.Open(this);
     }
@@ -78,6 +95,7 @@ public class RewardChest : MonoBehaviour, IInteractable
             _activeChest = null;
 
         _playerInteract = null;
+        _lightEffect?.Hide();
 
         StartCoroutine(Despawn());
     }

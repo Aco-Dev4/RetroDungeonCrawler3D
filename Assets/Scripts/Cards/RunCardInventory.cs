@@ -32,20 +32,28 @@ public class RunCardInventory : MonoBehaviour
     #endregion
 
     #region Card Changes
-    public void AddCard(CardData cardData)
+    public void ApplyCard(CardData cardData, PlayerController player, int silverInvestment = 0)
     {
-        if (cardData == null) return;
-        if (HasCard(cardData)) return;
+        if (cardData == null || player == null) return;
 
-        ownedCards.Add(new OwnedCard(cardData));
-    }
-
-    public void UpgradeCard(CardData cardData, int silverInvestment = 0)
-    {
         OwnedCard ownedCard = GetOwnedCard(cardData);
-        if (ownedCard == null) return;
+        bool isUpgrade = ownedCard != null;
+        if (isUpgrade)
+        {
+            ownedCard.Upgrade(silverInvestment);
+            RunStatsManager.Instance?.AddCardUpgraded();
+        }
+        else
+        {
+            ownedCards.Add(new OwnedCard(cardData));
+        }
+        player.RecalculateStats();
 
-        ownedCard.Upgrade(silverInvestment);
+        float gainedValue = isUpgrade ? cardData.valuePerUpgrade : cardData.baseValue;
+        if (cardData.acquisitionEffect != null)
+            cardData.acquisitionEffect.Apply(player, gainedValue);
+        else if (cardData.statType == CardStatType.Heal && player.TryGetComponent(out Health health))
+            health.HealPercent(gainedValue);
     }
 
     public void ClearCards()

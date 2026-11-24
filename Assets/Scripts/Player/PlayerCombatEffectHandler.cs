@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerCombatEffectHandler : MonoBehaviour
 {
     [SerializeField] private PlayerController playerController;
+    [SerializeField] private ParticleSystem criticalHitEffectPrefab;
 
     private void Awake()
     {
@@ -14,6 +15,12 @@ public class PlayerCombatEffectHandler : MonoBehaviour
     {
         ApplyLifesteal(attackResult);
         ApplyCriticalKnockback(attackResult, enemy);
+    }
+
+    public void PlayCriticalHitEffect(Vector3 position)
+    {
+        if (criticalHitEffectPrefab != null)
+            Instantiate(criticalHitEffectPrefab, position, Quaternion.identity);
     }
 
     private void ApplyLifesteal(PlayerAttackResult attackResult)

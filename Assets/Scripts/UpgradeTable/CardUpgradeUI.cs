@@ -91,7 +91,10 @@ public class CardUpgradeUI : MonoBehaviour
         for (int i = _spawnedSlots.Count - 1; i >= 0; i--)
         {
             if (_spawnedSlots[i] != null)
+            {
+                _spawnedSlots[i].gameObject.SetActive(false);
                 Destroy(_spawnedSlots[i].gameObject);
+            }
         }
 
         _spawnedSlots.Clear();
@@ -109,7 +112,7 @@ public class CardUpgradeUI : MonoBehaviour
     {
         if (ownedCard == null || ownedCard.cardData == null) return;
         if (CurrencyManager.Instance == null) return;
-        if (runCardInventory == null || playerController == null) return;
+        if (runCardInventory == null || playerController == null || !IsOpen()) return;
 
         int cost = GetUpgradeCost(ownedCard);
 
@@ -122,13 +125,7 @@ public class CardUpgradeUI : MonoBehaviour
         CurrencyManager.Instance.SetSilver(CurrencyManager.Instance.GetSilver() - cost);
         AudioManager.Instance?.PlaySFX("UIBuy");
 
-        CardData cardData = ownedCard.cardData;
-
-        runCardInventory.UpgradeCard(cardData, cost);
-        RunStatsManager.Instance?.AddCardUpgraded();
-        playerController.RecalculateStats();
-
-        ApplyInstantUpgradeEffect(cardData);
+        runCardInventory.ApplyCard(ownedCard.cardData, playerController, cost);
 
         Refresh();
         WaveManager.Instance?.OnTutorialUpgradeCompleted();
@@ -136,26 +133,7 @@ public class CardUpgradeUI : MonoBehaviour
 
     private int GetUpgradeCost(OwnedCard ownedCard)
     {
-        if (ownedCard == null || ownedCard.cardData == null)
-            return 0;
-
-        if (useTutorialUpgradeCost)
-            return tutorialUpgradeCost;
-
-        return ownedCard.cardData.baseUpgradeCost + ownedCard.cardData.costIncreasePerLevel * (ownedCard.level - 1);
-    }
-
-    private void ApplyInstantUpgradeEffect(CardData cardData)
-    {
-        if (cardData == null || playerController == null) return;
-
-        switch (cardData.statType)
-        {
-            case CardStatType.Heal:
-                Health health = playerController.GetComponent<Health>();
-                health?.HealPercent(cardData.valuePerUpgrade);
-                break;
-        }
+        return useTutorialUpgradeCost ? tutorialUpgradeCost : ownedCard.GetUpgradeCost();
     }
     #endregion
 }

@@ -6,11 +6,13 @@ public class Health : MonoBehaviour
     private int maxHealth;
     public int currentHealth;
     public HealthBar healthBar;
+    [SerializeField] private HealthFeedbackSettings feedbackSettings;
     private bool _isInvulnerable;
     #endregion
 
     #region Runtime
     private PlayerVignetteController _vignette;
+    private HealthFeedback _feedback;
     private bool _hasTakenDamage;
     #endregion
 
@@ -18,9 +20,15 @@ public class Health : MonoBehaviour
     private void Awake()
     {
         _vignette = GetComponent<PlayerVignetteController>();
+        if (feedbackSettings != null)
+            _feedback = new HealthFeedback(this, feedbackSettings);
 
         if (maxHealth <= 0)
             InitFromCurrentHealth();
+    }
+    private void OnDisable()
+    {
+        _feedback?.StopDamageFlash();
     }
     #endregion
 
@@ -84,9 +92,12 @@ public class Health : MonoBehaviour
         if (amount <= 0) return;
         if (currentHealth <= 0) return;
 
+        int healthBefore = currentHealth;
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
 
         RefreshHealthVisuals();
+        if (currentHealth > healthBefore)
+            _feedback?.PlayHeal();
     }
 
     public void HealPercent(float percent)
@@ -106,6 +117,8 @@ public class Health : MonoBehaviour
 
         if (currentHealth > 0)
         {
+            _feedback?.PlayDamageFlash();
+
             if (TryGetComponent(out PlayerController player))
                 AudioManager.Instance?.PlaySFX("PlayerHit");
             else if (TryGetComponent(out EnemyAI enemy))
@@ -168,7 +181,7 @@ public class Health : MonoBehaviour
         AudioManager.Instance?.PlaySFX("PlayerDeath");
         AudioManager.Instance?.PlaySFX("GameOver");
 
-        GameManager.Instance?.SetState(GameState.GameOver);
+        GameManager.Instance?.GameOver();
         UIManager.Instance?.ShowGameOver();
     }
 

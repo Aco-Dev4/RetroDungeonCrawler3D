@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11bd0853ffc24a1d8f7d4236b6ef6a93, type: 3}
+  m_Name: PlayerVisualFeedbackSettings
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVisualFeedbackSettings
+  jumpPuff: {fileID: 729338702245936978, guid: dd920e78cb2347847b5cac8da17e46ac, type: 3}
+  jumpPuffHeight: 0.07
+  fistPuff: {fileID: 6106636821036054862, guid: fe70ca7bce9d96a48a485d9f25adc6ac, type: 3}
+  forearmLength: 0.43
+  fistPuffOffset: 0.15
+  swordSlash: {fileID: 7357172557787330503, guid: 4f0b6a0b27de3734f8264b07ab2426a1, type: 3}
+  swordEcho: {fileID: 8226183635634838880, guid: 4223dd6d5f3f28b4594ea50f1b67a236, type: 3}
+  guardianReviveGlow: {fileID: 2900628678458953606, guid: 2a4cd329d0e8fe447bb31a71d4fe6bce, type: 3}

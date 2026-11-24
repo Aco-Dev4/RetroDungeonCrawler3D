@@ -58,6 +58,9 @@ public class PlayerDeathEffectHandler : MonoBehaviour
         health.SetInvulnerable(true);
         invulnerabilityVisual?.StartInvulnerabilityEffect(reviveDelay + immunityDuration);
         health.Revive(1);
+        AudioManager.Instance?.PlaySFX("GuardianAngel");
+        if (TryGetComponent(out PlayerController player))
+            player.PlayGuardianReviveEffect();
 
         yield return new WaitForSeconds(reviveDelay);
 

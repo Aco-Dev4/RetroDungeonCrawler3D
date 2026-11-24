@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController _characterController;
     private Camera _mainCamera;
     private Health _health;
+    private PlayerVisualFeedback _visuals;
 
     [Header("Core References")]
     [SerializeField] private PlayerData playerData;
@@ -22,6 +23,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerRunEffectHandler runEffectHandler;
     [SerializeField] private PlayerDeathEffectHandler deathEffectHandler;
     [SerializeField] private PlayerRewardEffectHandler rewardEffectHandler;
+    [SerializeField] private PlayerVisualFeedbackSettings visualFeedbackSettings;
 
     [Header("Tutorial Override")]
     [SerializeField] private bool ignorePermanentUpgrades;
@@ -36,6 +38,8 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Movement Runtime
+    private int _slideSurfaceLayers;
+    private InputAction _moveAction;
     private Vector2 _input;
     private Vector3 _direction;
 
@@ -127,7 +131,7 @@ public class PlayerController : MonoBehaviour
         if (GameManager.Instance == null || GameManager.Instance.State != GameState.Playing)
             return;
 
-        HandleRotation();
+        ReadMovement();
         HandleGravity();
         HandleSlide();
         HandleMovement();
@@ -142,6 +146,9 @@ public class PlayerController : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
         _mainCamera = Camera.main;
         _health = GetComponent<Health>();
+        if (visualFeedbackSettings != null)
+            _visuals = new PlayerVisualFeedback(_characterController, _animator, visualFeedbackSettings);
+        _slideSurfaceLayers = LayerMask.GetMask("Default", "Ground", "Environment");
 
         if (runCardInventory == null)
             runCardInventory = GetComponent<RunCardInventory>();
@@ -195,6 +202,8 @@ public class PlayerController : MonoBehaviour
         deathEffectHandler?.SetRevives(_stats.guardianAngelRevives);
     }
 
+    public void PlayGuardianReviveEffect() => _visuals?.PlayGuardianRevive();
+
     private bool ShouldForceGuaranteedCrit()
     {
         if (_stats.guaranteedCritEveryXHits <= 0)
@@ -222,13 +231,17 @@ public class PlayerController : MonoBehaviour
     #region Input
     public void Move(InputAction.CallbackContext context)
     {
-        _input = context.ReadValue<Vector2>();
-        _direction = new Vector3(_input.x, 0f, _input.y);
+        _moveAction = context.action;
     }
 
     public void Jump(InputAction.CallbackContext context)
     {
-        if (!context.started) return;
+        if (!context.started || !CanUseGameplayInput()) return;
+        TryJump();
+    }
+
+    private void TryJump()
+    {
         if (!CanJump()) return;
 
         if (_numberOfJumps == 0)
@@ -236,34 +249,42 @@ public class PlayerController : MonoBehaviour
 
         _numberOfJumps++;
         _velocity = _jumpPower;
+        _visuals?.PlayJumpPuff();
         AudioManager.Instance?.PlaySFX("PlayerJump");
     }
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (!context.started) return;
+        if (!context.started || !CanUseGameplayInput()) return;
         if (!_canAttack) return;
 
         StartAttack();
     }
+
+    private bool CanUseGameplayInput()
+    {
+        return isActiveAndEnabled && Application.isFocused &&
+               GameManager.Instance != null && GameManager.Instance.State == GameState.Playing;
+    }
     #endregion
 
     #region Movement
-    private void HandleRotation()
+    private void ReadMovement()
     {
-        if (_input.sqrMagnitude == 0f) return;
-        if (_mainCamera == null) return;
+        _input = Application.isFocused && _moveAction != null && _moveAction.enabled
+            ? _moveAction.ReadValue<Vector2>()
+            : Vector2.zero;
 
-        _direction = Quaternion.Euler(0f, _mainCamera.transform.eulerAngles.y, 0f) * new Vector3(_input.x, 0f, _input.y);
+        _direction = new Vector3(_input.x, 0f, _input.y);
+        if (_input.sqrMagnitude == 0f || _mainCamera == null) return;
 
+        _direction = Quaternion.Euler(0f, _mainCamera.transform.eulerAngles.y, 0f) * _direction;
         Quaternion targetRotation = Quaternion.LookRotation(_direction, Vector3.up);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
     }
 
     private void HandleGravity()
     {
-        if (_isSliding) return;
-
         if (IsGrounded() && _velocity < 0f)
             _velocity = -1f;
         else
@@ -282,7 +303,8 @@ public class PlayerController : MonoBehaviour
     {
         if (_characterController == null) return;
 
-        if (Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, out RaycastHit hitInfo, 2f))
+        if (_velocity <= 0f && Physics.Raycast(transform.position + Vector3.up * 0.1f,
+                Vector3.down, out RaycastHit hitInfo, 2f, _slideSurfaceLayers, QueryTriggerInteraction.Ignore))
         {
             float slopeAngle = Vector3.Angle(hitInfo.normal, Vector3.up);
 
@@ -290,8 +312,8 @@ public class PlayerController : MonoBehaviour
             {
                 _isSliding = true;
 
-                Vector3 slopeDirection = Vector3.ProjectOnPlane(Vector3.down, hitInfo.normal).normalized;
-                _characterController.Move(slopeDirection * (_moveSpeed * Time.deltaTime));
+                _direction.y = 0f;
+                _direction += Vector3.ProjectOnPlane(Vector3.down, hitInfo.normal).normalized;
 
                 return;
             }
@@ -308,8 +330,7 @@ public class PlayerController : MonoBehaviour
 
         if (_animator != null)
         {
-            float moveAmount = new Vector3(_direction.x, 0f, _direction.z).magnitude;
-            _animator.SetFloat("Speed", moveAmount);
+            _animator.SetFloat("Speed", _input.magnitude);
         }
     }
 
@@ -448,11 +469,22 @@ public class PlayerController : MonoBehaviour
         AudioManager.Instance?.PlaySFX(_hasSword ? "PlayerSword" : "PlayerPunch");
 
         float finalRange = PlayerDamageCalculator.GetAttackRange(_stats, _hasSword, swordRangeBonus);
+        float attackRadius = finalRange * 0.5f;
+        Vector3 attackOrigin = transform.position + transform.forward * attackRadius;
+        if (_hasSword)
+        {
+            float baseRange = Mathf.Max(0.01f, playerData.attackRange + swordRangeBonus);
+            _visuals?.PlaySwordSlash(attackOrigin, attackRadius, finalRange / baseRange);
+        }
+        else
+        {
+            _visuals?.PlayFistPuff();
+        }
+
         bool forceCrit = ShouldForceGuaranteedCrit();
         PlayerAttackResult attackResult = PlayerDamageCalculator.GetAttackResult(_stats, _hasSword, swordDamageBonus, _health, forceCrit);
 
-        Vector3 attackOrigin = transform.position + transform.forward * (finalRange * 0.5f);
-        Collider[] hits = Physics.OverlapSphere(attackOrigin, finalRange * 0.5f, enemyLayer);
+        Collider[] hits = Physics.OverlapSphere(attackOrigin, attackRadius, enemyLayer);
 
         HitEnemies(hits, attackResult);
     }
@@ -466,7 +498,11 @@ public class PlayerController : MonoBehaviour
             if (!TryGetEnemyHitData(hits[i], out Health targetHealth, out EnemyAI enemy))
                 continue;
 
+            int healthBeforeHit = targetHealth.currentHealth;
             targetHealth.TakeDamage(attackResult.damage, gameObject);
+
+            if (attackResult.isCrit && targetHealth.currentHealth < healthBeforeHit)
+                combatEffectHandler?.PlayCriticalHitEffect(hits[i].bounds.center);
 
             if (attackResult.isCrit && !playedCritSound)
             {
@@ -610,6 +646,8 @@ public class PlayerController : MonoBehaviour
     {
         runEffectHandler?.OnWaveCompleted();
     }
+
+    public bool UsesPermanentUpgrades => !ignorePermanentUpgrades;
 
     public PlayerRewardEffectHandler GetRewardEffectHandler()
     {

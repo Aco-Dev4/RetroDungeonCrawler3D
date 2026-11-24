@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 322083628952763147}
   - component: {fileID: 7759296182496784547}
   - component: {fileID: 4528150021355058758}
+  - component: {fileID: 5036839186680434271}
   m_Layer: 7
   m_Name: OrcEnemy
   m_TagString: Untagged
@@ -232,6 +233,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   currentHealth: 0
   healthBar: {fileID: 8610345856205901319}
+  feedbackSettings: {fileID: 11400000, guid: 87f2f64719ce454c8789a76fe61bcce2, type: 2}
 --- !u!1 &1881804372226051921
 GameObject:
   m_ObjectHideFlags: 0
@@ -1069,3 +1071,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0a608d38b048cd4f9f3f5aae5e2a05b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimationEventForwarder
+--- !u!114 &5036839186680434271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 580938970311413625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a36561bf90af48d885b37b6a0ad61327, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OrcSlamEffects
+  warningMaterial: {fileID: 2100000, guid: 2219f8d2e72a44c41882128bc841979e, type: 2}
+  impactPrefab: {fileID: 3201716496212298890, guid: 2b75e8983f9da634492ce2adcf79bc5f, type: 3}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8

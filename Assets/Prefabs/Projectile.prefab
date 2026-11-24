@@ -129,10 +129,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackProjectile
   speed: 10
   lifetime: 10
-  ignoreDestroyOnLayers:
+  groundLayers:
     serializedVersion: 2
-    m_Bits: 128
-  destroyOnAnyCollision: 0
+    m_Bits: 8
+  playerLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  impactEffectPrefab: {fileID: 8223656021750814959, guid: 2a52f312899845d4b816b685a4349873, type: 3}
+  impactSoundName: WizardImpact
 --- !u!1 &8203971933358639402
 GameObject:
   m_ObjectHideFlags: 0

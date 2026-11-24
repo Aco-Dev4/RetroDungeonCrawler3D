@@ -18,6 +18,7 @@ public class EnemyAI : MonoBehaviour
     private NavMeshAgent _agent;
     private Animator _animator;
     private Collider _collider;
+    private OrcSlamEffects _slamEffects;
 
     [Header("Mini Boss")]
     [SerializeField] private GameObject miniBossIcon;
@@ -27,8 +28,10 @@ public class EnemyAI : MonoBehaviour
     private GameObject _player;
     private Health _playerHealth;
     private Collider _playerCollider;
-    private Vector3 _lastValidDestination;
     private float _distanceToPlayer;
+    private NavMeshPath _chasePath;
+    private float _nextPathUpdateTime;
+    private const float PathUpdateInterval = 0.2f;
     #endregion
 
     #region Attack
@@ -102,6 +105,7 @@ public class EnemyAI : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
         _collider = GetComponent<Collider>();
         _animator = GetComponentInChildren<Animator>();
+        _slamEffects = GetComponent<OrcSlamEffects>();
     }
 
     private void ResolvePlayer()
@@ -342,8 +346,11 @@ public class EnemyAI : MonoBehaviour
 
     private void ResumeMovement()
     {
-        if (_agent != null && _agent.enabled && _agent.isOnNavMesh)
+        if (_agent != null && _agent.enabled && _agent.isOnNavMesh && _agent.isStopped)
+        {
             _agent.isStopped = false;
+            _nextPathUpdateTime = 0f;
+        }
 
         if (_animator != null)
             _animator.SetBool("IsMoving", true);
@@ -354,25 +361,14 @@ public class EnemyAI : MonoBehaviour
     private void MoveToPlayer()
     {
         if (_agent == null || !_agent.enabled || !_agent.isOnNavMesh) return;
-        if (_player == null) return;
+        if (_agent.isOnOffMeshLink || Time.time < _nextPathUpdateTime) return;
 
-        NavMeshPath path = new NavMeshPath();
-        _agent.CalculatePath(_player.transform.position, path);
+        _nextPathUpdateTime = Time.time + PathUpdateInterval;
+        _chasePath ??= new NavMeshPath();
 
-        if (path.status == NavMeshPathStatus.PathComplete)
-        {
-            _lastValidDestination = _player.transform.position;
-            _agent.SetDestination(_lastValidDestination);
-        }
-        else if (path.status == NavMeshPathStatus.PathPartial && path.corners.Length > 0)
-        {
-            _lastValidDestination = path.corners[^1];
-            _agent.SetDestination(_lastValidDestination);
-        }
-        else if (_lastValidDestination != Vector3.zero)
-        {
-            _agent.SetDestination(_lastValidDestination);
-        }
+        // A partial path still lets the enemy approach a target above or outside the NavMesh.
+        if (_agent.CalculatePath(_player.transform.position, _chasePath))
+            _agent.SetPath(_chasePath);
     }
 
     private void HandleAgentRotationMode()
@@ -458,17 +454,23 @@ public class EnemyAI : MonoBehaviour
 
         IEnemyAttack attack = attackObject.GetComponent<IEnemyAttack>();
         attack?.Init(_stats.damage, gameObject, _player.transform.position);
+        _slamEffects?.PlayImpact();
     }
 
     public void DisableRotation()
     {
         _canRotate = false;
+
+        if (_isAttacking && _slamEffects != null && attackOrigin != null && attackPrefab != null &&
+            attackPrefab.TryGetComponent(out BoxCollider hitbox))
+            _slamEffects.ShowWarning(attackOrigin, hitbox);
     }
 
     public void OnAttackFinished()
     {
         _isAttacking = false;
         _canRotate = true;
+        _slamEffects?.HideWarning();
     }
 
     private IEnumerator AttackCooldown()

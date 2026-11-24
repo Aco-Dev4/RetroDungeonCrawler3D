@@ -19,7 +19,7 @@ MonoBehaviour:
   deathSoundName: EnemyDeath
   maxHealth: 50
   damage: 15
-  attackSpeed: 0.45
+  attackSpeed: 0.35
   attackRange: 10
   moveSpeed: 3
   weight: 1

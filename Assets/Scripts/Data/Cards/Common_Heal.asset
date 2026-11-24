@@ -20,6 +20,7 @@ MonoBehaviour:
   usePercent: 0
   baseValue: 0.5
   valuePerUpgrade: 0.25
+  acquisitionEffect: {fileID: 11400000, guid: 11aef07572cd47e78b7e635934523d3e, type: 2}
   baseUpgradeCost: 10
   costIncreasePerLevel: 10
   valueDisplayType: 0

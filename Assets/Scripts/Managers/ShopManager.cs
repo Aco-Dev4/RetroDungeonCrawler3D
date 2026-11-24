@@ -85,7 +85,9 @@ public class ShopManager : MonoBehaviour
         ShopUpgradeTier nextTierData = isMaxed ? null : upgrade.tiers[currentTier + 1];
 
         int cost = isMaxed ? 0 : nextTierData.cost;
-        string valueText = currentTierData.valueText;
+        string valueText = upgrade.GetTierDisplayText(currentTierData);
+        if (nextTierData != null)
+            valueText += $" -> <color=#BBF879>{upgrade.GetTierDisplayText(nextTierData)}</color>";
 
         ShopItemUI item = Instantiate(shopItemPrefab, contentParent);
 

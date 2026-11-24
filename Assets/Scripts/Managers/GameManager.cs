@@ -18,18 +18,13 @@ public class GameManager : MonoBehaviour
         Instance = this;
     }
 
-    public void SetState(GameState newState)
-    {
-        State = newState;
-    }
-
     public void PauseGame()
     {
         if (State != GameState.Playing) return;
 
         State = GameState.Paused;
         Time.timeScale = 0f;
-        playerInput.SwitchCurrentActionMap("UI");
+        playerInput?.SwitchCurrentActionMap("UI");
         CursorManager.Instance?.UnlockCursor();
     }
 
@@ -39,7 +34,7 @@ public class GameManager : MonoBehaviour
 
         State = GameState.Playing;
         Time.timeScale = 1f;
-        playerInput.SwitchCurrentActionMap("Gameplay");
+        playerInput?.SwitchCurrentActionMap("Gameplay");
         CursorManager.Instance?.LockCursor();
     }
 
@@ -48,7 +43,7 @@ public class GameManager : MonoBehaviour
         State = GameState.GameOver;
         RunTimer.Instance?.StopTimer();
         Time.timeScale = 1f;
-        playerInput.SwitchCurrentActionMap("UI");
+        playerInput?.SwitchCurrentActionMap("UI");
         CursorManager.Instance?.UnlockCursor();
     }
 }

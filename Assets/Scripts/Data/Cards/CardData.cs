@@ -15,6 +15,9 @@ public class CardData : ScriptableObject
     public float baseValue;
     public float valuePerUpgrade = 0.05f;
 
+    [Header("Optional effect on pickup or upgrade")]
+    public CardAcquisitionEffect acquisitionEffect;
+
     [Header("Upgrade Cost")]
     public int baseUpgradeCost = 10;
     public int costIncreasePerLevel = 10;

@@ -83,6 +83,13 @@ MonoBehaviour:
     volume: 1
     pitchMin: 1
     pitchMax: 1
+  - soundName: GuardianAngel
+    clips:
+    - {fileID: 8300000, guid: ddd108c33bfd43c6b4c169407662b0d2, type: 3}
+    playMode: 0
+    volume: 1.5
+    pitchMin: 1
+    pitchMax: 1
   - soundName: PlayerDeath
     clips:
     - {fileID: 8300000, guid: e90a6bf6fb300d546991e42efe4ff4e3, type: 3}
@@ -133,11 +140,18 @@ MonoBehaviour:
     volume: 1
     pitchMin: 1
     pitchMax: 1
+  - soundName: WizardImpact
+    clips:
+    - {fileID: 8300000, guid: fc0a5858ccc24434ea65a20eef2fc94e, type: 3}
+    playMode: 0
+    volume: 1.4
+    pitchMin: 1
+    pitchMax: 1
   - soundName: OrcAttack
     clips:
-    - {fileID: 8300000, guid: eb9f5b001f403ca4aa3aa86c94aa7c14, type: 3}
+    - {fileID: 8300000, guid: 1c95ca8fb058beb48ba826fc3680e6b5, type: 3}
     playMode: 0
-    volume: 1
+    volume: 1.6
     pitchMin: 1
     pitchMax: 1
   - soundName: SkeletonAttack

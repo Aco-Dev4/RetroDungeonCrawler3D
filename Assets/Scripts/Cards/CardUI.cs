@@ -45,14 +45,6 @@ public class CardUI : MonoBehaviour
     [SerializeField] private List<CardRarityColor> rarityColors = new();
     #endregion
 
-    #region Unity
-    private void Awake()
-    {
-        if (playerController == null)
-            playerController = FindFirstObjectByType<PlayerController>();
-    }
-    #endregion
-
     #region Setup
     public void Setup(CardData cardData, Action<CardData> onChosen)
     {
@@ -71,18 +63,16 @@ public class CardUI : MonoBehaviour
         }
     }
 
-    public void Setup(RewardOption rewardOption, Action<RewardOption> onChosen)
+    public void Setup(RewardOption rewardOption, Action<RewardOption> onChosen, PlayerController player)
     {
         if (rewardOption == null || rewardOption.cardData == null)
             return;
 
         CardData cardData = rewardOption.cardData;
+        playerController = player;
 
         ApplyBaseCardVisuals(cardData);
         ApplyRewardVisuals(rewardOption.isUpgrade);
-
-        if (nameText != null)
-            nameText.text = rewardOption.isUpgrade ? $"{cardData.cardName} UPGRADE" : cardData.cardName;
 
         if (descriptionText != null)
             descriptionText.text = rewardOption.isUpgrade ? GetUpgradePreviewText(cardData) : cardData.description;

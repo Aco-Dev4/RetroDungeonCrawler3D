@@ -38,6 +38,9 @@ public class GameDataManager : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool createFreshDataOnAwake = false;
 
+    [Header("Shop")]
+    [SerializeField] private ShopUpgradeDatabase shopUpgradeDatabase;
+
     private PersistentPlayerData _data;
     private string SavePath => Path.Combine(Application.persistentDataPath, "playerdata.json");
     #endregion
@@ -322,24 +325,12 @@ public class GameDataManager : MonoBehaviour
 
     public int GetExtraLuck()
     {
-        int tier = GetUpgradeTier("ExtraLuck");
-
-        if (tier <= 0) return 0;
-        if (tier == 1) return 5;
-        if (tier == 2) return 8;
-        if (tier == 3) return 12;
-        if (tier == 4) return 15;
-        return 20;
+        return shopUpgradeDatabase?.GetTier("ExtraLuck", GetUpgradeTier("ExtraLuck"))?.intValue ?? 0;
     }
 
     public float GetExtraSilverMultiplier()
     {
-        int tier = GetUpgradeTier("ExtraSilver");
-
-        if (tier <= 0) return 0f;
-        if (tier == 1) return 0.10f;
-        if (tier == 2) return 0.20f;
-        return 0.35f;
+        return shopUpgradeDatabase?.GetTier("ExtraSilver", GetUpgradeTier("ExtraSilver"))?.floatValue ?? 0f;
     }
 
     public bool HasUnlockedEpicCards()
@@ -355,6 +346,11 @@ public class GameDataManager : MonoBehaviour
     public bool HasUnlockedCriticalHits()
     {
         return GetUpgradeTier("CriticalHits") >= 1;
+    }
+
+    public bool HasExtraChestChoice()
+    {
+        return GetUpgradeTier("ExtraChestChoice") >= 1;
     }
     #endregion
 

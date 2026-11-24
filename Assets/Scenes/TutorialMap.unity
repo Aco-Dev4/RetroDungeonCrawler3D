@@ -6047,6 +6047,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameDataManager
   createFreshDataOnAwake: 0
+  shopUpgradeDatabase: {fileID: 11400000, guid: 423b0036c80881e40a730c358cc72a8e, type: 2}
 --- !u!1 &777367958
 GameObject:
   m_ObjectHideFlags: 0
@@ -9972,10 +9973,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 9060497557834733268}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 650, y: 400}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: -31}
+  m_SizeDelta: {x: 0, y: -70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1393666658
 MonoBehaviour:
@@ -9990,12 +9991,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
   m_Padding:
-    m_Left: 70
-    m_Right: 70
-    m_Top: 25
-    m_Bottom: 25
+    m_Left: 18
+    m_Right: 18
+    m_Top: 5
+    m_Bottom: 5
   m_ChildAlignment: 4
-  m_Spacing: 75
+  m_Spacing: 26
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -18308,6 +18309,7 @@ MonoBehaviour:
   runEffectHandler: {fileID: 0}
   deathEffectHandler: {fileID: 0}
   rewardEffectHandler: {fileID: 0}
+  visualFeedbackSettings: {fileID: 11400000, guid: 6c5cdd87793a74c48b5337f5f3ceaec0, type: 2}
   ignorePermanentUpgrades: 1
   tutorialBaseDamage: 30
   footstepInterval: 0.35
@@ -18857,7 +18859,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7975385308873794334}
         m_TargetAssemblyTypeName: ChestRewardUI, Assembly-CSharp
-        m_MethodName: Close
+        m_MethodName: RequestClose
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18881,6 +18883,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   currentHealth: 0
   healthBar: {fileID: 236226998}
+  feedbackSettings: {fileID: 11400000, guid: bf20fa0caf9a29e4a9b5f960be009049, type: 2}
 --- !u!1 &4715464905994197034
 GameObject:
   m_ObjectHideFlags: 0
@@ -21014,6 +21017,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14b693d8fe641f74c92e5fdb57d60b2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChestRewardUI
+  discardConfirmationPrefab: {fileID: 7135716261539644345, guid: 7f7e05d209d3bfe4ba859c7e47bd7e93, type: 3}
   rootPanel: {fileID: 8704615951117339740}
   cardUIPrefab: {fileID: 4983196932028131127, guid: 996a80a06b3777944b10b3430483ef4b, type: 3}
   cardContainer: {fileID: 1393666656}
@@ -21448,7 +21452,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -25, y: -25}
+  m_AnchoredPosition: {x: -32, y: -32}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8701027677043070972
@@ -21704,7 +21708,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 650, y: 400}
+  m_SizeDelta: {x: 650, y: 470}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &9070749077924259594
 GameObject:

@@ -85,6 +85,10 @@ public class UIManager : MonoBehaviour
         if (pausePanel != null)
             pausePanel.SetActive(false);
 
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+
+        _isPaused = false;
         CursorManager.Instance?.UnlockCursor();
 
         yield return new WaitForSeconds(gameOverDelay);
@@ -152,10 +156,14 @@ public class UIManager : MonoBehaviour
 
     public void OnPause(InputAction.CallbackContext context)
     {
-        if (!context.started) return;
+        if (!context.started || GameManager.Instance == null ||
+            GameManager.Instance.State == GameState.GameOver) return;
 
         if (ChestRewardUI.Instance != null && ChestRewardUI.Instance.IsOpen())
+        {
+            ChestRewardUI.Instance.CancelCloseConfirmation();
             return;
+        }
 
         if (CardUpgradeUI.Instance != null && CardUpgradeUI.Instance.IsOpen())
         {
@@ -168,9 +176,12 @@ public class UIManager : MonoBehaviour
 
     public void TogglePause()
     {
+        GameManager game = GameManager.Instance;
+        if (game == null || game.State == GameState.GameOver) return;
+
         if (_isPaused)
             ResumeGame();
-        else
+        else if (game.State == GameState.Playing)
             PauseGame();
     }
 
@@ -189,7 +200,7 @@ public class UIManager : MonoBehaviour
         _isPaused = false;
         pausePanel.SetActive(false);
 
-        GameManager.Instance.ResumeGame();
+        GameManager.Instance?.ResumeGame();
     }
 
     #endregion

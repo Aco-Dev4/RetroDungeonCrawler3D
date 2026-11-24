@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class EnemyAttackHitbox : MonoBehaviour, IEnemyAttack
 {
+    [SerializeField] private ParticleSystem swingEffectPrefab;
+
     private int _damage;
     private GameObject _owner;
 
@@ -9,7 +11,17 @@ public class EnemyAttackHitbox : MonoBehaviour, IEnemyAttack
     {
         _damage = damage;
         _owner = owner;
+        PlaySwingEffect();
         Destroy(gameObject, 0.15f);
+    }
+
+    private void PlaySwingEffect()
+    {
+        if (swingEffectPrefab == null || _owner == null) return;
+
+        Transform enemy = _owner.transform;
+        ParticleSystem swing = Instantiate(swingEffectPrefab, enemy.position, enemy.rotation);
+        swing.Play();
     }
 
     private void OnTriggerEnter(Collider other)

@@ -31,5 +31,12 @@ public class OwnedCard
 
         return cardData.baseValue + cardData.valuePerUpgrade * (level - 1);
     }
+
+    public int GetUpgradeCost()
+    {
+        if (cardData == null) return 0;
+
+        return cardData.baseUpgradeCost + cardData.costIncreasePerLevel * (level - 1);
+    }
     #endregion
 }

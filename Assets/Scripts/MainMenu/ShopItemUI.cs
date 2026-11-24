@@ -45,11 +45,9 @@ public class ShopItemUI : MonoBehaviour
         if (valueText != null)
             valueText.text = valueDisplay;
 
+        // An unassigned sprite renders as a plain UI square.
         if (iconImage != null)
-        {
             iconImage.sprite = icon;
-            iconImage.enabled = icon != null;
-        }
 
         if (costText != null)
             costText.text = (isCompleted || isOwned)

@@ -48,9 +48,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RewardChest
   animator: {fileID: 8273237300654595604}
+  lid: {fileID: 3116811264297099935}
   interactionCanvas: {fileID: 6409362365040854503}
   outlineObject: {fileID: 0}
+  lightEffectPrefab: {fileID: 7338400448009791333, guid: 9af503a7bf91f3f4c993a7219cee582f, type: 3}
   timeToDespawn: 2
+  beamPreviewTime: 0.18
 --- !u!135 &3396580641633797285
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -352,10 +355,6 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
       objectReference: {fileID: 2100000, guid: db44dc7348279394485e2be71f7affeb, type: 2}
-    - target: {fileID: 1261596957915617074, guid: 636c1ab7dd908f04cb7d6c427d5ab3b3, type: 3}
-      propertyPath: 'm_Materials.Array.data[4]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 5aae727b75700b14db4163ee68c642a9, type: 2}
     - target: {fileID: 5079181337290995536, guid: 636c1ab7dd908f04cb7d6c427d5ab3b3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -411,6 +410,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6364227574113830802}
   m_SourcePrefab: {fileID: 100100000, guid: 636c1ab7dd908f04cb7d6c427d5ab3b3, type: 3}
+--- !u!4 &3116811264297099935 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 32090301238908177, guid: 636c1ab7dd908f04cb7d6c427d5ab3b3, type: 3}
+  m_PrefabInstance: {fileID: 3112869845252306830}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &7351020896292461156 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5563968844767538666, guid: 636c1ab7dd908f04cb7d6c427d5ab3b3, type: 3}
